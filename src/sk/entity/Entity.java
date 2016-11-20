@@ -23,8 +23,9 @@ public class Entity extends Node {
 	
 	@Override
 	public void draw() {
-		if(has(Renderer.class))
-			get(Renderer.class).draw();
+		for(int i : components.keySet())
+			for(Component c : components.get(i))
+				c.draw();
 	}
 	
 	public <T extends Component> boolean has(Class<T> c) {
@@ -53,7 +54,7 @@ public class Entity extends Node {
 				StringBuilder sb = new StringBuilder();
 				
 				sb.append("\"" + comp.getClass().getSimpleName() + "\" requires"
-						+ " the following components: ");
+						+ " the following component(s): ");
 				
 				for(String c : requirements) {
 					
@@ -121,6 +122,12 @@ public class Entity extends Node {
 				components.get(p).remove(comp);
 			}
 		}
+		
+		return this;
+	}
+	
+	public Entity clear() {
+		components.clear();
 		
 		return this;
 	}

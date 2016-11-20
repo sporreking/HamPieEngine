@@ -1,3 +1,5 @@
+import java.awt.Font;
+
 import org.lwjgl.glfw.GLFW;
 
 import sk.entity.Entity;
@@ -6,17 +8,23 @@ import sk.game.Game;
 import sk.gamestate.GameState;
 import sk.gfx.Animation;
 import sk.gfx.Camera;
+import sk.gfx.FontTexture;
 import sk.gfx.Mesh;
 import sk.gfx.Renderer;
+import sk.gfx.SpriteSheet;
 import sk.gfx.Texture;
+import sk.gfx.gui.GUIElement;
 import sk.sst.SST;
 import sk.util.io.Input;
+import sk.util.vector.Vector3f;
 
 public class TestState implements GameState {
 	
-	private Renderer r;
-	
 	private Texture t_wood;
+	
+	private SpriteSheet t_ss;
+	
+	private FontTexture t_font;
 	
 	Entity t_entity;
 	
@@ -26,18 +34,16 @@ public class TestState implements GameState {
 	public void init() {		
 		//GFX
 		t_wood = new Texture("res/texture/wood.png");
+		t_ss = new SpriteSheet("res/texture/zombies.png", 4, 4);
+		t_font = new FontTexture("Hello World!", 128, 128, 0, 64,
+				new Font("Fixedsys", Font.BOLD, 11), new Vector3f(0, 0, 1));
 		
-		r = new Renderer(Mesh.QUAD).setTexture(t_wood);
+		Renderer r = new Renderer(Mesh.QUAD);
 		
 		//Entity
 		t_entity = new Entity();
-		t_entity.add(0, new SST());
-		
-		t_entity.get(SST.class).store("t1", 1);
-		t_entity.get(SST.class).store("t2", "hej");
-		
-		t_entity.add(1, r);
-		t_entity.add(0, new Animation());
+		t_entity.add(0, new GUIElement(-.5f, 0, 200, 0, 100, 100));
+//		t_entity.add(0, new Animation(t_ss, 5.0f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
 		
 		//Root
 		t_root = new Root().add(0, "Test1", t_entity);
@@ -76,5 +82,7 @@ public class TestState implements GameState {
 	@Override
 	public void exit() {
 		t_wood.destroy();
+		t_ss.destroy();
+		t_font.destroy();
 	}
 }

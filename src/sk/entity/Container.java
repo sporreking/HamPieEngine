@@ -59,4 +59,10 @@ public class Container extends Node {
 	public int getNumOfNodes() {
 		return nodes.size();
 	}
+	
+	public Container clear() {
+		nodes.clear();
+		
+		return this;
+	}
 }

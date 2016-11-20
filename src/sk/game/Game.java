@@ -61,7 +61,8 @@ public final class Game {
 	 * 
 	 */
 	private static final void loop() {
-		GameStateManager.update(1.0);
+		Time.update();
+		GameStateManager.update(Time.getDelta());
 	}
 	
 	public static final void stop() {

@@ -8,6 +8,8 @@ public abstract class Component {
 	
 	public void update(double delta) {}
 	
+	public void draw() {}
+	
 	public void exit() {}
 	
 	public Class<? extends Component>[] requirements() { return null; }

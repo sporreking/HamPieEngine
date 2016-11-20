@@ -127,4 +127,11 @@ public class Root extends Node {
 	public int getNumOfNodes() {
 		return nodes.size();
 	}
+	
+	public Root clear() {
+		priorities.clear();
+		nodes.clear();
+		
+		return this;
+	}
 }

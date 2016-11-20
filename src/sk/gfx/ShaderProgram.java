@@ -229,9 +229,11 @@ public class ShaderProgram {
 	}
 	
 	public static final ShaderProgram ORTHO;
+	public static final ShaderProgram GUI;
 	
 	static {
 		ORTHO = new ShaderProgram("res/shader/ortho.vert", "res/shader/ortho.frag");
+		GUI = new ShaderProgram("res/shader/gui.vert", "res/shader/gui.frag");
 	}
 	
 	/**
