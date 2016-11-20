@@ -6,6 +6,8 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
 import sk.util.io.Input;
+import sk.util.io.Mouse;
+import sk.util.io.MouseButton;
 import sk.util.vector.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -72,6 +74,8 @@ public final class Window {
 		
 		//Setup key callback
 		Input.INSTANCE.set(window);
+		Mouse.INSTANCE.set(window);
+		MouseButton.INSTANCE.set(window);
 	}
 	
 	/**

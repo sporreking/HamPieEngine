@@ -1,24 +1,26 @@
 package sk.util.io;
 
-import org.lwjgl.glfw.GLFWKeyCallback;
-
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_PRESS;
+import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Input extends GLFWKeyCallback {
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+
+public class MouseButton extends GLFWMouseButtonCallback {
 	
 	private static final HashMap<Integer, KeyState> states = new HashMap<>();
-	
+
 	@Override
-	public void invoke(long window, int key, int scancode, int action, int mods) {
+	public void invoke(long window, int button, int action, int mods) {
 		if(action == GLFW_PRESS) {
-			states.put(key, KeyState.PRESSED);
+			states.put(button, KeyState.PRESSED);
 		} else if(action == GLFW_RELEASE) {
-			states.put(key, KeyState.RELEASED);
+			states.put(button, KeyState.RELEASED);
 		}
 	}
+	
 	
 	/**
 	 * 
@@ -87,5 +89,5 @@ public class Input extends GLFWKeyCallback {
 		DOWN, PRESSED, RELEASED;
 	}
 	
-	public static final GLFWKeyCallback INSTANCE = new Input();
+	public static final GLFWMouseButtonCallback INSTANCE = new MouseButton();
 }
