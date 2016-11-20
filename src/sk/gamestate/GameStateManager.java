@@ -2,7 +2,7 @@ package sk.gamestate;
 
 import sk.game.Game;
 import sk.game.Window;
-import sk.util.io.Input;
+import sk.util.io.Keyboard;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -43,7 +43,7 @@ public final class GameStateManager {
 		if(currentState == null)
 			return;
 		
-		Input._update();
+		Keyboard._update();
 		glfwPollEvents();
 		
 		currentState.update(delta);

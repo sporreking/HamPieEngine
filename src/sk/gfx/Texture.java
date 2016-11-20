@@ -20,14 +20,32 @@ public class Texture {
 	private int width;
 	private int height;
 	
+	/**
+	 * 
+	 * Creates a new empty texture. {@link #generate(String) generate()} should be called before use.
+	 * 
+	 */
 	public Texture() {
 		
 	}
 	
+	/**
+	 * 
+	 * Creates a new texture from the specified file.
+	 * 
+	 * @param path the file path.
+	 */
 	public Texture(String path) {
 		generate(path);
 	}
 	
+	/**
+	 * 
+	 * Generates a texture from the specified file.
+	 * 
+	 * @param path the file path.
+	 * @return this texture instance.
+	 */
 	public Texture generate(String path) {
 		
 		BufferedImage img = null;
@@ -47,6 +65,15 @@ public class Texture {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Generates a texture from the specified bitmap.
+	 * 
+	 * @param width the width of the bitmap.
+	 * @param height the height of the bitmap.
+	 * @param pixels the bitmap.
+	 * @return this texture instance.
+	 */
 	public Texture generate(int width, int height, int[] pixels) {
 		
 		this.width = width;
@@ -73,10 +100,23 @@ public class Texture {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Binds this texture to the 0th sampler.
+	 * 
+	 * @return this texture instance.
+	 */
 	public Texture bind() {
 		return bind(0);
 	}
 	
+	/**
+	 * 
+	 * Binds this texture to the specified sampler.
+	 * 
+	 * @param target the target sampler.
+	 * @return this texture instance.
+	 */
 	public Texture bind(int target) {
 		glActiveTexture(GL_TEXTURE0 + target);
 		glBindTexture(GL_TEXTURE_2D, id);
@@ -84,18 +124,41 @@ public class Texture {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Returns the OpenGL generated ID of this texture.
+	 * 
+	 * @return the ID of this texture.
+	 */
 	public int getID() {
 		return id;
 	}
 	
+	/**
+	 * 
+	 * Returns the width of this texture in pixels.
+	 * 
+	 * @return the width of this texture.
+	 */
 	public int getWidth() {
 		return width;
 	}
 	
+	/**
+	 * 
+	 * Returns the height of this texture in pixels.
+	 * 
+	 * @return the height of this texture.
+	 */
 	public int getHeight() {
 		return height;
 	}
 	
+	/**
+	 * 
+	 * Destroys the generated texture.
+	 * 
+	 */
 	public void destroy() {
 		glDeleteTextures(id);
 	}
@@ -106,6 +169,11 @@ public class Texture {
 		DEFAULT = new Texture().generate(1, 1, new int[] {0xffffffff});
 	}
 	
+	/**
+	 * 
+	 * Destroys all engine-created textures.
+	 * 
+	 */
 	public static final void destroyAll() {
 		DEFAULT.destroy();
 	}

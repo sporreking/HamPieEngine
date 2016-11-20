@@ -10,6 +10,11 @@ public class Entity extends Node {
 	
 	private TreeMap<Integer, ArrayList<Component>> components;
 	
+	/**
+	 * 
+	 * Creates a new empty entity.
+	 * 
+	 */
 	public Entity() {
 		components = new TreeMap<>();
 	}
@@ -28,6 +33,13 @@ public class Entity extends Node {
 				c.draw();
 	}
 	
+	/**
+	 * 
+	 * Checks whether or not a component of the specified type is attached to this entity.
+	 * 
+	 * @param c the component type to check.
+	 * @return {@code true} if the component is attached.
+	 */
 	public <T extends Component> boolean has(Class<T> c) {
 		for(List<Component> comps : components.values())
 			for(Component comp : comps)
@@ -37,6 +49,14 @@ public class Entity extends Node {
 		return false;
 	}
 	
+	/**
+	 * 
+	 * Adds a new component to this entity.
+	 * 
+	 * @param priority the lowest priority will be updated first.
+	 * @param comp the component to add.
+	 * @return this entity instance.
+	 */
 	public Entity add(int priority, Component comp) {
 		if(has(comp.getClass()))
 			throw new IllegalArgumentException("The component ("
@@ -80,6 +100,13 @@ public class Entity extends Node {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Returns the component of the specified type, or {@code null} if no such component is present.
+	 * 
+	 * @param c the type of component to fetch.
+	 * @return the component, or {@code null} if it is not present.
+	 */
 	@SuppressWarnings("unchecked")
 	public <T extends Component> T get(Class<T> c) {
 		for(List<Component> comps : components.values())
@@ -90,6 +117,13 @@ public class Entity extends Node {
 		return null;
 	}
 	
+	/**
+	 * 
+	 * Returns all components with the specified priority.
+	 * 
+	 * @param priority the priority to fetch from.
+	 * @return all components with the specified priority.
+	 */
 	@SuppressWarnings("unchecked")
 	public List<Component> getComponents(int priority) {
 		if(components.get(priority) == null)
@@ -99,6 +133,13 @@ public class Entity extends Node {
 		return (List<Component>) components.get(priority).clone();
 	}
 	
+	/**
+	 * 
+	 * Returns the priority of the specified component.
+	 * 
+	 * @param c the type of the component.
+	 * @return the priority of the component or {@code -1}.
+	 */
 	public int getPriority(Class<? extends Component> c) {
 		for(int i : components.keySet()) {
 			for(Component comp : getComponents(i))
@@ -109,6 +150,13 @@ public class Entity extends Node {
 		return -1;
 	}
 	
+	/**
+	 * 
+	 * Removes the component of the specified type.
+	 * 
+	 * @param c the type of the component.
+	 * @return this entity instance.
+	 */
 	public Entity remove(Class<? extends Component> c) {
 		if(!has(c))
 			throw new IllegalArgumentException("The component \"" + c.getSimpleName()
@@ -126,6 +174,12 @@ public class Entity extends Node {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Removes all components from this entity.
+	 * 
+	 * @return this entity instance.
+	 */
 	public Entity clear() {
 		components.clear();
 		

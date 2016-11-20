@@ -204,6 +204,14 @@ public class ShaderProgram {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Sends a 4x4 matrix to the specified uniform in this program.
+	 * 
+	 * @param location the name of the uniform.
+	 * @param mat4 the matrix to send.
+	 * @return this shader program instance.
+	 */
 	public ShaderProgram sendM4(String location, Matrix4f mat4) {
 		
 		FloatBuffer buffer = ByteBuffer.allocateDirect((4 * 4) << 2)
@@ -243,5 +251,6 @@ public class ShaderProgram {
 	 */
 	public static final void destroyAll() {
 		ORTHO.destroy();
+		GUI.destroy();
 	}
 }

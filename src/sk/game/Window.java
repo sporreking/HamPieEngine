@@ -5,7 +5,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
-import sk.util.io.Input;
+import sk.util.io.Keyboard;
 import sk.util.vector.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -71,7 +71,7 @@ public final class Window {
 		glViewport(0, 0, Game.properties.width, Game.properties.height);
 		
 		//Setup key callback
-		Input.INSTANCE.set(window);
+		Keyboard.INSTANCE.set(window);
 	}
 	
 	/**
@@ -103,6 +103,12 @@ public final class Window {
 		return height[0];
 	}
 	
+	/**
+	 * 
+	 * Returns the aspect ratio of the window.
+	 * 
+	 * @return the aspect ratio of the window.
+	 */
 	public static final float getAspectRatio() {
 		return ((float) getWidth()) / ((float) getHeight());
 	}

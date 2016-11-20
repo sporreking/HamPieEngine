@@ -2,6 +2,7 @@ package sk.game;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import sk.gamestate.GameState;
 import sk.gamestate.GameStateManager;
 import sk.gfx.Mesh;
 
@@ -65,10 +66,22 @@ public final class Game {
 		GameStateManager.update(Time.getDelta());
 	}
 	
+	/**
+	 * 
+	 * Tells the game to exit after the frame has completed.
+	 * The {@link GameState#exit()} method will be called before exiting the loop.
+	 * 
+	 */
 	public static final void stop() {
 		running = false;
 	}
 	
+	/**
+	 * 
+	 * Returns whether or not the game is running, or should be exited.
+	 * 
+	 * @return {@code true} if the game is running and should not be exited.
+	 */
 	public static final boolean isRunning() {
 		return running;
 	}
