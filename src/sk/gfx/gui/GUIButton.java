@@ -48,8 +48,7 @@ public class GUIButton extends GUIElement {
 	
 	@Override
 	public void init() {
-		if(getParent().has(Transform.class))
-			transform = getParent().get(Transform.class);
+		super.init();
 		
 		if(!getParent().has(AABB.class))
 			getParent().add(0, new AABB(2.0f * width / Window.getWidth(),

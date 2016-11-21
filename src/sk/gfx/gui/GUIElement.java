@@ -6,9 +6,14 @@ import sk.gfx.Camera;
 import sk.gfx.Mesh;
 import sk.gfx.Renderer;
 import sk.gfx.ShaderProgram;
+import sk.gfx.Transform;
 
 public class GUIElement extends Renderer {
 	
+	protected float anchorX;
+	protected float anchorY;
+	protected int offsetX;
+	protected int offsetY;
 	protected int width;
 	protected int height;
 	
@@ -26,9 +31,23 @@ public class GUIElement extends Renderer {
 		super(Mesh.QUAD);
 		camera = new Camera().createOrtho(-1, 1, 1, -1);
 		
-		updateTransform(anchorX, anchorY, offsetX, offsetY, width, height);
+		this.anchorX = anchorX;
+		this.anchorY = anchorY;
+		this.offsetX = offsetX;
+		this.offsetY = offsetY;
+		this.width = width;
+		this.height = height;
+		
+		updateTransform();
 	}
 	
+	@Override
+	public void init() {
+		if(getParent().has(Transform.class))
+			transform = getParent().get(Transform.class);
+		
+		updateTransform();
+	}
 	
 	/**
 	 * 
@@ -41,28 +60,13 @@ public class GUIElement extends Renderer {
 	 * @param width the width of this GUI element in pixels.
 	 * @param height the height of this GUI element in pixels.
 	 */
-	public void updateTransform(float anchorX, float anchorY, int offsetX, int offsetY, int width, int height) {
-		this.width = width;
-		this.height = height;
+	public void updateTransform() {
 		
 		transform.scale.x = 2.0f * width /  Window.getWidth();
 		transform.scale.y = 2.0f * height / Window.getHeight();
 		
 		transform.position.x = anchorX + 2.0f * offsetX / Window.getWidth();
 		transform.position.y = anchorY + 2.0f * offsetY / Window.getHeight();
-	}
-
-	/**
-	 * 
-	 * Updates the transform of this GUI element
-	 * 
-	 * @param anchorX the x-coordinate of this GUI element's anchor point. 
-	 * @param anchorY the y-coordinate of this GUI element's anchor point.
-	 * @param offsetX the x-axis offset in pixels from the anchor point.
-	 * @param offsetY the y-axis offset in pixels from the anchor point.
-	 */
-	public void updateTransform(float anchorX, float anchorY, int offsetX, int offsetY) {
-		updateTransform(anchorX, anchorY, offsetX, offsetY, width, height);
 	}
 	
 	/**
