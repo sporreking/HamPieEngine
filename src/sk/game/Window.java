@@ -5,13 +5,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
-<<<<<<< HEAD
-import sk.util.io.Input;
 import sk.util.io.Mouse;
 import sk.util.io.MouseButton;
-=======
 import sk.util.io.Keyboard;
->>>>>>> refs/remotes/origin/master
 import sk.util.vector.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.*;
