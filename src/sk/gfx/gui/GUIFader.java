@@ -4,42 +4,42 @@ import sk.gfx.ShaderProgram;
 import sk.gfx.Texture;
 
 public class GUIFader extends GUIElement{
-
 	
-	//
-	Texture[] textures;
-	Texture mask;
+	private Texture[] textures;
+	private Texture mask;
 	
-	float value;
+	private float threshold;
 	
 	/**
-	 * Constructs a GUI element that fades between textures depending on the value, and the mask. 
-	 * It draws "textures[0]" if the sample from "mask" is greater than "value" otherwise it draws "texture[1]"
-	 * @param anchorX The anchor point in screen coordinates for this specific GUI element on the X-axis. 
-	 * @param anchorY The anchor point in screen coordinates for this specific GUI element on the Y-axis.
-	 * @param offsetX The pixel offset from the anchor point, in pixels on the X-axis.
-	 * @param offsetY The pixel offset from the anchor point, in pixels on the Y-axis.
-	 * @param width The width in pixels of this GUI element.
-	 * @param height The height in pixels of this GUI element.
-	 * @param mask The mask that handles the blending between the two textures.
-	 * @param textures The two textures that will have color sampled from it. 
+	 * 
+	 * Creates a new GUI element that fades between textures depending on a threshold and a mask. 
+	 * It will render "textureA" if the sample from "mask" is greater than the threshold,
+	 * otherwise it will render "textureB".
+	 * 
+	 * @param anchorX the x-coordinate of this GUI element's anchor point. 
+	 * @param anchorY the y-coordinate of this GUI element's anchor point.
+	 * @param offsetX the x-axis offset in pixels from the anchor point.
+	 * @param offsetY the y-axis offset in pixels from the anchor point.
+	 * @param width the width of this GUI element in pixels.
+	 * @param height the height of this GUI element in pixels.
+	 * @param mask the mask that handles the blending between the two textures.
+	 * @param textureA The two textures that will have color sampled from it. 
 	 */
-	public GUIFader(float anchorX, float anchorY, int offsetX, int offsetY, int width, int height, Texture mask, Texture ... textures) {
+	public GUIFader(float anchorX, float anchorY, int offsetX, int offsetY, int width, int height,
+			Texture mask, Texture textureA, Texture textureB) {
 		super(anchorX, anchorY, offsetX, offsetY, width, height);
 		
-		if (textures.length != 2) {
-			throw new IllegalArgumentException("You did not supply two textures to the GUIFader constructor for textures.");
-		}
-		
-		this.textures = textures;
+		this.textures = new Texture[] { textureA, textureB };
 		this.mask = mask;
 		
-		value = 0;
+		threshold = 0.5f;
 	}
 
 	/**
-	 * Sets the indexed texture to the new texture.
-	 * @param index The index of the texture, 0 or 1.
+	 * 
+	 * Sets textureA or textureB.
+	 * 
+	 * @param index the index of the texture, 0 = textureA and 1 = textureB.
 	 * @param texture The texture.
 	 */
 	public void setTexture(int index, Texture texture) {
@@ -47,34 +47,40 @@ public class GUIFader extends GUIElement{
 	}
 	
 	/**
-	 * Sets the value of value, which controls the blending.
-	 * @param value The value.
+	 * 
+	 * Sets the threshold. This value controls which texture will be drawn.
+	 * It will render "textureA" if the sample from "mask" is greater than the threshold,
+	 * otherwise it will render "textureB".
+	 * 
+	 * @param threshold the new threshold.
 	 */
-	public void setValue(float value) {
-		value = value < 0.0 ? 0.0f : value;
-		value = value > 1.0 ? 1.0f : value;
-		this.value = value;
+	public void setThreshold(float threshold) {
+		threshold = Math.max(threshold, 0);
+		threshold = Math.min(threshold, 1);
+		this.threshold = threshold;
 	}
 	
 	/**
-	 * Changes the value of value by delta linearly, which controls the blending.
-	 * @param delta The change of "value"
+	 * 
+	 * Changes the threshold linearly. This value controls which texture will be drawn.
+	 * 
+	 * @param delta the threshold change.
 	 */
-	public void changeValue(float delta) {
-		setValue(value + delta);
+	public void changeThreshold(float delta) {
+		setThreshold(threshold + delta);
 	}
 	
 	/**
+	 * 
 	 * Sets the mask texture.
-	 * @param mask The mask.
+	 * 
+	 * @param mask the mask texture.
 	 */
 	public void setMask(Texture mask) {
 		this.mask = mask;
 	}
 	
-	/**
-	 * Self explanatory.
-	 */
+	@Override
 	public void draw() {
 		setupShader();
 		
@@ -82,7 +88,7 @@ public class GUIFader extends GUIElement{
 		ShaderProgram.GUI.send1i("b_is_fader", 1);
 		
 		//Tell the shader that this is a fader
-		ShaderProgram.GUI.send1f("f_value", this.value);
+		ShaderProgram.GUI.send1f("f_value", threshold);
 		
 		//Send the texture id
 		ShaderProgram.GUI.send1i("t_mask", 0);

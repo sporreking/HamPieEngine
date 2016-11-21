@@ -59,6 +59,7 @@ public class Keyboard extends GLFWKeyCallback {
 	}
 	
 	/**
+	 * 
 	 * Checks if the specified key was pressed this frame.
 	 * 
 	 * @param key the key code to check.
@@ -86,7 +87,7 @@ public class Keyboard extends GLFWKeyCallback {
 		return false;
 	}
 	
-	private enum KeyState {
+	public static enum KeyState {
 		DOWN, PRESSED, RELEASED;
 	}
 	

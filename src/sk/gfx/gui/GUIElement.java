@@ -9,17 +9,18 @@ import sk.gfx.ShaderProgram;
 
 public class GUIElement extends Renderer {
 	
-	private int width;
-	private int height;
+	protected int width;
+	protected int height;
 	
 	/**
-	 * Constructs a GUI element, which is attached to the screen.
-	 * @param anchorX The anchor point in screen coordinates for this specific GUI element on the X-axis. 
-	 * @param anchorY The anchor point in screen coordinates for this specific GUI element on the Y-axis.
-	 * @param offsetX The pixel offset from the anchor point, in pixels on the X-axis.
-	 * @param offsetY The pixel offset from the anchor point, in pixels on the Y-axis.
-	 * @param width The width in pixels of this GUI element.
-	 * @param height The height in pixels of this GUI element.
+	 * Creates a new GUI element, and attaches it to the screen.
+	 * 
+	 * @param anchorX the x-coordinate of this GUI element's anchor point. 
+	 * @param anchorY the y-coordinate of this GUI element's anchor point.
+	 * @param offsetX the x-axis offset in pixels from the anchor point.
+	 * @param offsetY the y-axis offset in pixels from the anchor point.
+	 * @param width the width of this GUI element in pixels.
+	 * @param height the height of this GUI element in pixels.
 	 */
 	public GUIElement(float anchorX, float anchorY, int offsetX, int offsetY, int width, int height) {
 		super(Mesh.QUAD);
@@ -30,13 +31,15 @@ public class GUIElement extends Renderer {
 	
 	
 	/**
-	 * Updates the transform of the GUI element
-	 * @param anchorX The anchor point in screen coordinates for this specific GUI element on the X-axis. 
-	 * @param anchorY The anchor point in screen coordinates for this specific GUI element on the Y-axis.
-	 * @param offsetX The pixel offset from the anchor point, in pixels on the X-axis.
-	 * @param offsetY The pixel offset from the anchor point, in pixels on the Y-axis.
-	 * @param width The width in pixels of this GUI element.
-	 * @param height The height in pixels of this GUI element.
+	 * 
+	 * Updates the transform of this GUI element.
+	 * 
+	 * @param anchorX the x-coordinate of this GUI element's anchor point. 
+	 * @param anchorY the y-coordinate of this GUI element's anchor point.
+	 * @param offsetX the x-axis offset in pixels from the anchor point.
+	 * @param offsetY the y-axis offset in pixels from the anchor point.
+	 * @param width the width of this GUI element in pixels.
+	 * @param height the height of this GUI element in pixels.
 	 */
 	public void updateTransform(float anchorX, float anchorY, int offsetX, int offsetY, int width, int height) {
 		this.width = width;
@@ -50,24 +53,28 @@ public class GUIElement extends Renderer {
 	}
 
 	/**
-	 * Updates the transform of the GUI element
-	 * @param anchorX The anchor point in screen coordinates for this specific GUI element on the X-axis. 
-	 * @param anchorY The anchor point in screen coordinates for this specific GUI element on the Y-axis.
-	 * @param offsetX The pixel offset from the anchor point, in pixels on the X-axis.
-	 * @param offsetY The pixel offset from the anchor point, in pixels on the Y-axis.
+	 * 
+	 * Updates the transform of this GUI element
+	 * 
+	 * @param anchorX the x-coordinate of this GUI element's anchor point. 
+	 * @param anchorY the y-coordinate of this GUI element's anchor point.
+	 * @param offsetX the x-axis offset in pixels from the anchor point.
+	 * @param offsetY the y-axis offset in pixels from the anchor point.
 	 */
 	public void updateTransform(float anchorX, float anchorY, int offsetX, int offsetY) {
 		updateTransform(anchorX, anchorY, offsetX, offsetY, width, height);
 	}
 	
 	/**
-	 * Moves the GUI element.
-	 * @param deltaOffsetX The distance to move on the X-axis.
-	 * @param deltaOffsetY The distance to move on the Y-axis.
+	 * 
+	 * Translates the GUI element.
+	 * 
+	 * @param dx the distance to translate on the x-axis.
+	 * @param dy The distance to translate on the y-axis.
 	 */
-	public void move(float deltaOffsetX, float deltaOffsetY) {
-		transform.position.x += deltaOffsetX;
-		transform.position.y += deltaOffsetY;
+	public void translate(float dx, float dy) {
+		transform.position.x += dx;
+		transform.position.y += dy;
 	}
 	
 	@Override	
@@ -75,9 +82,7 @@ public class GUIElement extends Renderer {
 		
 	}
 	
-	/**
-	 * Self descriptive.
-	 */
+	@Override
 	public void draw() {
 		setupShader();
 	
@@ -93,6 +98,11 @@ public class GUIElement extends Renderer {
 		getMesh().draw();
 	}
 	
+	/**
+	 * 
+	 * Called before each draw call to bind the GUI shader program and send it's appropriate matrices.
+	 * 
+	 */
 	protected void setupShader() {
 		//Select shader program
 		ShaderProgram.GUI.use();
