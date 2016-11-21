@@ -19,6 +19,12 @@ public class Renderer extends Component {
 		this.mesh = mesh;
 	}
 	
+	@Override
+	public void init() {
+		if(getParent().has(Transform.class))
+			transform = getParent().get(Transform.class);
+	}
+	
 	/**
 	 * 
 	 * Renders the mesh with associated properties.

@@ -87,7 +87,7 @@ public class Keyboard extends GLFWKeyCallback {
 		return false;
 	}
 	
-	private enum KeyState {
+	public static enum KeyState {
 		DOWN, PRESSED, RELEASED;
 	}
 	

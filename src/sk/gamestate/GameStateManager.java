@@ -3,6 +3,7 @@ package sk.gamestate;
 import sk.game.Game;
 import sk.game.Window;
 import sk.util.io.Keyboard;
+import sk.util.io.Mouse;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -44,6 +45,7 @@ public final class GameStateManager {
 			return;
 		
 		Keyboard._update();
+		Mouse._update();
 		glfwPollEvents();
 		
 		currentState.update(delta);

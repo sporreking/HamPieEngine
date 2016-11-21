@@ -1,9 +1,10 @@
 package sk.gfx;
 
+import sk.entity.Component;
 import sk.util.vector.Matrix4f;
 import sk.util.vector.Vector2f;
 
-public class Transform {
+public class Transform extends Component {
 	
 	public Vector2f position = new Vector2f();
 	public Vector2f scale = new Vector2f(1, 1);

@@ -16,14 +16,16 @@ import sk.gfx.Mesh;
 import sk.gfx.Renderer;
 import sk.gfx.SpriteSheet;
 import sk.gfx.Texture;
+import sk.gfx.gui.GUIButton;
 import sk.gfx.gui.GUIElement;
+import sk.gfx.gui.GUIFader;
 import sk.sst.SST;
 import sk.util.io.Keyboard;
 import sk.util.vector.Vector3f;
 
 public class TestState implements GameState {
 	
-	private Texture t_wood;
+	private Texture t_wood, t_mask, t_on, t_off;
 	
 	private SpriteSheet t_ss;
 	
@@ -38,6 +40,9 @@ public class TestState implements GameState {
 	@Override
 	public void init() {		
 		//GFX
+		t_mask = new Texture("res/texture/mask.png");
+		t_on = new Texture("res/texture/on.png");
+		t_off = new Texture("res/texture/off.png");
 		t_wood = new Texture("res/texture/wood.png");
 		t_ss = new SpriteSheet("res/texture/zombies.png", 4, 4);
 		t_font = new FontTexture("Hello World!", 128, 128, 0, 64,
@@ -47,7 +52,8 @@ public class TestState implements GameState {
 		
 		//Entity
 		t_entity = new Entity();
-		t_entity.add(0, new GUIElement(-.5f, 0, 200, 0, 100, 100));
+		//t_entity.add(0, new GUIElement(-.5f, 0, 200, 0, 100, 100).setTexture(t_font));
+		t_entity.add(0, new GUIButton(-.5f, 0, 200, 0, 100, 100));
 //		t_entity.add(0, new Animation(t_ss, 5.0f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
 		
 		//Root
@@ -76,10 +82,12 @@ public class TestState implements GameState {
 		if(Keyboard.down(GLFW.GLFW_KEY_Q)) {
 			Camera.DEFAULT.scale.x += speed;
 			Camera.DEFAULT.scale.y += speed;
+			((Entity) t_root.get("Test1")).get(GUIFader.class).changeThreshold(speed);
 		}
 		if(Keyboard.down(GLFW.GLFW_KEY_E)) {
 			Camera.DEFAULT.scale.x -= speed;
 			Camera.DEFAULT.scale.y -= speed;
+			((Entity) t_root.get("Test1")).get(GUIFader.class).changeThreshold(-speed);
 		}
 		if(Keyboard.down(GLFW.GLFW_KEY_O)) {
 			nd += speed * .1f;

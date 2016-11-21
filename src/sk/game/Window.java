@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
+import sk.util.io.Mouse;
 import sk.util.io.Keyboard;
 import sk.util.vector.Vector4f;
 
@@ -72,6 +73,8 @@ public final class Window {
 		
 		//Setup key callback
 		Keyboard.INSTANCE.set(window);
+		Mouse.INSTANCE.set(window);
+		Mouse.Cursor.INSTANCE.set(window);
 	}
 	
 	/**
