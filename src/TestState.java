@@ -2,6 +2,9 @@ import java.awt.Font;
 
 import org.lwjgl.glfw.GLFW;
 
+import sk.audio.Audio;
+import sk.audio.AudioManager;
+import sk.audio.SineAudio;
 import sk.entity.Entity;
 import sk.entity.Root;
 import sk.game.Game;
@@ -30,6 +33,8 @@ public class TestState implements GameState {
 	
 	Root t_root;
 	
+	Audio t_psych;
+	
 	@Override
 	public void init() {		
 		//GFX
@@ -47,9 +52,17 @@ public class TestState implements GameState {
 		
 		//Root
 		t_root = new Root().add(0, "Test1", t_entity);
+		
+		//Audio
+		AudioManager.start();
+		
+		t_psych = new Audio("res/audio/elevator.wav");
+		
+		AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
 	}
 	
 	float speed = .01f;
+	float nd = 1.0f;
 	@Override
 	public void update(double delta) {
 		if(Keyboard.down(GLFW.GLFW_KEY_W))
@@ -68,10 +81,18 @@ public class TestState implements GameState {
 			Camera.DEFAULT.scale.x -= speed;
 			Camera.DEFAULT.scale.y -= speed;
 		}
+		if(Keyboard.down(GLFW.GLFW_KEY_O)) {
+			nd += speed * .1f;
+			AudioManager.setSourcePitch(nd, 0);
+		}
+		if(Keyboard.down(GLFW.GLFW_KEY_I)) {
+			nd -= speed * .1f;
+			AudioManager.setSourcePitch(nd, 0);
+		}
 		
 		if(Keyboard.released(GLFW.GLFW_KEY_ESCAPE))
 			Game.stop();
-		t_root.update(delta);
+		t_root.update(delta * nd);
 	}
 	
 	@Override
@@ -84,5 +105,6 @@ public class TestState implements GameState {
 		t_wood.destroy();
 		t_ss.destroy();
 		t_font.destroy();
+		t_psych.destroy();
 	}
 }

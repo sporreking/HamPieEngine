@@ -2,9 +2,12 @@ package sk.game;
 
 import static org.lwjgl.opengl.GL11.*;
 
+import sk.audio.AudioManager;
 import sk.gamestate.GameState;
 import sk.gamestate.GameStateManager;
 import sk.gfx.Mesh;
+import sk.gfx.ShaderProgram;
+import sk.gfx.Texture;
 
 /**
  * 
@@ -93,5 +96,8 @@ public final class Game {
 	 */
 	private static final void destroy() {
 		Mesh.destroyAll();
+		Texture.destroyAll();
+		ShaderProgram.destroyAll();
+		AudioManager.destroy();
 	}
 }
