@@ -16,4 +16,11 @@ public abstract class Node {
 	 * 
 	 */
 	public abstract void draw();
+	
+	/**
+	 * 
+	 * Destroys all subsequent nodes.
+	 * 
+	 */
+	public abstract void destroy();
 }
