@@ -112,15 +112,10 @@ public class Container extends Node {
 		return nodes.size();
 	}
 	
-	/**
-	 * 
-	 * Removes all nodes from this container.
-	 * 
-	 * @return this container instance.
-	 */
-	public Container clear() {
+	@Override
+	public void destroy() {
+		for(Node n : nodes)
+			n.destroy();
 		nodes.clear();
-		
-		return this;
 	}
 }

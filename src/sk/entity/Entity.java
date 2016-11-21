@@ -176,13 +176,15 @@ public class Entity extends Node {
 	
 	/**
 	 * 
-	 * Removes all components from this entity.
+	 * Calls exit on all components and clears itself from them.
 	 * 
-	 * @return this entity instance.
 	 */
-	public Entity clear() {
-		components.clear();
+	@Override
+	public void destroy() {
+		for(List<Component> cl : components.values())
+			for(Component c : cl)
+				c.exit();
 		
-		return this;
+		components.clear();
 	}
 }

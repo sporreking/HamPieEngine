@@ -202,16 +202,13 @@ public class Root extends Node {
 		return nodes.size();
 	}
 	
-	/**
-	 * 
-	 * Removes all nodes contained by this root.
-	 * 
-	 * @return this root instance.
-	 */
-	public Root clear() {
+	@Override
+	public void destroy() {
+		for(List<String> keys : priorities.values())
+			for(String key : keys)
+				nodes.get(key).destroy();
+		
 		priorities.clear();
 		nodes.clear();
-		
-		return this;
 	}
 }
