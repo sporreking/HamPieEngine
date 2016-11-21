@@ -16,6 +16,7 @@ import sk.gfx.Mesh;
 import sk.gfx.Renderer;
 import sk.gfx.SpriteSheet;
 import sk.gfx.Texture;
+import sk.gfx.Transform;
 import sk.gfx.gui.GUIButton;
 import sk.gfx.gui.GUIElement;
 import sk.gfx.gui.GUIFader;
@@ -53,7 +54,10 @@ public class TestState implements GameState {
 		//Entity
 		t_entity = new Entity();
 		//t_entity.add(0, new GUIElement(-.5f, 0, 200, 0, 100, 100).setTexture(t_font));
-		t_entity.add(0, new GUIButton(-.5f, 0, 200, 0, 100, 100));
+		GUIButton button = new GUIButton(-.5f, 0, 200, 0, 100, 100);
+		button.setOnClick(() -> System.out.println("Click"));
+		t_entity.add(0, new Transform());
+		t_entity.add(0, button);
 //		t_entity.add(0, new Animation(t_ss, 5.0f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
 		
 		//Root
@@ -71,6 +75,8 @@ public class TestState implements GameState {
 	float nd = 1.0f;
 	@Override
 	public void update(double delta) {
+		
+		
 		if(Keyboard.down(GLFW.GLFW_KEY_W))
 			Camera.DEFAULT.position.y += speed;
 		if(Keyboard.down(GLFW.GLFW_KEY_A))
@@ -92,10 +98,12 @@ public class TestState implements GameState {
 		if(Keyboard.down(GLFW.GLFW_KEY_O)) {
 			nd += speed * .1f;
 			AudioManager.setSourcePitch(nd, 0);
+			t_entity.get(GUIButton.class).transform.position.x += speed;
 		}
 		if(Keyboard.down(GLFW.GLFW_KEY_I)) {
 			nd -= speed * .1f;
 			AudioManager.setSourcePitch(nd, 0);
+			t_entity.get(GUIButton.class).transform.position.x -= speed;
 		}
 		
 		if(Keyboard.released(GLFW.GLFW_KEY_ESCAPE))
