@@ -8,8 +8,11 @@ import java.util.HashMap;
 
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
+import sk.gfx.gui.GUIButton;
+
 public class MouseButton extends GLFWMouseButtonCallback {
 	
+	public static boolean changes = false;
 	private static final HashMap<Integer, KeyState> states = new HashMap<>();
 
 	@Override
@@ -19,6 +22,7 @@ public class MouseButton extends GLFWMouseButtonCallback {
 		} else if(action == GLFW_RELEASE) {
 			states.put(button, KeyState.RELEASED);
 		}
+		changes = true;
 	}
 	
 	
@@ -58,6 +62,7 @@ public class MouseButton extends GLFWMouseButtonCallback {
 			states.remove(key);
 		
 		trash.clear();
+		changes = false;
 	}
 	
 	/**

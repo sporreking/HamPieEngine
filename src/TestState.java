@@ -13,6 +13,7 @@ import sk.gfx.Mesh;
 import sk.gfx.Renderer;
 import sk.gfx.SpriteSheet;
 import sk.gfx.Texture;
+import sk.gfx.gui.GUIButton;
 import sk.gfx.gui.GUIElement;
 import sk.gfx.gui.GUIFader;
 import sk.sst.SST;
@@ -47,7 +48,7 @@ public class TestState implements GameState {
 		//Entity
 		t_entity = new Entity();
 		//t_entity.add(0, new GUIElement(-.5f, 0, 200, 0, 100, 100).setTexture(t_font));
-		t_entity.add(0, new GUIFader(-.5f, 0, 200, 0, 100, 100, t_mask, t_off, t_on));
+		t_entity.add(0, new GUIButton(-.5f, 0, 200, 0, 100, 100));
 //		t_entity.add(0, new Animation(t_ss, 5.0f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
 		
 		//Root

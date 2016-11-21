@@ -2,7 +2,9 @@ package sk.gamestate;
 
 import sk.game.Game;
 import sk.game.Window;
+import sk.gfx.gui.GUIButton;
 import sk.util.io.Keyboard;
+import sk.util.io.MouseButton;
 
 import static org.lwjgl.glfw.GLFW.*;
 
@@ -44,6 +46,7 @@ public final class GameStateManager {
 			return;
 		
 		Keyboard._update();
+		MouseButton._update();
 		glfwPollEvents();
 		
 		currentState.update(delta);

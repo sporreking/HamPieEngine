@@ -3,6 +3,7 @@ package sk.util.io;
 
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
+import sk.gfx.gui.GUIButton;
 import sk.util.vector.Vector2f;
 
 public class Mouse extends GLFWCursorPosCallback {
@@ -10,9 +11,10 @@ public class Mouse extends GLFWCursorPosCallback {
 	static double x, y;
 	
 	@Override
-	public void invoke(long window, double xPos, double yPos) {
+	public void invoke(long window, double xPos, double yPos) {	
 		x = xPos;
 		y = yPos;
+		MouseButton.changes = true;
 	}
 	
 	/**
