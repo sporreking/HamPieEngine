@@ -10,6 +10,11 @@ public class Root extends Node {
 	private TreeMap<Integer, List<String>> priorities;
 	private HashMap<String, Node> nodes;
 	
+	/**
+	 * 
+	 * Creates a new empty root.
+	 * 
+	 */
 	public Root() {
 		priorities = new TreeMap<>();
 		nodes = new HashMap<>();
@@ -29,6 +34,15 @@ public class Root extends Node {
 				nodes.get(key).draw();
 	}
 	
+	/**
+	 * 
+	 * Adds a new node to this root.
+	 * 
+	 * @param priority the lowest priority will be updated first.
+	 * @param key the key to associate the node with.
+	 * @param node the node to be added.
+	 * @return this root instance.
+	 */
 	public Root add(int priority, String key, Node node) {
 		if(nodes.containsKey(key))
 			throw new IllegalArgumentException("A node with the key \""
@@ -43,14 +57,35 @@ public class Root extends Node {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Checks whether or not this a node with the specified key exists within this root.
+	 * 
+	 * @param key the key to check.
+	 * @return {@code true} if the a matching node exists.
+	 */
 	public boolean has(String key) {
 		return nodes.containsKey(key);
 	}
 	
+	/**
+	 * 
+	 * Returns the node with the specified key, or {@code null} if no such node exists.
+	 * 
+	 * @param key the key to fetch with.
+	 * @return the node with the specified key, or {@code null} if no such node exists.
+	 */
 	public Node get(String key) {
 		return nodes.get(key);
 	}
 	
+	/**
+	 * 
+	 * Returns the priority of the node with the specified key.
+	 * 
+	 * @param key the key of the node.
+	 * @return the priority of the node.
+	 */
 	public int getPriority(String key) {
 		for(int i : priorities.keySet())
 			if(priorities.get(i).contains(key))
@@ -60,6 +95,13 @@ public class Root extends Node {
 				+ key + "\" in this root");
 	}
 	
+	/**
+	 * 
+	 * Returns a list containing all keys of the nodes with the specified priorities.
+	 * 
+	 * @param priorities the priorities to fetch with.
+	 * @return a list containing the keys.
+	 */
 	public List<String> getKeys(int... priorities) {
 		List<String> keys = new ArrayList<>();
 		
@@ -75,6 +117,13 @@ public class Root extends Node {
 		return keys;
 	}
 	
+	/**
+	 * 
+	 * Returns a list containing all nodes with the specified priorities.
+	 * 
+	 * @param priorities the priorities to fetch with.
+	 * @return a list containing the nodes.
+	 */
 	public List<Node> getNodes(int... priorities) {
 		List<Node> nodes = new ArrayList<>();
 		
@@ -90,6 +139,12 @@ public class Root extends Node {
 		return nodes;
 	}
 	
+	/**
+	 * 
+	 * Returns a list containing all keys of this root.
+	 * 
+	 * @return all keys of this root.
+	 */
 	public List<String> getKeys() {
 		List<String> keys = new ArrayList<>();
 		
@@ -99,6 +154,12 @@ public class Root extends Node {
 		return keys;
 	}
 	
+	/**
+	 * 
+	 * Returns a list containing all node of this root.
+	 * 
+	 * @return all nodes of this root.
+	 */
 	public List<Node> getNodes() {
 		List<Node> nodes = new ArrayList<>();
 		
@@ -108,6 +169,13 @@ public class Root extends Node {
 		return nodes;
 	}
 	
+	/**
+	 * 
+	 * Removes the node with the specified key from this root.
+	 * 
+	 * @param key the key of the node to remove.
+	 * @return this root instance.
+	 */
 	public Root remove(String key) {
 		for(int i = 0; i < priorities.size(); i++) {
 			List<String> list = priorities.get(i);
@@ -124,10 +192,22 @@ public class Root extends Node {
 				+ key + "\" in this root");
 	}
 	
+	/**
+	 * 
+	 * Returns the number of nodes contained by this root.
+	 * 
+	 * @return the number of nodes.
+	 */
 	public int getNumOfNodes() {
 		return nodes.size();
 	}
 	
+	/**
+	 * 
+	 * Removes all nodes contained by this root.
+	 * 
+	 * @return this root instance.
+	 */
 	public Root clear() {
 		priorities.clear();
 		nodes.clear();

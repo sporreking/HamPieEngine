@@ -30,6 +30,13 @@ public final class SST extends Component {
 	
 	private int numOfBackups = DEFAULT_NUM_BACKUPS;
 	
+	/**
+	 * 
+	 * Store a value.
+	 * 
+	 * @param tag the tag to associate the value with.
+	 * @param data the value to store. Must be numeric, boolean or string.
+	 */
 	public final void store(String tag, Object data) {
 		
 		if(!(data instanceof Number || data instanceof String))
@@ -45,14 +52,36 @@ public final class SST extends Component {
 			}
 	}
 	
+	/**
+	 * 
+	 * Returns the type of the value associated with the tag.
+	 * 
+	 * @param tag the tag of the value.
+	 * @return the type of the value.
+	 */
 	public final SSTType getTagType(String tag) {
 		return tags.get(tag).type;
 	}
 	
+	/**
+	 * 
+	 * Returns the value associated with the specified tag.
+	 * 
+	 * @param tag the tag of the value.
+	 * @return the value associated with the tag.
+	 */
 	public final Object get(String tag) {
 		return tags.get(tag).data;
 	}
 	
+	/**
+	 * 
+	 * Outputs each tag into the specified file. If a file  with the same name already exists,
+	 * the old one will be saved as a backup - assuming that backups are enabled.
+	 * 
+	 * @param path the file path.
+	 * @throws IOException if the file could not be written to.
+	 */
 	public final void dump(String path) throws IOException {
 		int length = 0;
 		
@@ -122,6 +151,13 @@ public final class SST extends Component {
 		raf.close();
 	}
 	
+	/**
+	 * 
+	 * Loads all tags from a previously saved file.
+	 * 
+	 * @param path the file path.
+	 * @throws IOException if the file could not be read.
+	 */
 	public final void load(String path) throws IOException {
 		tags.clear();
 		
@@ -167,6 +203,13 @@ public final class SST extends Component {
 		raf.close();
 	}
 	
+	/**
+	 * 
+	 * Converts a string into a byte buffer of the appropriate format.
+	 * 
+	 * @param buffer
+	 * @return
+	 */
 	private static String readStringFromByteBuffer(ByteBuffer buffer) {
 		buffer.mark();
 		
@@ -186,12 +229,25 @@ public final class SST extends Component {
 		return STRING_ENCODING.decode(tagBuffer).toString();
 	}
 	
+	/**
+	 * 
+	 * Sets the number of backups to be used.
+	 * 
+	 * @param num the number of backups.
+	 * @return this SST instance.
+	 */
 	public final SST setNumberOfBackups(int num) {
 		numOfBackups = num;
 		
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Returns the number of backups to be used.
+	 * 
+	 * @return the number of backups to be used.
+	 */
 	public final int getNumberOfBackups() {
 		return numOfBackups;
 	}
@@ -203,6 +259,13 @@ public final class SST extends Component {
 		
 		public T data;
 		
+		/**
+		 * 
+		 * Creates a new data component.
+		 * 
+		 * @param tag the tag to associate the value with.
+		 * @param data the value.
+		 */
 		public SSTComponent(String tag, T data) {
 			this.tag = tag;
 			this.data = data;
@@ -229,6 +292,12 @@ public final class SST extends Component {
 			}
 		}
 		
+		/**
+		 * 
+		 * Writes the data of this component to a byte buffer.
+		 * 
+		 * @param buffer the buffer to write to.
+		 */
 		public void write(ByteBuffer buffer) {
 			
 			buffer.put((byte)type.ordinal());

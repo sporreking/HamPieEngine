@@ -15,14 +15,35 @@ public class SpriteSheet {
 	private int tilesX;
 	private int tilesY;
 	
+	/**
+	 * 
+	 * Creates a new empty sprite sheet. {@link #generate(String, int, int) generate()} should be called before use.
+	 * 
+	 */
 	public SpriteSheet() {
 		
 	}
 	
+	/**
+	 * 
+	 * Create a new sprite sheet.
+	 * 
+	 * @param path the path of the texture file to create from.
+	 * @param tilesX the amount of tiles on the x-axis in the file.
+	 * @param tilesY the amount of tiles on the y-axis in the file.
+	 */
 	public SpriteSheet(String path, int tilesX, int tilesY) {
 		generate(path, tilesX, tilesY);
 	}
 	
+	/**
+	 * 
+	 * Generates the sprite sheet.
+	 * 
+	 * @param path the path of the texture file to create from.
+	 * @param tilesX the amount of tiles on the x-axis in the file.
+	 * @param tilesY the amount of tiles on the y-axis in the file.
+	 */
 	public SpriteSheet generate(String path, int tilesX, int tilesY) {
 		this.tilesX = tilesX;
 		this.tilesY = tilesY;
@@ -58,38 +79,94 @@ public class SpriteSheet {
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Returns the width of the entire sprite sheet in pixels.
+	 * 
+	 * @return the width of the sprite sheet.
+	 */
 	public int getWidth() {
 		return width;
 	}
 	
+	/**
+	 * 
+	 * Returns the height of the entire sprite sheet in pixels.
+	 * 
+	 * @return the height of the sprite sheet.
+	 */
 	public int getHeight() {
 		return height;
 	}
 	
+	/**
+	 * 
+	 * Returns the number of tiles on the x-axis of this texture.
+	 * 
+	 * @return the number of tiles.
+	 */
 	public int getTilesX() {
 		return tilesX;
 	}
 	
+	/**
+	 * 
+	 * Returns the number of tiles on the y-axis of this texture.
+	 * 
+	 * @return the number of tiles.
+	 */
 	public int getTilesY() {
 		return tilesY;
 	}
 	
+	/**
+	 * 
+	 * Returns the width of each tile in pixels.
+	 * 
+	 * @return the width of each tile.
+	 */
 	public int getTileWidth() {
 		return width / tilesX;
 	}
 	
+	/**
+	 * 
+	 * Returns the height of each tile in pixels.
+	 * 
+	 * @return the height of each tiles in pixels.
+	 */
 	public int getTileHeight() {
 		return height / tilesY;
 	}
 	
+	/**
+	 * 
+	 * Returns the texture at the given offset in the sprite sheet.
+	 * 
+	 * @param offset the offset wrapped by each row.
+	 * @return the texture at the given offset.
+	 */
 	public Texture getTexture(int offset) {
 		return textures[offset];
 	}
 	
+	/**
+	 * 
+	 * Returns the texture at the given coordinates in the sprite sheet.
+	 * 
+	 * @param x the x-coordinate of the texture.
+	 * @param y the y-coordinate of the texture.
+	 * @return the texture at the given coordinates.
+	 */
 	public Texture getTexture(int x, int y) {
 		return textures[y * tilesX + x];
 	}
 	
+	/**
+	 * 
+	 * Destroys all textures created by this sprite sheet.
+	 * 
+	 */
 	public void destroy() {
 		for(Texture t : textures)
 			t.destroy();

@@ -7,7 +7,7 @@ import static org.lwjgl.glfw.GLFW.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Input extends GLFWKeyCallback {
+public class Keyboard extends GLFWKeyCallback {
 	
 	private static final HashMap<Integer, KeyState> states = new HashMap<>();
 	
@@ -59,9 +59,10 @@ public class Input extends GLFWKeyCallback {
 	}
 	
 	/**
-	 * Returns true if the specified key is pressed.
-	 * @param key The key to check.
-	 * @return If the key is pressed.
+	 * Checks if the specified key was pressed this frame.
+	 * 
+	 * @param key the key code to check.
+	 * @return {@code true} if the key was pressed.
 	 */
 	public static final boolean pressed(int key) {
 		if(states.containsKey(key))
@@ -71,9 +72,11 @@ public class Input extends GLFWKeyCallback {
 	}
 	
 	/**
-	 * Returns true if the specified key is released.
-	 * @param key The key to check.
-	 * @return If the key is pressed.
+	 * 
+	 * Checks if the specified key was released this frame.
+	 * 
+	 * @param key the key code to check.
+	 * @return 
 	 */
 	public static final boolean released(int key) {
 		if(states.containsKey(key))
@@ -87,5 +90,5 @@ public class Input extends GLFWKeyCallback {
 		DOWN, PRESSED, RELEASED;
 	}
 	
-	public static final GLFWKeyCallback INSTANCE = new Input();
+	public static final GLFWKeyCallback INSTANCE = new Keyboard();
 }

@@ -45,20 +45,46 @@ public class Renderer extends Component {
 		mesh.draw();
 	}
 	
+	/**
+	 * 
+	 * Returns the mesh of this renderer.
+	 * 
+	 * @return the mesh of this renderer.
+	 */
 	public Mesh getMesh() {
 		return mesh;
 	}
 	
+	/**
+	 * 
+	 * Assigns a mesh to this renderer.
+	 * 
+	 * @param mesh the new mesh.
+	 * @return this renderer instance.
+	 */
 	public Renderer setMesh(Mesh mesh) {
 		this.mesh = mesh;
 		
 		return this;
 	}
 	
+	/**
+	 * 
+	 * Returns the texture of this renderer.
+	 * 
+	 * @return the texture of this renderer.
+	 */
 	public Texture getTexture() {
 		return texture;
 	}
 	
+	/**
+	 * 
+	 * Assigns a texture to this renderer.
+	 * 
+	 * @param texture the new texture.
+	 * @return this renderer instance.
+	 */
 	public Renderer setTexture(Texture texture) {
 		this.texture = texture;
 		

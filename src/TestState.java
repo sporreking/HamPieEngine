@@ -16,7 +16,7 @@ import sk.gfx.Texture;
 import sk.gfx.gui.GUIElement;
 import sk.gfx.gui.GUIFader;
 import sk.sst.SST;
-import sk.util.io.Input;
+import sk.util.io.Keyboard;
 import sk.util.vector.Vector3f;
 
 public class TestState implements GameState {
@@ -57,26 +57,26 @@ public class TestState implements GameState {
 	float speed = .01f;
 	@Override
 	public void update(double delta) {
-		if(Input.down(GLFW.GLFW_KEY_W))
+		if(Keyboard.down(GLFW.GLFW_KEY_W))
 			Camera.DEFAULT.position.y += speed;
-		if(Input.down(GLFW.GLFW_KEY_A))
+		if(Keyboard.down(GLFW.GLFW_KEY_A))
 			Camera.DEFAULT.position.x -= speed;
-		if(Input.down(GLFW.GLFW_KEY_S))
+		if(Keyboard.down(GLFW.GLFW_KEY_S))
 			Camera.DEFAULT.position.y -= speed;
-		if(Input.down(GLFW.GLFW_KEY_D))
+		if(Keyboard.down(GLFW.GLFW_KEY_D))
 			Camera.DEFAULT.position.x += speed;
-		if(Input.down(GLFW.GLFW_KEY_Q)) {
+		if(Keyboard.down(GLFW.GLFW_KEY_Q)) {
 			Camera.DEFAULT.scale.x += speed;
 			Camera.DEFAULT.scale.y += speed;
 			((Entity) t_root.get("Test1")).get(GUIFader.class).changeValue(speed);
 		}
-		if(Input.down(GLFW.GLFW_KEY_E)) {
+		if(Keyboard.down(GLFW.GLFW_KEY_E)) {
 			Camera.DEFAULT.scale.x -= speed;
 			Camera.DEFAULT.scale.y -= speed;
 			((Entity) t_root.get("Test1")).get(GUIFader.class).changeValue(-speed);
 		}
 		
-		if(Input.released(GLFW.GLFW_KEY_ESCAPE))
+		if(Keyboard.released(GLFW.GLFW_KEY_ESCAPE))
 			Game.stop();
 		t_root.update(delta);
 	}

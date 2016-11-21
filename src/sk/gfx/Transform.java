@@ -9,6 +9,12 @@ public class Transform {
 	public Vector2f scale = new Vector2f(1, 1);
 	public float rotation = 0;
 	
+	/**
+	 * 
+	 * Returns a matrix representation of this transform.
+	 * 
+	 * @return a matrix representation of the transform.
+	 */
 	public Matrix4f getMatrix() {
 		Matrix4f translation = (Matrix4f) new Matrix4f().setIdentity();
 		translation.m30 = position.getX();
