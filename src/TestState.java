@@ -82,12 +82,12 @@ public class TestState implements GameState {
 		if(Keyboard.down(GLFW.GLFW_KEY_Q)) {
 			Camera.DEFAULT.scale.x += speed;
 			Camera.DEFAULT.scale.y += speed;
-			((Entity) t_root.get("Test1")).get(GUIFader.class).changeValue(speed);
+			((Entity) t_root.get("Test1")).get(GUIFader.class).changeThreshold(speed);
 		}
 		if(Keyboard.down(GLFW.GLFW_KEY_E)) {
 			Camera.DEFAULT.scale.x -= speed;
 			Camera.DEFAULT.scale.y -= speed;
-			((Entity) t_root.get("Test1")).get(GUIFader.class).changeValue(-speed);
+			((Entity) t_root.get("Test1")).get(GUIFader.class).changeThreshold(-speed);
 		}
 		if(Keyboard.down(GLFW.GLFW_KEY_O)) {
 			nd += speed * .1f;
