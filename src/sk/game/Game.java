@@ -39,8 +39,11 @@ public final class Game {
 		GameStateManager.enterState(properties.startState);
 		
 		running = true;
-		while(!Window.shouldClose() && running)
+		while(running) {
+			if(Window.shouldClose())
+				running = false;
 			loop();
+		}
 		
 		destroy();
 	}
