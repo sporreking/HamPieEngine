@@ -179,9 +179,9 @@ public class Root extends Node {
 	public Root remove(String key) {
 		for(int i = 0; i < priorities.size(); i++) {
 			List<String> list = priorities.get(i);
-			for(String str : list) {
-				if(str.equals(key)) {
-					priorities.remove(i);
+			for(int j = 0; j < list.size(); j++) {
+				if(list.get(j).equals(key)) {
+					priorities.get(i).remove(j);
 					nodes.remove(key);
 					return this;
 				}

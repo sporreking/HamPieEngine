@@ -181,9 +181,12 @@ public class Entity extends Node {
 	 */
 	@Override
 	public void destroy() {
-		for(List<Component> cl : components.values())
-			for(Component c : cl)
+		for(List<Component> cl : components.values()) {
+			for(Component c : cl) {
 				c.exit();
+				c.removeParent();
+			}
+		}
 		
 		components.clear();
 	}
