@@ -6,6 +6,7 @@ import static org.lwjgl.opengl.GL20.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
 
 import sk.util.vector.Matrix4f;
 
@@ -14,6 +15,8 @@ public class ShaderProgram {
 	private int id;
 	
 	private Shader vert, frag;
+	
+	private HashMap<String, Integer> uniformLocations = new HashMap<>();
 	
 	/**
 	 * 
@@ -89,7 +92,7 @@ public class ShaderProgram {
 	 * @return this shader program instance.
 	 */
 	public ShaderProgram send1i(String location, int i) {
-		glUniform1i(glGetUniformLocation(id, location), i);
+		glUniform1i(getUniformLocation(location), i);
 		
 		return this;
 	}
@@ -104,7 +107,7 @@ public class ShaderProgram {
 	 * @return this shader program instance.
 	 */
 	public ShaderProgram send2i(String location, int i, int j) {
-		glUniform2i(glGetUniformLocation(id, location), i, j);
+		glUniform2i(getUniformLocation(location), i, j);
 		
 		return this;
 	}
@@ -120,7 +123,7 @@ public class ShaderProgram {
 	 * @return this shader program instance.
 	 */
 	public ShaderProgram send3i(String location, int i, int j, int k) {
-		glUniform3i(glGetUniformLocation(id, location), i, j, k);
+		glUniform3i(getUniformLocation(location), i, j, k);
 		
 		return this;
 	}
@@ -137,7 +140,7 @@ public class ShaderProgram {
 	 * @return this shader program instance.
 	 */
 	public ShaderProgram send4i(String location, int i, int j, int k, int l) {
-		glUniform4i(glGetUniformLocation(id, location), i, j, k, l);
+		glUniform4i(getUniformLocation(location), i, j, k, l);
 		
 		return this;
 	}
@@ -151,7 +154,7 @@ public class ShaderProgram {
 	 * @return this shader program instance.
 	 */
 	public ShaderProgram send1f(String location, float f) {
-		glUniform1f(glGetUniformLocation(id, location), f);
+		glUniform1f(getUniformLocation(location), f);
 		
 		return this;
 	}
@@ -166,7 +169,7 @@ public class ShaderProgram {
 	 * @return this shader program instance.
 	 */
 	public ShaderProgram send2f(String location, float f1, float f2) {
-		glUniform2f(glGetUniformLocation(id, location), f1, f2);
+		glUniform2f(getUniformLocation(location), f1, f2);
 		
 		return this;
 	}
@@ -182,7 +185,7 @@ public class ShaderProgram {
 	 * @return this shader program instance.
 	 */
 	public ShaderProgram send3f(String location, float f1, float f2, float f3) {
-		glUniform3f(glGetUniformLocation(id, location), f1, f2, f3);
+		glUniform3f(getUniformLocation(location), f1, f2, f3);
 		
 		return this;
 	}
@@ -199,7 +202,7 @@ public class ShaderProgram {
 	 * @return this shader program instance.
 	 */
 	public ShaderProgram send4f(String location, float f1, float f2, float f3, float f4) {
-		glUniform4f(glGetUniformLocation(id, location), f1, f2, f3, f4);
+		glUniform4f(getUniformLocation(location), f1, f2, f3, f4);
 		
 		return this;
 	}
@@ -222,9 +225,28 @@ public class ShaderProgram {
 		
 		buffer.flip();
 		
-		glUniformMatrix4fv(glGetUniformLocation(id, location), false, buffer);
+		glUniformMatrix4fv(getUniformLocation(location), false, buffer);
 		
 		return this;
+	}
+	
+	/**
+	 * 
+	 * Gets the location id of the specified uniform in this program.
+	 * The first call for a specific location may be slower.
+	 * 
+	 * @param location the uniform name.
+	 * @return the id.
+	 */
+	public int getUniformLocation(String location) {
+		Integer i = uniformLocations.get(location);
+		
+		if(i == null) {
+			i = glGetUniformLocation(id, location);
+			uniformLocations.put(location, i);
+		}
+		
+		return i;
 	}
 	
 	/**
