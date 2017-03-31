@@ -161,7 +161,38 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f, 
 		return left.x * right.x + left.y * right.y;
 	}
 
+	/**
+	 * Adds vector b to this vector.
+	 * Note that this is not a "safe" function 
+	 * @param b The vector to be added
+	 * @return itself after the addition
+	 */
+	public Vector2f add(Vector2f b) {
+		x += b.x;
+		y += b.y;
+		return this;
+	}
+	
+	/**
+	 * Rotates a vector by the specified angle in radians
+	 * @param in The vector to rotate
+	 * @param angle The angle to rotate the in vector by
+	 * @param dest The vector to store the result in
+	 */
+	public static void rotate(Vector2f in, float angle, Vector2f dest) {
+		dest.x = (float) ( in.x * Math.cos(angle) - in.y * Math.cos(angle));
+		dest.y = (float) (-in.x * Math.cos(angle) + in.y * Math.sin(angle));
+	}
 
+	
+	/**
+	 * Returns a safe copy of itself
+	 */
+	public Vector2f clone() {
+		return new Vector2f(x, y);
+	}
+	
+	
 
 	/**
 	 * Calculate the angle between two vectors, in radians
