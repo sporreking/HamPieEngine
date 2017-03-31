@@ -17,6 +17,7 @@ import sk.gfx.Renderer;
 import sk.gfx.SpriteSheet;
 import sk.gfx.Texture;
 import sk.gfx.Transform;
+import sk.gfx.Vertex2D;
 import sk.gfx.gui.GUIButton;
 import sk.gfx.gui.GUIElement;
 import sk.gfx.gui.GUIFader;
@@ -64,7 +65,6 @@ public class TestState implements GameState {
 		t_entity.add(0, button);
 //		t_entity.add(0, new Animation(t_ss, 5.0f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
 */
-		World.gravity.y = 10.0f;
 		Transform t = new Transform();
 		t.position.y = -1.0f;
 		t_entity.add(0, t);
@@ -83,12 +83,18 @@ public class TestState implements GameState {
 		t = new Transform();
 		t.position.y = 1.0f;
 		t_entity.add(0, t);
-		t_entity.add(0,	new Renderer(Mesh.QUAD));
+		t_entity.add(0,	new Renderer(new Mesh(
+				new Vertex2D[] { 
+				new Vertex2D(-0.5f, -0.5f, 0.0f, 0.0f),
+				new Vertex2D(-0.5f,  0.5f, 0.0f, 0.0f),
+				new Vertex2D( 0.5f,  0.5f, 0.0f, 0.0f)},
+				0, 1, 2
+				)));
 		t_entity.add(0, new Shape(
 			new Vector2f(-0.5f, -0.5f),
-			new Vector2f( 0.5f, -0.5f),
-			new Vector2f( 0.5f,  0.5f),
-			new Vector2f(-0.5f,  0.5f)
+			new Vector2f(-0.5f,  0.5f),
+//			new Vector2f( 0.5f,  0.5f),
+			new Vector2f( 0.5f,  0.5f)
 		));
 		t_entity.add(0, new Body());
 		t_entity.get(Body.class).setDynamic(false);
@@ -98,9 +104,9 @@ public class TestState implements GameState {
 		//Audio
 		AudioManager.start();
 		
-		t_psych = new Audio("res/audio/elevator.wav");
+		//t_psych = new Audio("res/audio/elevator.wav");
 		
-		AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
+		//AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
 	}
 	
 	float speed = .01f;

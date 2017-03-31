@@ -164,12 +164,12 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f, 
 	/**
 	 * Adds vector b to this vector.
 	 * Note that this is not a "safe" function 
-	 * @param b The vector to be added
+	 * @param other The vector to be added
 	 * @return itself after the addition
 	 */
-	public Vector2f add(Vector2f b) {
-		x += b.x;
-		y += b.y;
+	public Vector2f add(Vector2f other) {
+		x += other.x;
+		y += other.y;
 		return this;
 	}
 	
@@ -180,10 +180,20 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f, 
 	 * @param dest The vector to store the result in
 	 */
 	public static void rotate(Vector2f in, float angle, Vector2f dest) {
-		dest.x = (float) ( in.x * Math.cos(angle) - in.y * Math.cos(angle));
-		dest.y = (float) (-in.x * Math.cos(angle) + in.y * Math.sin(angle));
+		dest.x = (float) ( in.x * Math.cos(angle) - in.y * Math.sin(angle));
+		dest.y = (float) (-in.x * Math.sin(angle) + in.y * Math.cos(angle));
 	}
 
+	/**
+	 * Subtracts the supplied vector from itself
+	 * @param other The Vector you want to subtract
+	 * @return Itself after the subtraction
+	 */
+	public Vector2f sub(Vector2f other) {
+		this.x -= other.x;
+		this.y -= other.y;
+		return this;
+	}
 	
 	/**
 	 * Returns a safe copy of itself

@@ -45,7 +45,7 @@ public class Shape extends Component {
 			Vector2f.sub(points[(i + 1) % points.length], points[i], edges[i]);
 			
 			// Check if the current point is further away then the current
-			float currentLength = points[i].lengthSquared();
+			float currentLength = points[i].length();
 			if (broadPhaseLength < currentLength) {
 				broadPhaseLength = currentLength; 
 			}
@@ -55,6 +55,17 @@ public class Shape extends Component {
 			normal.normalise();
 			normals[i] = normal;
 		}
+	}
+	
+	/**
+	 * This value is used for broad phase checks.
+	 * The check is a simple circular check,
+	 * where the extents are the maximum width of
+	 * the Shape in question.
+	 * @return The largest distance from origo.
+	 */
+	public float getBP() {
+		return broadPhaseLength;
 	}
 	
 	@Override
@@ -71,12 +82,12 @@ public class Shape extends Component {
 	}
 	
 	/**
-	 * Casts the shape along the normal specified
+	 * Casts the shape along the normal specified returning the minimi point
 	 * @param normal The normal you want to cast along
 	 * @return The longest distance along the normal
 	 * of all the points
 	 */
-	public float castAlong(Vector2f normal) {
+	public float castAlongMax(Vector2f normal) {
 		float maxLength = 0;
 		float angle = transform.rotation;
 		Vector2f rotatedPoint = new Vector2f();
@@ -85,6 +96,23 @@ public class Shape extends Component {
 			maxLength = Math.max(maxLength, Vector2f.dot(rotatedPoint, normal));
 		}
 		return maxLength;
+	}
+	
+	/**
+	 * Casts the shape along the normal specified returning the minimum point
+	 * @param normal The normal you want to cast along
+	 * @return The longest distance along the normal
+	 * of all the points
+	 */
+	public float castAlongMin(Vector2f normal) {
+		float minLength = 0;
+		float angle = transform.rotation;
+		Vector2f rotatedPoint = new Vector2f();
+		for (Vector2f p : points) {
+			Vector2f.rotate(p, angle, rotatedPoint);
+			minLength = Math.min(minLength, Vector2f.dot(rotatedPoint, normal));
+		}
+		return minLength;
 	}
 	
 	/**
@@ -100,8 +128,8 @@ public class Shape extends Component {
 		
 		CollisionData collision = new CollisionData();
 		
-		float lengthA = 0.0f;
-		float lengthB = 0.0f;
+		float max;
+		float min;
 		float dotDistance = 0.0f;
 		float depth = 0.0f;
 		
@@ -110,23 +138,40 @@ public class Shape extends Component {
 		System.arraycopy(a.normals, 0, normals, 0, a.normals.length);
 		System.arraycopy(b.normals, 0, normals, a.normals.length, b.normals.length);
 		
-		for (Vector2f n : normals) {
-			lengthA = Math.abs(a.castAlong(n));
-			lengthB = Math.abs(b.castAlong(n));
+		Vector2f n;
+		
+		final int split = a.normals.length;
+		
+		for (int i = 0; i < normals.length; i++) {
+			n = normals[i];
+			System.out.println(n);
+			if (i < split) {
+				max = a.castAlongMax(n);
+				min = -b.castAlongMin(n);				
+			} else {
+				max = b.castAlongMax(n);
+				min = -a.castAlongMin(n);				
+			}
+			
 			dotDistance = Math.abs(Vector2f.dot(distance, n));
-			depth = dotDistance - (lengthA + lengthB); 
-			if (0 > depth) {
-				depth = Math.abs(depth);
+			
+			depth = (max + min) - dotDistance;
+			
+			if (0 < depth) {
 				if (depth < collision.collisionDepth) {
 					collision.collisionDepth = depth;
 					collision.normal = n;
+					if (i < split) {
+						collision.normalOwner = a;
+					} else {
+						collision.normalOwner = b;
+					}
 				}
 			} else {
 				return null;
 			}
 		}
 		
-		// There was a collision
 		return collision;
 	}
 }

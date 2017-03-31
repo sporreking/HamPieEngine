@@ -9,6 +9,8 @@ import sk.util.vector.Vector2f;
 public class CollisionData {
 	public Vector2f normal;
 	public float collisionDepth = Float.MAX_VALUE;
+	public Shape normalOwner;
+	public Body other;
 	
 	public CollisionData() {}
 }
