@@ -67,6 +67,7 @@ public class TestState implements GameState {
 */
 		Transform t = new Transform();
 		t.position.y = -1.0f;
+		//t.scale.x = 1.5f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
 		t_entity.add(0, new Shape(
@@ -75,36 +76,51 @@ public class TestState implements GameState {
 			new Vector2f( 0.5f,  0.5f),
 			new Vector2f(-0.5f,  0.5f)
 		));
-		t_entity.add(0, new Body());
+		t_entity.add(0, new Body(1.0f, 1.0f, 1.0f));
 		//Root
 		t_root = new Root().add(0, "Test1", t_entity);
 
 		t_entity = new Entity();
 		t = new Transform();
+		//t.rotation = (float) (Math.PI * 1.0f / 4.0f);
 		t.position.y = 1.0f;
+		t.scale.x = 2.0f;
 		t_entity.add(0, t);
-		t_entity.add(0,	new Renderer(new Mesh(
-				new Vertex2D[] { 
-				new Vertex2D(-0.5f, -0.5f, 0.0f, 0.0f),
-				new Vertex2D(-0.5f,  0.5f, 0.0f, 0.0f),
-				new Vertex2D( 0.5f,  0.5f, 0.0f, 0.0f)},
-				0, 1, 2
-				)));
+		t_entity.add(0,	new Renderer(Mesh.QUAD));
 		t_entity.add(0, new Shape(
 			new Vector2f(-0.5f, -0.5f),
 			new Vector2f(-0.5f,  0.5f),
-//			new Vector2f( 0.5f,  0.5f),
-			new Vector2f( 0.5f,  0.5f)
+			new Vector2f( 0.5f,  0.5f),
+			new Vector2f( 0.5f, -0.5f)
 		));
-		t_entity.add(0, new Body());
+		t_entity.add(0, new Body(1.0f, 1.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(false);
 
 		t_root.add(0, "Test2", t_entity);
 		
+		t_entity = new Entity();
+		t = new Transform();
+		//t.rotation = (float) (Math.PI * 1.0f / 4.0f);
+		t.position.y = 0.0f;
+		t.position.x = 1.0f;
+		t.scale.x = 2.0f;
+		t_entity.add(0, t);
+		t_entity.add(0,	new Renderer(Mesh.QUAD));
+		t_entity.add(0, new Shape(
+			new Vector2f(-0.5f, -0.5f),
+			new Vector2f(-0.5f,  0.5f),
+			new Vector2f( 0.5f,  0.5f),
+			new Vector2f( 0.5f, -0.5f)
+		));
+		t_entity.add(0, new Body(1.0f, 1.0f, 0.2f));
+		t_entity.get(Body.class).setDynamic(true);
+
+		t_root.add(0, "Test3", t_entity);
+		
 		//Audio
 		AudioManager.start();
 		
-		//t_psych = new Audio("res/audio/elevator.wav");
+		t_psych = new Audio("res/audio/elevator.wav");
 		
 		//AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
 	}
@@ -115,6 +131,16 @@ public class TestState implements GameState {
 	public void update(double delta) {
 		
 		World.update(delta);
+		
+		//((Entity) t_root.get("Test1")).get(Transform.class).rotation += delta * 0.1;
+		
+		if(Keyboard.down(GLFW.GLFW_KEY_Z)) {
+			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) delta, 0.0f));
+		}
+		
+		if(Keyboard.down(GLFW.GLFW_KEY_X)) {
+			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) -delta, 0.0f));
+		}
 		
 		if(Keyboard.down(GLFW.GLFW_KEY_W))
 			Camera.DEFAULT.position.y += speed;

@@ -2,13 +2,14 @@ package sk.physics;
 
 import java.util.ArrayList;
 
+import sk.game.Time;
 import sk.util.vector.Vector2f;
 
 public class World {
 	
 	static ArrayList<Body> bodies = new ArrayList<Body>();
 	
-	public static Vector2f gravity = new Vector2f(0.01f, 0.1f);
+	public static Vector2f gravity = new Vector2f(0.001f, 0.1f);
 	public static final float FLOAT_CORRECT = 0.00001f;
 	public static float stepLength = 1.0f / 60.0f;
 	private static float timer = 0.0f;
@@ -40,8 +41,9 @@ public class World {
 			// Update all bodies
 			Vector2f deltaGravity = (Vector2f) gravity.clone().scale((float) stepLength);
 			for (Body a : bodies) {
-				a.addVelocity(deltaGravity);
-				a.update(stepLength);
+				if (a.isDynamic())
+					a.addVelocity(deltaGravity);
+				a.step(stepLength);
 			}
 			
 			// Check for collisions
@@ -49,40 +51,104 @@ public class World {
 				for (int j = 0; j < i; j++) {
 					Body a = bodies.get(i);
 					Body b = bodies.get(j);
-					// Check if they're in roughly the same area
-					float bpRange = (float) Math.pow(a.getShape().getBP() + b.getShape().getBP(), 2.0f);
-					float distanceSq = a.getTransform().position.clone().sub(b.getTransform().position).lengthSquared();
-					if (bpRange <= distanceSq)
 					// Make sure not both are static
 					if (!a.isDynamic() && !b.isDynamic()) return;
+					// Make sure not both are triggers
+					if (a.isTrigger() && b.isTrigger()) return;
+					// Check if they're in roughly the same area
+					float bpRange = (float) Math.pow(a.getShape().getBP() * Math.max(a.getTransform().scale.x, a.getTransform().scale.y)  + b.getShape().getBP() * Math.max(b.getTransform().scale.x, b.getTransform().scale.y), 2.0f);
+					float distanceSq = a.getTransform().position.clone().sub(b.getTransform().position).lengthSquared();
+					// Does it pass the broad phase test
+					if (bpRange <= distanceSq) return;
 					CollisionData c = Shape.SATtest(a.getShape(), b.getShape());
 					
 					// If there was a collision, handle it
 					if (c != null) {
-						// If both are dynamic
-						if (a.isDynamic() && b.isDynamic()) {
+						c.a = a;
+						c.b = b;
+						// Add their collision events
+						a.addCollision(c);
+						b.addCollision(c);
+						
+						// If one of them is a trigger we are done
+						if (a.isTrigger() || b.isTrigger()) continue;
+						// So we can refer to them as dynamic or static, if they are
+						Body staticBody = b.isDynamic() ? a : b;
+						Body dynamicBody = b.isDynamic() ? b : a;
+						// If both bodies are dynamic
+						boolean dynamicCollision = (a.isDynamic() && b.isDynamic());
+						
+						// If one is static
 							
+						// The normal should point from the static body
+						if (staticBody.getShape() == c.normalOwner) {
+							c.normal.negate();
+						}
+						
+						// Move it back
+						Vector2f reverse;
+						if (dynamicCollision) {
+							reverse = (Vector2f) c.normal.clone().scale(0.5f * c.collisionDepth + FLOAT_CORRECT);
+							staticBody.getTransform().position.sub(reverse);
 						} else {
-							// Else, one of them is dynamic, and one is static.
-							Body staticBody = a.isDynamic() ? b : a;
-							Body dynamicBody = a.isDynamic() ? a : b;
-							
-							if (staticBody.getShape() == c.normalOwner) {
-								c.normal.negate();
+							reverse = (Vector2f) c.normal.clone().scale(c.collisionDepth + FLOAT_CORRECT);
+						}
+						
+						dynamicBody.getTransform().position.add(reverse);
+						
+						
+						// Change the velocity
+						Vector2f relativeVelocity = new Vector2f();
+						Vector2f.sub(staticBody.getVelocity(), dynamicBody.getVelocity(), relativeVelocity);
+						
+						float normalVelocity = Vector2f.dot(relativeVelocity, c.normal);
+						// Make sure we're not moving away
+						if (0.0f < normalVelocity) {
+							// Velocity correction
+							float bounce = Math.min(a.getBounce(), b.getBounce());
+							float bounceImpulse = normalVelocity * (bounce + 1.0f);
+							if (dynamicCollision) {
+								bounceImpulse = normalVelocity * (bounce + 1.0f);
+								bounceImpulse /= a.getInvertedMass() + b.getInvertedMass();
+								Vector2f bounceForce = c.normal.clone().scale(bounceImpulse);
+								dynamicBody.addForce(bounceForce.scale(a.getMass()));
+								staticBody.addForce(bounceForce.scale(-a.getInvertedMass() * b.getMass()));
+							} else {
+								bounceImpulse *= dynamicBody.getMass();
+								Vector2f bounceForce = c.normal.clone().scale(bounceImpulse);
+								dynamicBody.addForce(bounceForce);
 							}
 							
-							// A normalized reversed body
-							Vector2f reverse = dynamicBody.getVelocity();
-							float dot = Vector2f.dot(dynamicBody.getVelocity(), c.normal);
-							reverse.scale(-(c.collisionDepth / dot + FLOAT_CORRECT));
-							
-							// Move back it back
-							dynamicBody.getTransform().position.add(reverse);
-							
-							// Change the velocity
-							Vector2f deltaVel = new Vector2f();
-							// TODO: THIS!!!
-							dynamicBody.addVelocity(deltaVel);;
+							// Friction
+							float mu = Math.min(a.getFriction(), b.getFriction());
+							if (mu != 0.0f) {
+								float frictionImpulse = Math.abs(bounceImpulse * mu);
+								// Super fast manual rotation and creation
+								Vector2f tangent = new Vector2f(c.normal.y, -c.normal.x);
+								// Make sure we're slowing down in the right direction
+								float frictionDirection = relativeVelocity.dot(tangent);
+								if (0.0f > frictionDirection) {
+									// If they're pointing the same way, flip them
+									tangent.negate();
+								}
+								
+								frictionDirection = Math.abs(frictionDirection);
+								
+								// If the friction force will slow us down too much, clamp it
+								if (frictionDirection < frictionImpulse) {
+									tangent.scale(frictionDirection * dynamicBody.getMass());
+								} else {
+									tangent.scale(frictionImpulse * dynamicBody.getMass());
+								}
+
+								// Add it to the body
+								if (dynamicCollision) {
+									dynamicBody.addForce(tangent.scale(0.5f));
+									dynamicBody.addForce(tangent.scale(-1.0f));
+								} else {
+									dynamicBody.addForce(tangent);									
+								}
+							}
 						}
 					}
 				}

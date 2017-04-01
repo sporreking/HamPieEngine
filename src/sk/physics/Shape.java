@@ -6,6 +6,7 @@ import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
 
 import sk.entity.Component;
 import sk.gfx.Transform;
+import sk.gfx.Vertex2D;
 import sk.util.vector.Vector2f;
 
 public class Shape extends Component {
@@ -17,6 +18,21 @@ public class Shape extends Component {
 	private Transform transform;
 	
 	private float broadPhaseLength = 0.0f;
+	
+	/**
+	 * 
+	 * @param points The points that make up the shape.
+	 * The points will be joined in the order you supplied, 
+	 * where clockwise is expected
+	 * Note that they are not allowed to be concave.
+	 */
+	public Shape(Vertex2D... points) {
+		this.points = new Vector2f[points.length];
+		for (int i = 0; i < points.length; i++) {
+			this.points[i] = new Vector2f(points[i].getData(0));
+		}
+		processPoints();
+	}
 	
 	/**
 	 * 
@@ -90,9 +106,16 @@ public class Shape extends Component {
 	public float castAlongMax(Vector2f normal) {
 		float maxLength = 0;
 		float angle = transform.rotation;
+		Vector2f scale = transform.scale;
 		Vector2f rotatedPoint = new Vector2f();
 		for (Vector2f p : points) {
-			Vector2f.rotate(p, angle, rotatedPoint);
+			rotatedPoint = p.clone();
+			// Scale
+			rotatedPoint.x *= scale.x;
+			rotatedPoint.y *= scale.y;
+			// Rotate
+			rotatedPoint = Vector2f.rotate(rotatedPoint, (float) angle, null);
+			// Cast
 			maxLength = Math.max(maxLength, Vector2f.dot(rotatedPoint, normal));
 		}
 		return maxLength;
@@ -107,9 +130,16 @@ public class Shape extends Component {
 	public float castAlongMin(Vector2f normal) {
 		float minLength = 0;
 		float angle = transform.rotation;
+		Vector2f scale = transform.scale;
 		Vector2f rotatedPoint = new Vector2f();
 		for (Vector2f p : points) {
-			Vector2f.rotate(p, angle, rotatedPoint);
+			rotatedPoint = p.clone();
+			// Scale
+			rotatedPoint.x *= scale.x;
+			rotatedPoint.y *= scale.y;
+			// Rotate
+			rotatedPoint = Vector2f.rotate(rotatedPoint, (float) angle, null);
+			// Cast
 			minLength = Math.min(minLength, Vector2f.dot(rotatedPoint, normal));
 		}
 		return minLength;
@@ -139,24 +169,26 @@ public class Shape extends Component {
 		System.arraycopy(b.normals, 0, normals, a.normals.length, b.normals.length);
 		
 		Vector2f n;
-		
 		final int split = a.normals.length;
+
 		
 		for (int i = 0; i < normals.length; i++) {
 			n = normals[i];
-			System.out.println(n);
 			if (i < split) {
+				n = Vector2f.rotate(n, a.transform.rotation, null);
 				max = a.castAlongMax(n);
-				min = -b.castAlongMin(n);				
+				min = -b.castAlongMin(n);	
 			} else {
+				n = Vector2f.rotate(n, b.transform.rotation, null);
 				max = b.castAlongMax(n);
 				min = -a.castAlongMin(n);				
 			}
+		
 			
 			dotDistance = Math.abs(Vector2f.dot(distance, n));
-			
 			depth = (max + min) - dotDistance;
-			
+			System.out.println(depth);
+						
 			if (0 < depth) {
 				if (depth < collision.collisionDepth) {
 					collision.collisionDepth = depth;
@@ -172,6 +204,18 @@ public class Shape extends Component {
 			}
 		}
 		
+		// The normal should point from A to B
+		// Find a way to write this without if-s and I will buy you
+		// an ice-cream
+		if (collision.normalOwner == a) {
+			if (collision.normal.dot(distance) < 0.0f) {
+				collision.normal.negate();
+			}
+		} else {
+			if (collision.normal.dot(distance) > 0.0f) {
+				collision.normal.negate();
+			}
+		}
 		return collision;
 	}
 }

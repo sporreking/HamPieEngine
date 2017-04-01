@@ -1,11 +1,14 @@
 package sk.physics;
 
+import java.util.ArrayList;
+
 import sk.entity.Component;
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
 
 public class Body extends Component {
 	
+	// Force and velocity, self explanatory
 	private Vector2f velocity = new Vector2f();
 	private Vector2f force = new Vector2f();
 	
@@ -23,7 +26,10 @@ public class Body extends Component {
 	// If the body is dynamic
 	private boolean dynamic = true;
 	
-	// If the body can rotate
+	// If the body should trigger any collision response
+	private boolean trigger = false;
+	
+	// If the body should rotate or not (WIP
 	private boolean rotatable = true;
 	
 	// A reference to the shape
@@ -31,6 +37,9 @@ public class Body extends Component {
 	
 	// A quick reference to the transform
 	private Transform transform;
+	
+	// A list of all collisions this frame
+	private ArrayList<CollisionData> collisions = new ArrayList<CollisionData>();
 	
 	public Body() {
 		this(1.0f, 1.0f);
@@ -41,9 +50,32 @@ public class Body extends Component {
 	}
 	
 	public Body(float mass, float friction) {
+		this(mass, friction, 1.0f);
+	}
+	
+	public Body(float mass, float friction, float bounce) {
 		setMass(mass);
 		setFriction(friction);
+		setBounce(bounce);
 		World.addBody(this);
+	}
+
+	public CollisionData getCollision(Body b) {
+		for (CollisionData c : collisions) {
+			//TODO
+		}
+		return null;
+	}
+	
+	public void addCollision(CollisionData c) {
+		c = new CollisionData(c);
+		if (c.a == this) {
+			c.other = c.b;
+		} else {
+			c.other = c.a;
+		}
+		
+		collisions.add(c);
 	}
 	
 	public Shape getShape() {
@@ -115,7 +147,7 @@ public class Body extends Component {
 	}
 	
 	public void addForce(Vector2f force) {
-		Vector2f.add((Vector2f) force.clone().scale(invertedMass), this.force, this.force);
+		Vector2f.add((Vector2f) force, this.force, this.force);
 	}
 	
 	public void addVelocity(Vector2f vel) {
@@ -141,13 +173,20 @@ public class Body extends Component {
 		}; 
 	}
 		
-	@Override
-	public void update(double delta) {
-		if (!isDynamic()) return;
-		
-		Vector2f.add(velocity, (Vector2f) force.clone().scale((float) delta), velocity);
-		force.set(0.0f, 0.0f);
-		
+	public void step(double delta) {
+		if (isDynamic()) {
+			Vector2f.add(velocity, (Vector2f) force.scale(invertedMass), velocity);
+			force.set(0.0f, 0.0f);			
+		}
 		Vector2f.add(transform.position, (Vector2f) velocity.clone().scale((float) delta), transform.position);
+		collisions.clear();
+	}
+
+	public Vector2f getMomentum() {
+		return (Vector2f) getVelocity().scale(mass);
+	}
+
+	public boolean isTrigger() {
+		return trigger;
 	}
 }

@@ -72,6 +72,14 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f, 
 		set(x, y);
 	}
 
+	public Vector2f(float[] data) {
+		if (data.length < 2) {
+			throw new IllegalArgumentException("Data supplied to Vector2f is not enought to create a vector");
+		}
+		this.x = data[0];
+		this.y = data[1];
+	}
+
 	/* (non-Javadoc)
 	 * @see org.lwjgl.util.vector.WritableVector2f#set(float, float)
 	 */
@@ -178,10 +186,16 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f, 
 	 * @param in The vector to rotate
 	 * @param angle The angle to rotate the in vector by
 	 * @param dest The vector to store the result in
+	 * @return 
 	 */
-	public static void rotate(Vector2f in, float angle, Vector2f dest) {
+	public static Vector2f rotate(Vector2f in, float angle, Vector2f dest) {
+		if (dest == null) {
+			dest = new Vector2f();
+		}
+		
 		dest.x = (float) ( in.x * Math.cos(angle) - in.y * Math.sin(angle));
-		dest.y = (float) (-in.x * Math.sin(angle) + in.y * Math.cos(angle));
+		dest.y = (float) ( in.x * Math.sin(angle) + in.y * Math.cos(angle));			
+		return dest;
 	}
 
 	/**
@@ -278,7 +292,7 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f, 
 	/* (non-Javadoc)
 	 * @see org.lwjgl.vector.Vector#scale(float)
 	 */
-	public Vector scale(float scale) {
+	public Vector2f scale(float scale) {
 
 		x *= scale;
 		y *= scale;
@@ -355,5 +369,9 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f, 
 	
 	public int numValues() {
 		return 2;
+	}
+
+	public float dot(Vector2f other) {
+		return this.x * other.x + this.y * other.y;
 	}
 }
