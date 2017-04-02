@@ -95,7 +95,8 @@ public class TestState implements GameState {
 		));
 		t_entity.add(0, new Body(1.0f, 1.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(false);
-
+		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
+		
 		t_root.add(0, "Test2", t_entity);
 		
 		t_entity = new Entity();
