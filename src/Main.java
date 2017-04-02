@@ -14,7 +14,7 @@ public class Main {
 		gp.clearColor = new Vector4f(1, 0, 1, 1);
 		gp.vSync = true;
 		gp.height = 600;
-		gp.width = 600;
+		gp.width = 800;
 		
 		Game.start(gp);
 	}

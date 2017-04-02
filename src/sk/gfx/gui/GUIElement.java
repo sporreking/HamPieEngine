@@ -29,7 +29,7 @@ public class GUIElement extends Renderer {
 	 */
 	public GUIElement(float anchorX, float anchorY, int offsetX, int offsetY, int width, int height) {
 		super(Mesh.QUAD);
-		camera = new Camera().createOrtho(-1, 1, 1, -1);
+		camera = Camera.GUI;
 		
 		this.anchorX = anchorX;
 		this.anchorY = anchorY;

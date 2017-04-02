@@ -14,5 +14,5 @@ void main()
 {
 	pass_texCoords = in_texCoords;
 	
-	gl_Position = model * view * projection * vec4(in_pos, 0, 1);
+	gl_Position = projection * view * model * vec4(in_pos, 0, 1);
 }
