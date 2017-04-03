@@ -65,18 +65,19 @@ public class TestState implements GameState {
 		t_entity.add(0, button);
 //		t_entity.add(0, new Animation(t_ss, 5.0f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
 */
+		
+		Shape s_shape = new Shape(
+				new Vector2f(-0.5f, -0.5f),
+				new Vector2f(-0.5f,  0.5f),
+				new Vector2f( 0.5f,  0.5f),
+				new Vector2f( 0.5f, -0.5f));
+		
 		Transform t = new Transform();
 		t.position.y = -1.0f;
 		//t.scale.x = 1.5f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Shape(
-			new Vector2f(-0.5f, -0.5f),
-			new Vector2f( 0.5f, -0.5f),
-			new Vector2f( 0.5f,  0.5f),
-			new Vector2f(-0.5f,  0.5f)
-		));
-		t_entity.add(0, new Body(1.0f, 1.0f, 1.0f));
+		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 1.0f));
 		//Root
 		t_root = new Root().add(0, "Test1", t_entity);
 
@@ -87,13 +88,7 @@ public class TestState implements GameState {
 		t.scale.x = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Shape(
-			new Vector2f(-0.5f, -0.5f),
-			new Vector2f(-0.5f,  0.5f),
-			new Vector2f( 0.5f,  0.5f),
-			new Vector2f( 0.5f, -0.5f)
-		));
-		t_entity.add(0, new Body(1.0f, 1.0f, 0.2f));
+		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
 		
@@ -107,13 +102,7 @@ public class TestState implements GameState {
 		t.scale.x = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Shape(
-			new Vector2f(-0.5f, -0.5f),
-			new Vector2f(-0.5f,  0.5f),
-			new Vector2f( 0.5f,  0.5f),
-			new Vector2f( 0.5f, -0.5f)
-		));
-		t_entity.add(0, new Body(1.0f, 1.0f, 0.2f));
+		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(true);
 
 		t_root.add(0, "Test3", t_entity);

@@ -12,10 +12,14 @@ import sk.util.vector.Vector2f;
  * part. The shape is the restriction that
  * prevents overlap.
  * 
+ * A body is not limited to be used by one
+ * single body. It can be added to any number
+ * of bodies.
+ * 
  * @author Ed
  *
  */
-public class Shape extends Component {
+public class Shape {
 	
 	private Vector2f[] points;
 	private Vector2f[] normals;
@@ -57,6 +61,9 @@ public class Shape extends Component {
 		for (int i = 0; i < points.length; i++) {
 			this.points[i] = new Vector2f(points[i].getData(0));
 		}
+		
+		calculateBPRange();
+		
 		this.normals = normals.clone();
 	}
 	
@@ -76,6 +83,8 @@ public class Shape extends Component {
 	public Shape(Vector2f[] points, Vector2f[] normals) {
 		this.points = points.clone();
 		this.normals = normals.clone();
+	
+		calculateBPRange();
 	}
 	
 	/**
@@ -128,6 +137,16 @@ public class Shape extends Component {
 		this.normals = new Vector2f[normals.size()];
 		for (int i = 0; i < this.normals.length; i++) {
 			this.normals[i] = normals.get(i);
+		}
+	}
+	
+	/**
+	 * Calculates the Broad Phase Length of the body, nice and easy.
+	 */
+	private void calculateBPRange() {
+		broadPhaseLength = 0.0f;
+		for (Vector2f p : points) {
+			broadPhaseLength = Math.max(broadPhaseLength, Math.abs(p.length()));
 		}
 	}
 	

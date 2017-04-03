@@ -16,8 +16,8 @@ public class CollisionData {
 	public Vector2f normal;
 	// The penetration depth
 	public float collisionDepth = Float.MAX_VALUE;
-	// Which shape owned the normal
-	public Shape normalOwner;
+	// Which transform is grouped with the normal
+	public Transform normalOwner;
 	// The bodies involved
 	public Body a, b;
 	// The other body
@@ -108,9 +108,9 @@ public class CollisionData {
 					collision.collisionDepth = depth;
 					collision.normal = n;
 					if (i < split) {
-						collision.normalOwner = a;
+						collision.normalOwner = ta;
 					} else {
-						collision.normalOwner = b;
+						collision.normalOwner = tb;
 					}
 				}
 			} else {
@@ -121,7 +121,7 @@ public class CollisionData {
 		// The normal should point from A to B
 		// Find a way to write this without if-s and I will buy you
 		// an ice-cream, seriously
-		if (collision.normalOwner == a) {
+		if (collision.normalOwner == ta) {
 			if (collision.normal.dot(distance) < 0.0f) {
 				collision.normal.negate();
 			}
@@ -143,7 +143,7 @@ public class CollisionData {
 		boolean dynamicCollision = a.isDynamic();
 			
 		// The normal should point from the static body
-		if (a.getShape() == normalOwner) {
+		if (a.getTransform() == normalOwner) {
 			normal.negate();
 		}
 		

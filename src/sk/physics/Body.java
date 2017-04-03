@@ -56,9 +56,12 @@ public class Body extends Component {
 	/**
 	 * Initalizes the body to a default state of
 	 * 1.0 Mass, 1.0 Friction and 1.0 Bounce (Elasticity)
+	 * 
+	 * @param shape The shape you want to use as collider
+	 * 
 	 */
-	public Body() {
-		this(1.0f, 1.0f, 1.0f);
+	public Body(Shape shape) {
+		this(shape, 1.0f, 1.0f, 1.0f);
 	}
 	
 	/**
@@ -66,32 +69,36 @@ public class Body extends Component {
 	 * the other values to.
 	 * 1.0 Friction and 1.0 Bounce (Elasticity)
 	 * 
+	 * @param shape The shape you want to use as collider
 	 * @param mass The mass of your new body
 	 */
-	public Body(float mass) {
-		this(mass, 1.0f);
+	public Body(Shape shape, float mass) {
+		this(shape, mass, 1.0f, 1.0f);
 	}
 	
 	/**
 	 * Lets you set the mass and friction of the to be created body.
 	 * This sets the bounce to 1.0.
-	 * 
+	 *
+	 * @param shape The shape you want to use as collider
 	 * @param mass The mass of your new body
 	 * @param friction The friction for your new body
 	 */
-	public Body(float mass, float friction) {
-		this(mass, friction, 1.0f);
+	public Body(Shape shape, float mass, float friction) {
+		this(shape, mass, friction, 1.0f);
 	}
 	
 	/**
 	 * The fully custom option for you who wish to create a body.
 	 * You decide everything for yourself.
 	 * 
+	 * @param shape The shape you want to use as collider
 	 * @param mass The mass of the new body
 	 * @param friction The friction of the new body
 	 * @param bounce The bounce factor of your new body
 	 */
-	public Body(float mass, float friction, float bounce) {
+	public Body(Shape shape, float mass, float friction, float bounce) {
+		this.shape = shape;
 		setMass(mass);
 		setFriction(friction);
 		setBounce(bounce);
@@ -338,7 +345,6 @@ public class Body extends Component {
 	
 	@Override
 	public void init() {
-		shape = getParent().get(Shape.class);
 		transform = getParent().get(Transform.class);
 	}
 	
@@ -346,7 +352,6 @@ public class Body extends Component {
 	@Override
 	public Class<? extends Component>[] requirements() { 
 		return (Class<? extends Component>[]) new Class<?>[] {
-			Shape.class,
 			Transform.class
 		}; 
 	}

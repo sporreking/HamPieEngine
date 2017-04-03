@@ -67,7 +67,7 @@ public class World {
 					if (!a.isDynamic() && !b.isDynamic()) continue;
 					// Make sure not both are triggers
 					if (a.isTrigger() && b.isTrigger()) continue;
-					// Check if they're in roughly the same area
+ 					// Check if they're in roughly the same area
 					float bpRange = (float) Math.pow(
 							a.getShape().getBP() * Math.max(
 									a.getTransform().scale.x, 
@@ -76,18 +76,22 @@ public class World {
 									b.getTransform().scale.x, 
 									b.getTransform().scale.y), 2.0f);
 					float distanceSq = Vector2f.sub(a.getTransform().position, b.getTransform().position, null).lengthSquared();
-					// Does it pass the broad phase test?
 					if (bpRange <= distanceSq) continue;
-					
+
 					CollisionData c = CollisionData.SATtest(a.getShape(), a.getTransform(), b.getShape(), b.getTransform());
 					
 					// If there was a collision, handle it
 					if (c == null) continue;
 					
 					// Add them so that a is static if any of them are static
-					c.a = b.isDynamic() ? a : b;
-					c.b = b.isDynamic() ? b : a;
-					
+					if (b.isDynamic()) {
+						c.a = a;
+						c.b = b;
+					} else {
+						c.a = b;
+						c.b = a;
+					}
+										
 					// Add their collisions to the bodies
 					a.addCollision(c);
 					b.addCollision(c);
