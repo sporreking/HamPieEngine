@@ -31,6 +31,9 @@ public class Transform extends Component {
 		scale.m00 = this.scale.x;
 		scale.m11 = this.scale.y;
 		
-		return Matrix4f.mul(Matrix4f.mul(rot, translation, null), scale, null);
+		// What is used to be...
+		//return Matrix4f.mul(Matrix4f.mul(rot, translation, null), scale, null);
+		// What it actually should be... You silly gose...
+		return Matrix4f.mul(Matrix4f.mul(translation, rot, null), scale, null);
 	}
 }

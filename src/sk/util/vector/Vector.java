@@ -107,6 +107,7 @@ public abstract class Vector implements Serializable, ReadableVector {
 	 */
 	public abstract Vector scale(float scale);
 
+	
 	/**
 	 * 
 	 * Returns a float array containing all values in chronological order.

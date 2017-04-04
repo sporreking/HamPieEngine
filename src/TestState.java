@@ -17,11 +17,16 @@ import sk.gfx.Renderer;
 import sk.gfx.SpriteSheet;
 import sk.gfx.Texture;
 import sk.gfx.Transform;
+import sk.gfx.Vertex2D;
 import sk.gfx.gui.GUIButton;
 import sk.gfx.gui.GUIElement;
 import sk.gfx.gui.GUIFader;
+import sk.physics.Body;
+import sk.physics.Shape;
+import sk.physics.World;
 import sk.sst.SST;
 import sk.util.io.Keyboard;
+import sk.util.vector.Vector2f;
 import sk.util.vector.Vector3f;
 
 public class TestState implements GameState {
@@ -53,22 +58,61 @@ public class TestState implements GameState {
 		
 		//Entity
 		t_entity = new Entity();
-		//t_entity.add(0, new GUIElement(-.5f, 0, 200, 0, 100, 100).setTexture(t_font));
+/*		//t_entity.add(0, new GUIElement(-.5f, 0, 200, 0, 100, 100).setTexture(t_font));
 		GUIButton button = new GUIButton(-.5f, 0, 200, 0, 100, 100);
 		button.setOnClick(() -> System.out.println("Click"));
 		t_entity.add(0, new Transform());
 		t_entity.add(0, button);
 //		t_entity.add(0, new Animation(t_ss, 5.0f, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15));
+*/
 		
+		Shape s_shape = new Shape(
+				new Vector2f(-0.5f, -0.5f),
+				new Vector2f(-0.5f,  0.5f),
+				new Vector2f( 0.5f,  0.5f),
+				new Vector2f( 0.5f, -0.5f));
+		
+		Transform t = new Transform();
+		t.position.y = -1.0f;
+		//t.scale.x = 1.5f;
+		t_entity.add(0, t);
+		t_entity.add(0,	new Renderer(Mesh.QUAD));
+		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 1.0f));
 		//Root
 		t_root = new Root().add(0, "Test1", t_entity);
+
+		t_entity = new Entity();
+		t = new Transform();
+		//t.rotation = (float) (Math.PI * 1.0f / 4.0f);
+		t.position.y = 1.0f;
+		t.scale.x = 2.0f;
+		t_entity.add(0, t);
+		t_entity.add(0,	new Renderer(Mesh.QUAD));
+		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 0.2f));
+		t_entity.get(Body.class).setDynamic(false);
+		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
+		
+		t_root.add(0, "Test2", t_entity);
+		
+		t_entity = new Entity();
+		t = new Transform();
+		//t.rotation = (float) (Math.PI * 1.0f / 4.0f);
+		t.position.y = 0.0f;
+		t.position.x = 1.0f;
+		t.scale.x = 2.0f;
+		t_entity.add(0, t);
+		t_entity.add(0,	new Renderer(Mesh.QUAD));
+		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 0.2f));
+		t_entity.get(Body.class).setDynamic(true);
+
+		t_root.add(0, "Test3", t_entity);
 		
 		//Audio
 		AudioManager.start();
 		
 		t_psych = new Audio("res/audio/elevator.wav");
 		
-		AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
+		//AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
 	}
 	
 	float speed = .01f;
@@ -76,6 +120,17 @@ public class TestState implements GameState {
 	@Override
 	public void update(double delta) {
 		
+		World.update(delta);
+		
+		//((Entity) t_root.get("Test1")).get(Transform.class).rotation += delta * 0.1;
+		
+		if(Keyboard.down(GLFW.GLFW_KEY_Z)) {
+			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) delta, 0.0f));
+		}
+		
+		if(Keyboard.down(GLFW.GLFW_KEY_X)) {
+			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) -delta, 0.0f));
+		}
 		
 		if(Keyboard.down(GLFW.GLFW_KEY_W))
 			Camera.DEFAULT.position.y += speed;

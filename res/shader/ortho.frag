@@ -1,10 +1,11 @@
-#version 440
+#version 300 es
+precision highp float;
 
 uniform sampler2D t_sampler;
 
-in vec2 pass_texCoords;
+in highp vec2 pass_texCoords;
 
-out vec4 out_color;
+out highp vec4 out_color;
 
 void main()
 {

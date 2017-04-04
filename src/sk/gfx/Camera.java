@@ -78,9 +78,11 @@ public class Camera extends Transform {
 	}
 	
 	public static final Camera DEFAULT;
+	public static final Camera GUI;
 	
 	static {
 		DEFAULT = new Camera().createOrtho(-Window.getAspectRatio(),
 				Window.getAspectRatio(), 1, -1);
+		GUI = new Camera().createOrtho(-1, 1, 1, -1);
 	}
 }

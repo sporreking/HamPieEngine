@@ -1,4 +1,5 @@
-#version 440
+#version 300 es
+precision highp float;
 
 uniform bool b_is_fader;
 uniform float f_value;
@@ -6,9 +7,9 @@ uniform sampler2D t_mask;
 uniform sampler2D t_sampler;
 uniform sampler2D t_sampler_on;
 
-in vec2 pass_texCoords;
+in highp vec2 pass_texCoords;
 
-out vec4 out_color;
+out highp vec4 out_color;
 
 void main()
 {

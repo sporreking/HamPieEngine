@@ -52,5 +52,4 @@ public class Vertex2D extends Vertex {
 	public Vertex2D(float x, float y, float s, float t) {
 		this(new Vector2f(x, y), new Vector2f(s, t));
 	}
-	
 }
