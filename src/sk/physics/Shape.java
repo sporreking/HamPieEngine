@@ -24,6 +24,10 @@ public class Shape {
 	private Vector2f[] points;
 	private Vector2f[] normals;
 	
+	// A vector that points from the center of the body, to the center of the shape
+	// (The body is always at 0, 0
+	private Vector2f center;
+	
 	private float broadPhaseLength = 0.0f;
 	
 	/**
@@ -113,18 +117,34 @@ public class Shape {
 			throw new IllegalArgumentException("There must be more than two points in a polygon... Shame on you!");
 		}
 		
+		// Calculate the center
+		center = new Vector2f();
+		for (Vector2f p : points) {
+			center.add(p);		
+		}
+		center.scale(1.0f / (float) points.length);
+		
+		// Subtract the center from each point so it's centerd
+		for (Vector2f p : points) {
+			p.sub(center);
+		}
+		
+		// Change the direction of the loop to make all normals point out
 		int start = 0;
 		int step = 1;
 
+		// Calculate the direction to loo through them
 		Vector2f edgeA = points[points.length - 1].clone().sub(points[0]);
 		Vector2f edgeB = points[1].clone().sub(points[0]);
 		
 		step = (int) Math.signum(edgeA.x * edgeB.y - edgeB.x * edgeA.y);
 		if (step < 0) {
-			start = points.length;	
+			start = points.length - 1;
 		}
 		
-		for (int i = start; i < points.length; i += step) {
+		
+		int i = start;
+		while (i < points.length && i >= 0) {
 			Vector2f.sub(points[(i + 1) % points.length], points[i], edge);
 			
 			// Check if the current point is further away then the current
@@ -146,12 +166,16 @@ public class Shape {
 			if (j == normals.size()) {
 				normals.add(normal);
 			}
+			i += step;
 		}
 		
+		
+		// IDK why, but calling (Vector2f[]) normals.toArray()
 		// Copy them over
 		this.normals = new Vector2f[normals.size()];
-		for (int i = 0; i < this.normals.length; i++) {
-			this.normals[i] = normals.get(i);
+		/*this.normals = (Vector2f[]) */normals.toArray(this.normals);
+		for (int j = 0; j < this.normals.length; j++) {
+			this.normals[j] = normals.get(j);
 		}
 	}
 	
@@ -163,6 +187,14 @@ public class Shape {
 		for (Vector2f p : points) {
 			broadPhaseLength = Math.max(broadPhaseLength, Math.abs(p.length()));
 		}
+	}
+	
+	/**
+	 * Returns the center position
+	 * @return the position
+	 */
+	public Vector2f getCenter() {
+		return center;
 	}
 	
 	/**

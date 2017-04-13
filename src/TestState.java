@@ -37,6 +37,8 @@ public class TestState implements GameState {
 	
 	private FontTexture t_font;
 	
+	World world = new World();
+	
 	Entity t_entity;
 	
 	Root t_root;
@@ -72,12 +74,19 @@ public class TestState implements GameState {
 				new Vector2f( 0.5f,  0.5f),
 				new Vector2f( 0.5f, -0.5f));
 		
+		Shape s_shape2 = new Shape(
+				new Vector2f(-1.5f,  0.5f),
+				new Vector2f(-1.5f, -0.5f),
+				new Vector2f(-0.5f, -0.5f),
+				new Vector2f(-0.5f,  0.5f));
+		
 		Transform t = new Transform();
 		t.position.y = -1.0f;
 		//t.scale.x = 1.5f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
 		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 1.0f));
+		world.addEntity(t_entity);
 		//Root
 		t_root = new Root().add(0, "Test1", t_entity);
 
@@ -91,6 +100,7 @@ public class TestState implements GameState {
 		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
+		world.addEntity(t_entity);
 		
 		t_root.add(0, "Test2", t_entity);
 		
@@ -102,9 +112,10 @@ public class TestState implements GameState {
 		t.scale.x = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 0.2f));
-		t_entity.get(Body.class).setDynamic(true);
-		
+		t_entity.add(0, new Body(s_shape2, 1.0f, 1.0f, 0.2f));
+		t_entity.get(Body.class).setDynamic(false);
+		t_entity.get(Body.class).addShape(s_shape);
+		world.addEntity(t_entity);
 		
 
 		t_root.add(0, "Test3", t_entity);
@@ -122,7 +133,7 @@ public class TestState implements GameState {
 	@Override
 	public void update(double delta) {
 		
-		World.update(delta);
+		world.update(delta);
 		
 		//((Entity) t_root.get("Test1")).get(Transform.class).rotation += delta * 0.1;
 		
@@ -145,12 +156,10 @@ public class TestState implements GameState {
 		if(Keyboard.down(GLFW.GLFW_KEY_Q)) {
 			Camera.DEFAULT.scale.x += speed;
 			Camera.DEFAULT.scale.y += speed;
-			((Entity) t_root.get("Test1")).get(GUIFader.class).changeThreshold(speed);
 		}
 		if(Keyboard.down(GLFW.GLFW_KEY_E)) {
 			Camera.DEFAULT.scale.x -= speed;
 			Camera.DEFAULT.scale.y -= speed;
-			((Entity) t_root.get("Test1")).get(GUIFader.class).changeThreshold(-speed);
 		}
 		if(Keyboard.down(GLFW.GLFW_KEY_O)) {
 			nd += speed * .1f;

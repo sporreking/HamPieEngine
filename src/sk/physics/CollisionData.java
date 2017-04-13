@@ -23,7 +23,7 @@ public class CollisionData {
 	// The other body
 	public Body other;
 	
-	public static final float INACCURACY = 0.001f;
+	public static float INACCURACY = 0.001f;
 	
 	/**
 	 * Default constructor, new collision objects
@@ -69,8 +69,7 @@ public class CollisionData {
 	 * data for the collision, returns null if no collision
 	 */
 	public static CollisionData SATtest(Shape a, Transform ta, Shape b, Transform tb) {
-		Vector2f distance = new Vector2f();
-		Vector2f.sub(ta.position, tb.position, distance);
+		Vector2f distance = Vector2f.sub(ta.position.clone().add(a.getCenter()), tb.position.clone().add(b.getCenter()), null);
 		
 		CollisionData collision = new CollisionData();
 		
@@ -155,9 +154,7 @@ public class CollisionData {
 		} else {
 			reverse = (Vector2f) normal.clone().scale(collisionDepth - INACCURACY);
 		}
-		
 		b.getTransform().position.add(reverse);
-		
 		
 		// Change the velocity
 		Vector2f relativeVelocity = new Vector2f();
