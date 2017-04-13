@@ -108,8 +108,23 @@ public class Shape {
 		// We don't want multiple of the same normals, so we calculate them on the fly
 		ArrayList<Vector2f> normals = new ArrayList<Vector2f>();
 		Vector2f edge = new Vector2f();
+
+		if (points.length < 3) {
+			throw new IllegalArgumentException("There must be more than two points in a polygon... Shame on you!");
+		}
 		
-		for (int i = 0; i < points.length; i++) {
+		int start = 0;
+		int step = 1;
+
+		Vector2f edgeA = points[points.length - 1].clone().sub(points[0]);
+		Vector2f edgeB = points[1].clone().sub(points[0]);
+		
+		step = (int) Math.signum(edgeA.x * edgeB.y - edgeB.x * edgeA.y);
+		if (step < 0) {
+			start = points.length;	
+		}
+		
+		for (int i = start; i < points.length; i += step) {
 			Vector2f.sub(points[(i + 1) % points.length], points[i], edge);
 			
 			// Check if the current point is further away then the current

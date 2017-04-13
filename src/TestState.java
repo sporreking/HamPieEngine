@@ -104,6 +104,8 @@ public class TestState implements GameState {
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
 		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(true);
+		
+		
 
 		t_root.add(0, "Test3", t_entity);
 		

@@ -54,7 +54,7 @@ public class Body extends Component {
 	private ArrayList<CollisionData> collisions = new ArrayList<CollisionData>();
 	
 	/**
-	 * Initalizes the body to a default state of
+	 * Initializes the body to a default state of
 	 * 1.0 Mass, 1.0 Friction and 1.0 Bounce (Elasticity)
 	 * 
 	 * @param shape The shape you want to use as collider
@@ -62,6 +62,18 @@ public class Body extends Component {
 	 */
 	public Body(Shape shape) {
 		this(shape, 1.0f, 1.0f, 1.0f);
+	}
+
+	/**
+	 * Creates a body that can be set to dynamic or static
+	 * @param shape The shape of the body.
+	 * @param isDynamic If the body should be dynamic
+	 * @param friction The friction for the body
+	 * @param bounce The bounce for the body
+	 */
+	public Body(Shape shape, boolean isDynamic, float friction, float bounce) {
+		this(shape, 0.0f, friction, bounce);
+		this.setDynamic(isDynamic);
 	}
 	
 	/**
@@ -104,6 +116,14 @@ public class Body extends Component {
 		setBounce(bounce);
 		World.addBody(this);
 	}
+	
+	/**
+	 * Decouples the body from the entity component system, so an entity isn't needed
+	 * @param transform The new transform you want the body to have when it isn't dependent on a parent
+	 */
+	public void decoupple(Transform transform) {
+		this.transform = transform;
+	}
 
 	/**
 	 * Returns a collision, if there is one, with the supplied body
@@ -137,6 +157,47 @@ public class Body extends Component {
 	}
 	
 	/**
+	 * Dots against a vector and returns the max.
+	 * 
+	 * @param normal The normal you wish to dot
+	 * @return The maximum dot of all the normals in the collisions
+	 */
+	public float dotCollisionNormals(Vector2f normal) {
+		float maxDot = Float.MIN_VALUE;
+		for (CollisionData c : collisions) {
+			maxDot = Math.max((float) maxDot, (float) c.normal.dot(normal));
+		}
+		return maxDot;
+	}
+	
+	/**
+	 * Loops through all collisions and returns the deepest
+	 * @return the deepest collision depth
+	 */
+	public float getMaxCollisionDepth() {
+		float maxDepth = Float.MIN_VALUE;
+		for (CollisionData c : collisions) {
+			maxDepth = Math.max((float) maxDepth, (float) c.collisionDepth);
+		}
+		return maxDepth;
+	}
+	
+	/**
+	 * Loops through the collisions and checks if any of them
+	 * are deeper than the supplied value
+	 * @param value the largest collision depth which returns true
+	 * @return if there was a collision that deep
+	 */
+	public boolean hasDeepCollision(float value) {
+		for (CollisionData c : collisions) {
+			if (value < c.collisionDepth) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
 	 * If there is any collision with the tag at all.
 	 * 
 	 * @param tag The tag you want to search for
@@ -163,6 +224,7 @@ public class Body extends Component {
 		} else {
 			c.other = c.a;
 		}
+		
 		
 		collisions.add(c);
 	}
