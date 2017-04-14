@@ -8,6 +8,7 @@ import sk.audio.SineAudio;
 import sk.entity.Entity;
 import sk.entity.Root;
 import sk.game.Game;
+import sk.game.Time;
 import sk.gamestate.GameState;
 import sk.gfx.Animation;
 import sk.gfx.Camera;
@@ -21,6 +22,8 @@ import sk.gfx.Vertex2D;
 import sk.gfx.gui.GUIButton;
 import sk.gfx.gui.GUIElement;
 import sk.gfx.gui.GUIFader;
+import sk.gfx.gui.GUIText;
+import sk.gfx.gui.GUITextPosition;
 import sk.physics.Body;
 import sk.physics.Shape;
 import sk.physics.World;
@@ -41,7 +44,9 @@ public class TestState implements GameState {
 	
 	Entity t_entity;
 	
-	Root t_root;
+	Root t_root = new Root();
+	
+	GUIText text = null;
 	
 	Audio t_psych;
 	
@@ -57,6 +62,15 @@ public class TestState implements GameState {
 				new Font("Fixedsys", Font.BOLD, 11), new Vector3f(0, 0, 1));
 		
 		Renderer r = new Renderer(Mesh.QUAD);
+	
+		t_entity = new Entity();
+		GUIElement e = new GUIElement(0, 0, 0, 0, 300, 300);
+		e.setTexture(t_wood);
+		text = new GUIText("Woo", 300, 300, new Font("Serif", Font.PLAIN, 50), new Vector3f(1.0f, 1.0f, 0.0f), GUITextPosition.TOP, new Vector2f());
+		e.setText(text);
+		t_entity.add(new Transform()).add(e);
+		
+		t_root.add(0, "SOMETHING", t_entity);
 		
 		//Entity
 		t_entity = new Entity();
@@ -88,7 +102,7 @@ public class TestState implements GameState {
 		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 1.0f));
 		world.addEntity(t_entity);
 		//Root
-		t_root = new Root().add(0, "Test1", t_entity);
+		t_root.add(0, "Test1", t_entity);
 
 		t_entity = new Entity();
 		t = new Transform();
@@ -130,8 +144,17 @@ public class TestState implements GameState {
 	
 	float speed = .01f;
 	float nd = 1.0f;
+	float clock = 0;
+	Vector3f color = new Vector3f(0, 1.0f, 0);
 	@Override
 	public void update(double delta) {
+		
+		System.out.println(1.0f / Time.getDelta());
+		
+		clock += delta;
+		color.x = (float) Math.sin(clock) * 0.5f + 0.5f;
+		text.setColor(color);
+		text.setText("" + (int) clock); 
 		
 		world.update(delta);
 		

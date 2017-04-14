@@ -12,7 +12,7 @@ public class Main {
 		gp.title = "Test";
 		gp.startState = States.TEST_1;
 		gp.clearColor = new Vector4f(1, 0, 1, 1);
-		gp.vSync = true;
+		gp.vSync = false;
 		gp.height = 600;
 		gp.width = 800;
 		
