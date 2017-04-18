@@ -2,10 +2,12 @@ package sk.physics;
 
 import java.util.ArrayList;
 
+import Debug.Debug;
 import sk.entity.Entity;
 import sk.game.Time;
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
+import sk.util.vector.Vector3f;
 
 /**
  * The World class handles all the collisions in the world, 
@@ -18,7 +20,7 @@ public class World {
 	
 	ArrayList<Body> bodies = new ArrayList<Body>();
 	
-	public Vector2f gravity = new Vector2f(0.001f, 0.1f);
+	public Vector2f gravity = new Vector2f(0.0f, -0.5f);
 	public float stepLength = 1.0f / 60.0f;
 	private float timer = 0.0f;
 	
@@ -59,6 +61,7 @@ public class World {
 			}
 			
 			// Check for collisions
+			System.out.println("New...");
 			for (int i = 0; i < bodies.size(); i++) {
 				for (int j = 0; j < i; j++) {
 					Body a = bodies.get(i);
@@ -70,27 +73,29 @@ public class World {
 					// Make sure not both are triggers
 					if (a.isTrigger() && b.isTrigger()) continue;
  					
+					
 					CollisionData c = null;
-					// There are multiple shapes, skipp the bread phase and try the bodies
+					// There are multiple shapes, skip the bread phase and try the bodies
 					Transform ta = a.getTransform();
 					Transform tb = b.getTransform();
 					for (Shape shapeA : a.getShapes()) {
 						for (Shape shapeB : b.getShapes()) {
 							float bpRange = (float) Math.pow(
 									a.getShape().getBP() * Math.max(
-											a.getTransform().scale.x, 
-											a.getTransform().scale.y) + 
+											ta.scale.x, 
+											ta.scale.y) + 
 									b.getShape().getBP() * Math.max(
-											b.getTransform().scale.x, 
-											b.getTransform().scale.y), 2.0f);
+											tb.scale.x,
+											tb.scale.y), 2.0f);
 							float distanceSq = Vector2f.sub(
-									a.getTransform().position.clone().add(shapeA.getCenter()), 
-									b.getTransform().position.clone().add(shapeB.getCenter()), 
+									shapeA.getCenter(ta),
+									shapeB.getCenter(tb),
 									null).lengthSquared();
 							
-							if (bpRange <= distanceSq) continue;
+							Debug.drawLine(shapeA.getCenter(ta), shapeB.getCenter(tb), new Vector3f(0, 1.0f, 0.0f));
 							
-							c = CollisionData.SATtest(a.getShape(), a.getTransform(), b.getShape(), b.getTransform());
+							if (bpRange <= distanceSq) continue;
+							c = CollisionData.SATtest(shapeA, ta, shapeB, tb);
 							
 							if (c == null) continue;
 							
@@ -102,24 +107,19 @@ public class World {
 								c.b = b;
 							}
 							
-							handleCollision(c);
+							// Add their collisions to the bodies
+							a.addCollision(c);
+							b.addCollision(c);
+							
+							// If one of them is a trigger we are done
+							if (a.isTrigger() || b.isTrigger()) return;
+						
+							c.solve();
 						}
 					}
 				}
 			}
 		}
-	}
-
-	private void handleCollision(CollisionData c) {
-		// Add their collisions to the bodies
-		c.a.addCollision(c);
-		c.b.addCollision(c);
-		
-		// If one of them is a trigger we are done
-		if (c.a.isTrigger() || c.b.isTrigger()) return;
-		
-		// Now we just solve the collision and everyone is happy
-		c.solve();
 	}
 	
 	/**

@@ -2,6 +2,7 @@ import java.awt.Font;
 
 import org.lwjgl.glfw.GLFW;
 
+import Debug.Debug;
 import sk.audio.Audio;
 import sk.audio.AudioManager;
 import sk.audio.SineAudio;
@@ -70,7 +71,7 @@ public class TestState implements GameState {
 		e.setText(text);
 		t_entity.add(new Transform()).add(e);
 		
-		t_root.add(0, "SOMETHING", t_entity);
+		//t_root.add(10000, "SOMETHING", t_entity);
 		
 		//Entity
 		t_entity = new Entity();
@@ -95,11 +96,11 @@ public class TestState implements GameState {
 				new Vector2f(-0.5f,  0.5f));
 		
 		Transform t = new Transform();
-		t.position.y = -1.0f;
+		t.position.y = 1.0f;
 		//t.scale.x = 1.5f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 1.0f));
+		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 1.0f));
 		world.addEntity(t_entity);
 		//Root
 		t_root.add(0, "Test1", t_entity);
@@ -111,7 +112,7 @@ public class TestState implements GameState {
 		t.scale.x = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 1.0f, 0.2f));
+		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
 		world.addEntity(t_entity);
@@ -126,9 +127,9 @@ public class TestState implements GameState {
 		t.scale.x = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape2, 1.0f, 1.0f, 0.2f));
+		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(false);
-		t_entity.get(Body.class).addShape(s_shape);
+		t_entity.get(Body.class).addShape(s_shape2);
 		world.addEntity(t_entity);
 		
 
@@ -149,8 +150,6 @@ public class TestState implements GameState {
 	@Override
 	public void update(double delta) {
 		
-		System.out.println(1.0f / Time.getDelta());
-		
 		clock += delta;
 		color.x = (float) Math.sin(clock) * 0.5f + 0.5f;
 		text.setColor(color);
@@ -164,9 +163,16 @@ public class TestState implements GameState {
 			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) delta, 0.0f));
 		}
 		
+		if(Keyboard.pressed(GLFW.GLFW_KEY_SPACE)) {
+			t_root.gete("Test1").get(Body.class).addForce(new Vector2f(0.0f, 1.0f));
+		}
+		
 		if(Keyboard.down(GLFW.GLFW_KEY_X)) {
 			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) -delta, 0.0f));
 		}
+		
+		t_root.gete("Test1").get(Body.class)._draw();
+		t_root.gete("Test3").get(Body.class)._draw();
 		
 		if(Keyboard.down(GLFW.GLFW_KEY_W))
 			Camera.DEFAULT.position.y += speed;
@@ -203,6 +209,7 @@ public class TestState implements GameState {
 	@Override
 	public void draw() {
 		t_root.draw();
+		Debug.draw();
 	}
 	
 	@Override

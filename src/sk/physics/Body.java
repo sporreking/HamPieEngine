@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import sk.entity.Component;
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
+import sk.util.vector.Vector3f;
 import sun.java2d.pipe.ShapeSpanIterator;
 
 /**
@@ -115,6 +116,12 @@ public class Body extends Component {
 		setMass(mass);
 		setFriction(friction);
 		setBounce(bounce);
+	}
+	
+	public void _draw() {
+		for (Shape s : shapes) {
+			s._draw(transform, new Vector3f(0.5f, 0.0f, 1.0f));
+		}
 	}
 	
 	/**
@@ -328,10 +335,17 @@ public class Body extends Component {
 	
 	/**
 	 * (Note that velocity by definition is a vector)
-	 * @return Returns the velocity of the body.
+	 * @return the velocity of the body.
 	 */
 	public Vector2f getVelocity() {
 		return velocity.clone();
+	}
+	
+	/**
+	 * v + F / m 
+	 */
+	public Vector2f getNextVelocity() {
+		return getVelocity().add(force.clone().scale(invertedMass));
 	}
 	
 	/**

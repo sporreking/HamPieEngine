@@ -1,10 +1,13 @@
 package sk.physics;
 
 import java.util.ArrayList;
+
+import Debug.Debug;
 import sk.entity.Component;
 import sk.gfx.Transform;
 import sk.gfx.Vertex2D;
 import sk.util.vector.Vector2f;
+import sk.util.vector.Vector3f;
 
 /**
  * A shape is an object that needs a body
@@ -123,38 +126,35 @@ public class Shape {
 			center.add(p);		
 		}
 		center.scale(1.0f / (float) points.length);
+		System.out.print("Center: ");
+		System.out.println(center);
 		
 		// Subtract the center from each point so it's centerd
 		for (Vector2f p : points) {
 			p.sub(center);
 		}
 		
-		// Change the direction of the loop to make all normals point out
-		int start = 0;
-		int step = 1;
-
 		// Calculate the direction to loo through them
 		Vector2f edgeA = points[points.length - 1].clone().sub(points[0]);
 		Vector2f edgeB = points[1].clone().sub(points[0]);
 		
-		step = (int) Math.signum(edgeA.x * edgeB.y - edgeB.x * edgeA.y);
-		if (step < 0) {
-			start = points.length - 1;
-		}
+		boolean rightHand = edgeA.x * edgeB.y - edgeB.x * edgeA.y < 0;
 		
-		
-		int i = start;
-		while (i < points.length && i >= 0) {
+		for (int i = 0; i < points.length; i++) {
 			Vector2f.sub(points[(i + 1) % points.length], points[i], edge);
 			
 			// Check if the current point is further away then the current
-			float currentLength = points[i].length();
-			if (broadPhaseLength < currentLength) {
-				broadPhaseLength = currentLength; 
-			}
+			float length = points[i].length();
+			broadPhaseLength = Math.max(length, broadPhaseLength);
 			
 			// Calculated of 90 degree rotation matrix
-			Vector2f normal = new Vector2f(-edge.y, edge.x);
+			
+			Vector2f normal;
+			if (rightHand) {
+				normal = new Vector2f(-edge.y, edge.x);
+			} else {
+				normal = new Vector2f(edge.y, -edge.x);
+			}
 			normal.normalise();
 			int j = 0;
 			for (; j < normals.size(); j++) {
@@ -166,17 +166,10 @@ public class Shape {
 			if (j == normals.size()) {
 				normals.add(normal);
 			}
-			i += step;
 		}
 		
-		
-		// IDK why, but calling (Vector2f[]) normals.toArray()
-		// Copy them over
 		this.normals = new Vector2f[normals.size()];
-		/*this.normals = (Vector2f[]) */normals.toArray(this.normals);
-		for (int j = 0; j < this.normals.length; j++) {
-			this.normals[j] = normals.get(j);
-		}
+		normals.toArray(this.normals);
 	}
 	
 	/**
@@ -193,8 +186,20 @@ public class Shape {
 	 * Returns the center position
 	 * @return the position
 	 */
-	public Vector2f getCenter() {
-		return center;
+	public Vector2f getCenter(Transform t) {
+		return new Vector2f(center.x * t.scale.x, center.y * t.scale.y).add(t.position);
+	}
+	
+	public void _draw(Transform t, Vector3f color) {
+		Vector2f dot;
+		for (Vector2f p : points) {
+			dot = p.clone().add(center);
+			dot.x *= t.scale.x;
+			dot.y *= t.scale.y;
+			dot = Vector2f.rotate(dot, t.rotation, null);
+			dot.add(t.position);
+			Debug.drawPoint(dot, color);
+		}
 	}
 	
 	/**
