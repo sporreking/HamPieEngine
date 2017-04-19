@@ -2,7 +2,6 @@ package sk.physics;
 
 import java.util.ArrayList;
 
-import Debug.Debug;
 import sk.entity.Component;
 import sk.gfx.Transform;
 import sk.gfx.Vertex2D;
@@ -198,7 +197,6 @@ public class Shape {
 			dot.y *= t.scale.y;
 			dot = Vector2f.rotate(dot, t.rotation, null);
 			dot.add(t.position);
-			Debug.drawPoint(dot, color);
 		}
 	}
 	

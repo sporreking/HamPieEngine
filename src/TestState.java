@@ -2,7 +2,6 @@ import java.awt.Font;
 
 import org.lwjgl.glfw.GLFW;
 
-import Debug.Debug;
 import sk.audio.Audio;
 import sk.audio.AudioManager;
 import sk.audio.SineAudio;
@@ -209,7 +208,6 @@ public class TestState implements GameState {
 	@Override
 	public void draw() {
 		t_root.draw();
-		Debug.draw();
 	}
 	
 	@Override

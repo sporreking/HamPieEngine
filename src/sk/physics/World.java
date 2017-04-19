@@ -2,7 +2,6 @@ package sk.physics;
 
 import java.util.ArrayList;
 
-import Debug.Debug;
 import sk.entity.Entity;
 import sk.game.Time;
 import sk.gfx.Transform;
@@ -92,7 +91,6 @@ public class World {
 									shapeB.getCenter(tb),
 									null).lengthSquared();
 							
-							Debug.drawLine(shapeA.getCenter(ta), shapeB.getCenter(tb), new Vector3f(0, 1.0f, 0.0f));
 							
 							if (bpRange <= distanceSq) continue;
 							c = CollisionData.SATtest(shapeA, ta, shapeB, tb);

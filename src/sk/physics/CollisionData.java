@@ -2,7 +2,6 @@ package sk.physics;
 
 import com.sun.org.apache.bcel.internal.generic.ATHROW;
 
-import Debug.Debug;
 import sk.game.Time;
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
@@ -80,11 +79,6 @@ public class CollisionData {
 				a.getCenter(ta), 
 				b.getCenter(tb), 
 				null);
-		
-		Debug.drawPoint(a.getCenter(ta), new Vector3f(1, 0, 0));
-		Debug.drawPoint(b.getCenter(tb), new Vector3f(1, 0, 0));
-		
-		Debug.drawLine(a.getCenter(ta), a.getCenter(ta).sub(distance), new Vector3f(0.0f, 1.0f, 1.0f));
 		
 		
 		CollisionData collision = new CollisionData();
