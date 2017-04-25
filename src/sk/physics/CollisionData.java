@@ -1,7 +1,6 @@
 package sk.physics;
 
 
-import sk.game.Time;
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
 
@@ -14,6 +13,13 @@ import sk.util.vector.Vector2f;
  * 
  */
 public class CollisionData {
+
+	// If you're not getting generated collision
+	// events when bodies are on top of each other,
+	// this is the guy to increase. But if you're
+	// sinking in too much, make it smaller.
+	public static float INACCURACY = 0.001f;
+	
 	// The normal
 	public Vector2f normal;
 	// The penetration depth
@@ -26,8 +32,10 @@ public class CollisionData {
 	public Body a, b;
 	// The other body
 	public Body other;
-	
-	public static float INACCURACY = 0.001f;
+	// Some relevant physics variables
+	public float impactForce = 0;
+	public float normalVelocity = 0;
+	public float tangentVelocity = 0;
 	
 	/**
 	 * Default constructor, new collision objects
@@ -156,6 +164,8 @@ public class CollisionData {
 			normal.negate();
 		}
 		
+		
+		
 		// Move it back
 		Vector2f reverse;
 		if (dynamicCollision) {
@@ -170,7 +180,8 @@ public class CollisionData {
 		Vector2f relativeVelocity = new Vector2f();
 		Vector2f.sub(a.getNextVelocity(), b.getNextVelocity(), relativeVelocity);
 		
-		float normalVelocity = Vector2f.dot(relativeVelocity, normal);
+		normalVelocity = Vector2f.dot(relativeVelocity, normal);
+		
 		// Make sure we're not moving away, if we are, just return
 		if (0.0f > normalVelocity) return;
 		
@@ -188,6 +199,9 @@ public class CollisionData {
 			b.addForce(bounceForce);
 		}
 		
+		// Store it for future use.
+		impactForce = bounceImpulse;
+		
 		// Friction
 		float mu = Math.min(a.getFriction(), b.getFriction());
 		if (mu == 0.0f) return;
@@ -196,17 +210,17 @@ public class CollisionData {
 		// Super fast manual rotation and creation
 		Vector2f tangent = new Vector2f(normal.y, -normal.x);
 		// Make sure we're slowing down in the right direction
-		float frictionDirection = relativeVelocity.dot(tangent);
-		if (0.0f > frictionDirection) {
+		tangentVelocity = relativeVelocity.dot(tangent);
+		if (0.0f > tangentVelocity) {
 			// If they're pointing the same way, flip them
 			tangent.negate();
 		}
 		
-		frictionDirection = Math.abs(frictionDirection);
+		float frictionStrength = Math.abs(tangentVelocity);
 		
 		// If the friction force will slow us down too much, clamp it
-		if (frictionDirection < frictionImpulse) {
-			tangent.scale(frictionDirection * totalMass);
+		if (frictionStrength < frictionImpulse) {
+			tangent.scale(frictionStrength * totalMass);
 		} else {
 			tangent.scale(frictionImpulse * totalMass);
 		}

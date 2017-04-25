@@ -23,6 +23,10 @@ public class Body extends Component {
 	private Vector2f velocity = new Vector2f();
 	private Vector2f force = new Vector2f();
 	
+	// One way collisions
+	private Vector2f direction = new Vector2f(0, 1);
+	private float leniency = 1.0f;
+	
 	// The mass
 	private float mass = 0.0f;
 	private float invertedMass = 0.0f;
@@ -166,6 +170,7 @@ public class Body extends Component {
 
 	/**
 	 * Returns a collision, if there is one, with the supplied body
+	 * 
 	 * @param b The body you want to look for
 	 * @return A collision if it is found, null otherwise
 	 */
@@ -198,6 +203,12 @@ public class Body extends Component {
 	/**
 	 * Dots against a vector and returns the max.
 	 * 
+	 * The default return value is Float.MIN_VALUE, if
+	 * there are no collisions.
+	 * 
+	 * NOTE: Before you start yelling at me for not returning
+	 * the minimum. Just flip your sodding normal.
+	 * 
 	 * @param normal The normal you wish to dot
 	 * @return The maximum dot of all the normals in the collisions
 	 */
@@ -210,6 +221,14 @@ public class Body extends Component {
 	}
 	
 	/**
+	 * The number of collisions that occurred this frame.
+	 * @return you're pretty clever, figure it out. 
+	 */
+	public int numCollisions() {
+		return collisions.size();
+	}
+	
+	/**
 	 * Loops through all collisions and returns the deepest
 	 * @return the deepest collision depth
 	 */
@@ -219,6 +238,17 @@ public class Body extends Component {
 			maxDepth = Math.max((float) maxDepth, (float) c.collisionDepth);
 		}
 		return maxDepth;
+	}
+	
+	/**
+	 * Returns a list of the collision data, note that this is
+	 * after the processing to make sure the normals are pointing
+	 * AWAY from this body.
+	 * 
+	 * @return the list of collisions.
+	 */
+	public CollisionData[] getCollisions() {
+		return (CollisionData[]) collisions.toArray();
 	}
 	
 	/**
@@ -254,6 +284,10 @@ public class Body extends Component {
 	/**
 	 * Adds a collision to the Body, mortals should not call this
 	 * function.
+	 * 
+	 * This functions makes sure all normals are pointing away
+	 * from the this body. Note that in calculations.
+	 * 
 	 * @param c The collision our superior overlords wish to add
 	 */
 	public void addCollision(CollisionData c) {
@@ -262,9 +296,11 @@ public class Body extends Component {
 			c.other = c.b;
 		} else {
 			c.other = c.a;
+			// We need to flip the normal, to make sure it is pointing
+			// away from the body. 
+			c.normal = c.normal.clone().negate();
 		}
-		
-		
+
 		collisions.add(c);
 	}
 	
@@ -598,5 +634,66 @@ public class Body extends Component {
 	 */
 	public ArrayList<Shape> getShapes() {
 		return shapes;
+	}
+
+	/**
+	 * @return a safe copy of the leniency.
+	 */
+	public Vector2f getOneWayDirection() {
+		return direction.clone();
+	}
+
+	public void setOneWayDirection(Vector2f direction) {
+		this.direction = (Vector2f) direction.normalise();
+	}
+	
+	/**
+	 * How lenient collisions set to one way should be.
+	 * 
+	 * 1 means, allow all direction.
+	 * 0 means, allow ONLY the direction specified.
+	 * 0.5, allow ones that are facing at most 90 degrees off.
+	 * 
+	 * @return the leniency.
+	 */
+	public float getOneWayLeniency() {
+		return leniency;
+	}
+
+	/**
+	 * How lenient collisions set to one way should be.
+	 * 
+	 * 0 < Leniency < 1
+	 * 
+	 * 1 means, allow all direction.
+	 * 0 means, allow NO directions.
+	 * 0.5, allow ones that are facing at most 90 degrees off.
+	 * 
+	 * @return the leniency.
+	 */
+	public void setOneWayLeniency(float leniency) {
+		if (leniency < 0 || leniency > 1) {
+			throw new IllegalArgumentException("The leanancy you supplied is not in the valid range of 0 to 1");
+		}
+		this.leniency = leniency;
+	}
+	
+	
+	/**
+	 * Checks if the normal supplied lives up to the
+	 * demands put on it by society and how well
+	 * it points in the OnewayDirection.
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public boolean oneWayCheck(Vector2f n) {
+		if (leniency == 1) return true;
+		
+		float dot = n.dot(direction);
+		if ((dot + 1.0f) * 0.5f >= leniency) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -120,6 +120,7 @@ public class TestState implements GameState {
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
 		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 0.2f));
 		t_entity.get(Body.class).setDynamic(false);
+		t_entity.get(Body.class).setOneWayLeniency(0.6f);
 		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
 		world.addEntity(t_entity);
 		
@@ -138,9 +139,9 @@ public class TestState implements GameState {
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).addShape(s_shape2);
 		t_entity.get(Body.class).addShape(s_shape3);
-		world.addEntity(t_entity);
+		//world.addEntity(t_entity);
 
-		t_root.add(0, "Test3", t_entity);
+		//t_root.add(0, "Test3", t_entity);
 		
 		//Audio
 		AudioManager.start();
@@ -170,7 +171,7 @@ public class TestState implements GameState {
 			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) delta, 0.0f));
 		}
 		
-		if(Keyboard.pressed(GLFW.GLFW_KEY_SPACE)) {
+		if(Keyboard.pressed(GLFW.GLFW_KEY_SPACE) && t_root.gete("Test1").get(Body.class).dotCollisionNormals(new Vector2f(0, 1)) > 0.98) {
 			t_root.gete("Test1").get(Body.class).addForce(new Vector2f(0.0f, 1.0f));
 		}
 		
@@ -179,7 +180,7 @@ public class TestState implements GameState {
 		}
 		
 		t_root.gete("Test1").get(Body.class)._draw();
-		t_root.gete("Test3").get(Body.class)._draw();
+		//t_root.gete("Test3").get(Body.class)._draw();
 		
 		if(Keyboard.down(GLFW.GLFW_KEY_W))
 			Camera.DEFAULT.position.y += speed;

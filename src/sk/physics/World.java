@@ -98,6 +98,9 @@ public class World {
 								c.b = b;
 							}
 							
+							// Skip the collision if the normal is the wrong way
+							if (!b.oneWayCheck(c.normal) || !a.oneWayCheck(c.normal.clone().negate())) continue;
+							
 							// Add their collisions to the bodies
 							a.addCollision(c);
 							b.addCollision(c);
