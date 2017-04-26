@@ -15,10 +15,11 @@ import sk.util.vector.Vector2f;
  */
 public class World {
 	
-	ArrayList<Body> bodies = new ArrayList<Body>();
-	
-	public Vector2f gravity = new Vector2f(0.0f, -0.5f);
+	// Recommended is 1 / 60
 	public float stepLength = 1.0f / 60.0f;
+
+	ArrayList<Body> bodies = new ArrayList<Body>();
+	public Vector2f gravity = new Vector2f(0.0f, -0.5f);
 	private float timer = 0.0f;
 	
 	/**
@@ -73,7 +74,7 @@ public class World {
 					if (a.isTrigger() && b.isTrigger()) continue;
  					
 					
-					CollisionData c = null;
+					Collision c = null;
 					// There are multiple shapes, skip the bread phase and try the bodies
 					Transform ta = a.getTransform();
 					Transform tb = b.getTransform();
@@ -89,7 +90,7 @@ public class World {
 									.lengthSquared();
 							
 							if (bpRange <= distanceSq) continue;
-							c = CollisionData.SATtest(shapeA, ta, shapeB, tb);
+							c = Collision.SATtest(shapeA, ta, shapeB, tb);
 							
 							if (c == null) continue;
 							
@@ -102,7 +103,9 @@ public class World {
 							}
 							
 							// Skip the collision if the normal is the wrong way
-							if (!b.oneWayCheck(c.normal) || !a.oneWayCheck(c.normal.clone().negate())) continue;
+							if (!b.oneWayCheck(c.collisionDepth, a.getVelocity(), c.normal) || 
+								!a.oneWayCheck(c.collisionDepth, b.getVelocity(), c.normal.clone().negate())) 
+								continue;
 							
 							// Add their collisions to the bodies
 							a.addCollision(c);

@@ -3,6 +3,7 @@ package sk.physics;
 import java.util.ArrayList;
 import java.util.List;
 
+import sk.debug.Debug;
 import sk.entity.Component;
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
@@ -56,7 +57,7 @@ public class Body extends Component {
 	private String tag;
 	
 	// A list of all collisions this frame
-	private ArrayList<CollisionData> collisions = new ArrayList<CollisionData>();
+	private ArrayList<Collision> collisions = new ArrayList<Collision>();
 	
 	/**
 	 * Creates a new body with the specified shapes. 
@@ -161,6 +162,10 @@ public class Body extends Component {
 		for (Shape s : shapes) {
 			s._draw(transform, new Vector3f(0.5f, 0.0f, 1.0f));
 		}
+		
+		for (Collision d : collisions) {
+			Debug.drawLine(transform.position, transform.position.clone().add(d.normal), new Vector3f(1.0f, 0.0f, 0.5f));
+		}
 	}
 	
 	/**
@@ -178,8 +183,8 @@ public class Body extends Component {
 	 * @param b the body you want to look for.
 	 * @return a collision if it is found, null otherwise.
 	 */
-	public CollisionData getCollision(Body b) {
-		for (CollisionData c : collisions) {
+	public Collision getCollision(Body b) {
+		for (Collision c : collisions) {
 			if (c.other == b) {
 				return c;
 			}
@@ -194,21 +199,21 @@ public class Body extends Component {
 	 * @param tag the tag you want to search for.
 	 * @return a list of collisions with the tag.
 	 */
-	public CollisionData[] getCollisionsWithTag(String tag) {
-		ArrayList<CollisionData> collisions = new ArrayList<CollisionData>();
-		for (CollisionData c : collisions) {
+	public Collision[] getCollisionsWithTag(String tag) {
+		ArrayList<Collision> collisions = new ArrayList<Collision>();
+		for (Collision c : collisions) {
 			if (c.other.getTag().equals(tag)) {
 				collisions.add(c);
 			}
 		}
-		return (CollisionData[]) collisions.toArray();
+		return (Collision[]) collisions.toArray();
 	}
 	
 	/**
 	 * Performs a dot operation with all collision normals
 	 * against a vector and returns the max result.
 	 * 
-	 * The default return value is {@link Float#MIN_VALUE}, if
+	 * The default return value is {@link Float#MAX_VALUE}, if
 	 * there are no collisions.
 	 * <p>
 	 * Note: In order to retrieve the minimum dot product. Just flip the normal.
@@ -217,8 +222,8 @@ public class Body extends Component {
 	 * @return the maximum dot of all the normals in the collisions.
 	 */
 	public float dotCollisionNormals(Vector2f normal) {
-		float maxDot = Float.MIN_VALUE;
-		for (CollisionData c : collisions) {
+		float maxDot = -Float.MAX_VALUE;
+		for (Collision c : collisions) {
 			maxDot = Math.max((float) maxDot, (float) c.normal.dot(normal));
 		}
 		return maxDot;
@@ -227,7 +232,7 @@ public class Body extends Component {
 	/**
 	 * Returns the number of collisions that occurred this frame.
 	 * 
-	 * @return the number of collisions that occured this frame. 
+	 * @return the number of collisions that occurred this frame. 
 	 */
 	public int numCollisions() {
 		return collisions.size();
@@ -239,20 +244,20 @@ public class Body extends Component {
 	 * @return the deepest collision depth.
 	 */
 	public float getMaxCollisionDepth() {
-		float maxDepth = Float.MIN_VALUE;
-		for (CollisionData c : collisions) {
+		float maxDepth = 0;
+		for (Collision c : collisions) {
 			maxDepth = Math.max((float) maxDepth, (float) c.collisionDepth);
 		}
 		return maxDepth;
 	}
 	
 	/**
-	 * Returns a list of the collision data. Normals are always facing away from the shape.
+	 * Returns a list of the collision. Normals are always facing away from the shape.
 	 * 
 	 * @return the list of collisions.
 	 */
-	public CollisionData[] getCollisions() {
-		return (CollisionData[]) collisions.toArray();
+	public Collision[] getCollisions() {
+		return (Collision[]) collisions.toArray();
 	}
 	
 	/**
@@ -263,7 +268,7 @@ public class Body extends Component {
 	 * @return true if there was a collision depth equal to or beyond the supplied value.
 	 */
 	public boolean hasDeepCollision(float value) {
-		for (CollisionData c : collisions) {
+		for (Collision c : collisions) {
 			if (value < c.collisionDepth) {
 				return true;
 			}
@@ -278,7 +283,7 @@ public class Body extends Component {
 	 * @return true if the tag was found on a colliding body.
 	 */
 	public boolean isCollidingWithTag(String tag) {
-		for (CollisionData c : collisions) {
+		for (Collision c : collisions) {
 			if (c.other.getTag().equals(tag)) {
 				return true;
 			}
@@ -295,8 +300,8 @@ public class Body extends Component {
 	 * 
 	 * @param c the collision our superior overlords wish to add.
 	 */
-	protected void addCollision(CollisionData c) {
-		c = new CollisionData(c);
+	protected void addCollision(Collision c) {
+		c = new Collision(c);
 		c.normal = c.normal.clone();
 		if (c.a == this) {
 			c.other = c.b;
@@ -812,9 +817,9 @@ public class Body extends Component {
 	/**
 	 * How lenient collisions set to one way should be.
 	 * 
-	 * 1 means "allow all directions".
-	 * 0 means "only allow the specified direction".
-	 * 0.5 means "allow ones that are facing at most 90 degrees off".
+	 * 1 means "allow ONLY the direction".
+	 * 0 means "allow ones that are facing at most 90 degrees off".
+	 * -1 means "allow ALL directions".
 	 * 
 	 * @return the leniency.
 	 */
@@ -824,16 +829,20 @@ public class Body extends Component {
 
 	/**
 	 * How lenient collisions set to one way should be.<br>
-	 * 1 means "allow all direction".
-	 * 0 means "allow NO directions".
-	 * 0.5 means "allow ones that are facing at most 90 degrees off".
+	 * 1 means "allow ONLY the direction".
+	 * 0 means "allow ones that are facing at most 90 degrees off".
+	 * -1 means "allow ALL directions".
+	 * 
+	 * If you have an angle `a`, where `a` is the maximum angle of
+	 * deviation from the direction of the one way collision. Then
+	 * `leniency = cos(a)`. 
 	 * 
 	 * @return this body instance.
-	 * @throws IllegalArgumentException if the specified leniency is not in range <code>0 - 1</code>.
+	 * @throws IllegalArgumentException if the specified leniency is not in range <code>-1 - 1</code>.
 	 */
 	public Body setOneWayLeniency(float leniency) {
-		if (leniency < 0 || leniency > 1) {
-			throw new IllegalArgumentException("The specified leanancy is not in the valid range of 0 to 1");
+		if (leniency < -1 || leniency > 1) {
+			throw new IllegalArgumentException("The specified leanancy is not in the valid range of  to 1");
 		}
 		this.leniency = leniency;
 		
@@ -846,14 +855,17 @@ public class Body extends Component {
 	 * demands put on it by society and how well
 	 * it points in the OneWayDirection.
 	 * 
+	 * @param depth the depth of the collision.
+	 * @param v the velocity of the other body.
 	 * @param n the normal to check.
 	 * @return true if the normal lives up to the demands.
 	 */
-	public boolean oneWayCheck(Vector2f n) {
+	public boolean oneWayCheck(float depth, Vector2f v, Vector2f n) {
 		if (leniency == 1) return true;
 		
 		float dot = n.dot(direction);
-		if ((dot + 1.0f) * 0.5f >= leniency) {
+		if ((dot + 1.0f) * 0.5f >= leniency && 
+			 depth > v.dot(direction)) {
 			return true;
 		}
 		return false;

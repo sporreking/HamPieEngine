@@ -12,7 +12,7 @@ import sk.util.vector.Vector2f;
  * @author Ed
  * 
  */
-public class CollisionData {
+public class Collision {
 
 	// If you're not getting generated collision
 	// events when bodies are on top of each other,
@@ -42,7 +42,7 @@ public class CollisionData {
 	 * shouldn't be created outside of the engines
 	 * collision code. 
 	 */
-	protected CollisionData() {}
+	protected Collision() {}
 
 	/**
 	 * Copies the specified collision data.
@@ -50,7 +50,7 @@ public class CollisionData {
 	 * @param c the CollisionData object you wish to copy from.
 	 * 
 	 */
-	protected CollisionData(CollisionData c) {
+	protected Collision(Collision c) {
 		normal = c.normal;
 		collisionDepth = c.collisionDepth;
 		normalOwner = c.normalOwner;
@@ -83,14 +83,14 @@ public class CollisionData {
 	 * @return the collision object with the appropriate 
 	 * data for the collision, returns null if no collision.
 	 */
-	public static CollisionData SATtest(Shape a, Transform ta, Shape b, Transform tb) {
+	public static Collision SATtest(Shape a, Transform ta, Shape b, Transform tb) {
 		Vector2f distance = Vector2f.sub(
 				a.getCenter(ta),
 				b.getCenter(tb),
 				null);
 		
 		
-		CollisionData collision = new CollisionData();
+		Collision collision = new Collision();
 		
 		float max;
 		float min;

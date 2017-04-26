@@ -32,8 +32,7 @@ public class Shape {
 	private float broadPhaseLength = 0.0f;
 	
 	/**
-	 * The points will be joined in the order you supplied, 
-	 * where clockwise is expected.
+	 * The points will be joined in the order you supplied.
 	 * <p>
 	 * Note: Shapes are not allowed to be concave.
 	 * </p>
@@ -92,8 +91,7 @@ public class Shape {
 	}
 	
 	/**
-	 * The points will be joined in the order you supplied, 
-	 * where clockwise is expected.
+	 * The points will be joined in the order you supplied.
 	 * <p>
 	 * Note: Shapes are not allowed to be concave.
 	 * </p>
@@ -223,11 +221,11 @@ public class Shape {
 			// Translate
 			b.add(t.position);
 			
-			Debug.Debug.drawLine(a, b, color);
+			sk.debug.Debug.drawLine(a, b, color);
 		}
 		
 		// The broadphase check
-		Debug.Debug.drawCircle(getCenter(t), getBP(t));
+		sk.debug.Debug.drawCircle(getCenter(t), getBP(t));
 	}
 	
 	/**

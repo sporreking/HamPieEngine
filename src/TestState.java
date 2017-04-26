@@ -2,10 +2,10 @@ import java.awt.Font;
 
 import org.lwjgl.glfw.GLFW;
 
-import Debug.Debug;
 import sk.audio.Audio;
 import sk.audio.AudioManager;
 import sk.audio.SineAudio;
+import sk.debug.Debug;
 import sk.entity.Entity;
 import sk.entity.Root;
 import sk.game.Game;
@@ -111,20 +111,28 @@ public class TestState implements GameState {
 		//Root
 		t_root.add(0, "Test1", t_entity);
 
+
+		
 		t_entity = new Entity();
 		t = new Transform();
 		//t.rotation = (float) (Math.PI * 1.0f / 4.0f);
-		t.position.y = 1.0f;
+		t.position.y = 2.0f;
 		t.scale.x = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
 		t_entity.add(0, new Body(1.0f, 100.0f, 0.2f, s_shape));
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).setOneWayLeniency(0.6f);
-		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
+		//t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
 		world.addEntity(t_entity);
 		
 		t_root.add(0, "Test2", t_entity);
+		
+		//Audio
+		AudioManager.start();
+		
+		t_psych = new Audio("res/audio/elevator.wav");
+		
 		
 		t_entity = new Entity();
 		t = new Transform();
@@ -139,15 +147,9 @@ public class TestState implements GameState {
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).addShape(s_shape2);
 		t_entity.get(Body.class).addShape(s_shape3);
-		//world.addEntity(t_entity);
-
-		//t_root.add(0, "Test3", t_entity);
+		world.addEntity(t_entity);
 		
-		//Audio
-		AudioManager.start();
-		
-		t_psych = new Audio("res/audio/elevator.wav");
-		
+		t_root.add(0, "Test3", t_entity);
 		//AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
 	}
 	
@@ -172,7 +174,7 @@ public class TestState implements GameState {
 		}
 		
 		if(Keyboard.pressed(GLFW.GLFW_KEY_SPACE) && t_root.gete("Test1").get(Body.class).dotCollisionNormals(new Vector2f(0, 1)) > 0.98) {
-			t_root.gete("Test1").get(Body.class).addForce(new Vector2f(0.0f, 1.0f));
+			t_root.gete("Test1").get(Body.class).addForce(new Vector2f(0.0f, 1.3f));
 		}
 		
 		if(Keyboard.down(GLFW.GLFW_KEY_X)) {
