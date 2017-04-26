@@ -9,7 +9,7 @@ public class Main {
 	public static final void main(String[] args) {
 		GameProperties gp = new GameProperties();
 		
-		//Debug.Debug.DEBUG = true;
+		Debug.Debug.setDebugMode(true);;
 		
 		gp.title = "Test";
 		gp.startState = States.TEST_1;
