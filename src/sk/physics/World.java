@@ -22,8 +22,9 @@ public class World {
 	private float timer = 0.0f;
 	
 	/**
-	 * Adds a body to this horrid world of collision
-	 * @param body The body you wish to add
+	 * Adds a physics body to this world.
+	 * 
+	 * @param body the body you wish to add.
 	 */
 	public void addBody(Body body) {
 		// Make sure there's only one of each body
@@ -32,8 +33,9 @@ public class World {
 	}
 	
 	/**
-	 * Removes the body from the list of bodies
-	 * @param body The body that should be removed
+	 * Removes the specified body from this world if it is contained.
+	 * 
+	 * @param body the body that should be removed.
 	 */
 	public void removeBody(Body body) {
 		bodies.remove(body);
@@ -42,7 +44,8 @@ public class World {
 	/**
 	 * Updates the world, checks for collisions and
 	 * steps forward through the simulation.
-	 * @param delta The time step
+	 * 
+	 * @param delta the time passed since the previous frame.
 	 */
 	public void update(double delta) {
 		timer += delta;
@@ -117,8 +120,9 @@ public class World {
 	}
 	
 	/**
-	 * Adds the entities body to the world
-	 * @param entity the entity you whish to add
+	 * Adds the body of an entity.
+	 * 
+	 * @param entity the entity whose body you wish to add.
 	 */
 	public void addEntity(Entity entity) {
 		addBody(entity.get(Body.class));

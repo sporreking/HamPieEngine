@@ -5,8 +5,8 @@ import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
 
 /**
- * A class that handles collision information,
- * it then uses that information to solve the
+ * A class that handles collision information.
+ * It then uses that information to solve the
  * collision.
  * 
  * @author Ed
@@ -42,14 +42,15 @@ public class CollisionData {
 	 * shouldn't be created outside of the engines
 	 * collision code. 
 	 */
-	public CollisionData() {}
+	protected CollisionData() {}
 
 	/**
-	 * Copy constructor
-	 * @param c The CollisionData object you wish to copy
+	 * Copies the specified collision data.
+	 * 
+	 * @param c the CollisionData object you wish to copy from.
 	 * 
 	 */
-	public CollisionData(CollisionData c) {
+	protected CollisionData(CollisionData c) {
 		normal = c.normal;
 		collisionDepth = c.collisionDepth;
 		normalOwner = c.normalOwner;
@@ -60,11 +61,12 @@ public class CollisionData {
 	
 	/**
 	 * Fuses two arrays into one. This is used with the collision test and runs
-	 * almost every frame and should thus be well optimized. If you know of 
-	 * improvements let me know
-	 * @param a The first array
-	 * @param b The second array
-	 * @return The combined array
+	 * almost every frame. Thus, it should be be well optimized. If you know of 
+	 * improvements, let me know.
+	 * 
+	 * @param a the first array.
+	 * @param b the second array.
+	 * @return the combined array.
 	 */
 	public static Vector2f[] fuseArrays(Vector2f[] a, Vector2f[] b) {
 		Vector2f[] out = new Vector2f[a.length + b.length];
@@ -74,11 +76,12 @@ public class CollisionData {
 	}
 	
 	/**
-	 * Does a Separate Axis Theorem test on the two shapes
-	 * @param a The first shape you want to check collision against
-	 * @param b The second shape you want to check collision against
-	 * @return The collision object with the appropriate 
-	 * data for the collision, returns null if no collision
+	 * Does a <em>Separate Axis Theorem</em> test on the two shapes.
+	 * 
+	 * @param a the first shape you want to check collision against.
+	 * @param b the second shape you want to check collision against.
+	 * @return the collision object with the appropriate 
+	 * data for the collision, returns null if no collision.
 	 */
 	public static CollisionData SATtest(Shape a, Transform ta, Shape b, Transform tb) {
 		Vector2f distance = Vector2f.sub(
@@ -151,9 +154,10 @@ public class CollisionData {
 	}
 	
 	/**
-	 * Solves the collision that is stored in this object.
-	 * 
-	 * This applies friction and bounce to all objects
+	 * Solves the contained collision.
+	 * <p>
+	 * Note: This applies friction and bounce to all objects.
+	 * </p>
 	 */
 	public void solve(float delta) {
 		// If both bodies are dynamic

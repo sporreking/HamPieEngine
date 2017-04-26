@@ -106,7 +106,7 @@ public class TestState implements GameState {
 		//t.scale.x = 1.5f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 1.0f));
+		t_entity.add(0, new Body(1.0f, 100.0f, 1.0f, s_shape));
 		world.addEntity(t_entity);
 		//Root
 		t_root.add(0, "Test1", t_entity);
@@ -118,7 +118,7 @@ public class TestState implements GameState {
 		t.scale.x = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 0.2f));
+		t_entity.add(0, new Body(1.0f, 100.0f, 0.2f, s_shape));
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).setOneWayLeniency(0.6f);
 		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
@@ -135,7 +135,7 @@ public class TestState implements GameState {
 		t.scale.y = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 0.2f));
+		t_entity.add(0, new Body(1.0f, 100.0f, 0.2f, s_shape));
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).addShape(s_shape2);
 		t_entity.get(Body.class).addShape(s_shape3);
