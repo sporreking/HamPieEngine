@@ -302,16 +302,23 @@ public class Body extends Component {
 	 * 
 	 * @param c the collision our superior overlords wish to add.
 	 */
-	protected void addCollision(Collision c) {
-		c = new Collision(c);
-		c.normal = c.normal.clone();
+	protected void addCollision(Collision in) {
+		Collision c = new Collision(in);
+		c.normal = in.normal.clone();
+		c.distance = in.distance.clone();
 		if (c.a == this) {
 			c.other = c.b;
+			
+			if (c.normal.dot(c.distance) > 0.0f) {
+				c.normal.negate();
+			}
 		} else {
 			c.other = c.a;
 			// We need to flip the normal, to make sure it is pointing
-			// away from the body. 
-			c.normal.negate();
+			// away from the body.
+			if (c.normal.dot(c.distance) < 0.0f) {
+				c.normal.negate();
+			}
 		}
 
 		collisions.add(c);

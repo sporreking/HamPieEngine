@@ -94,6 +94,13 @@ public class World {
 							
 							if (c == null) continue;
 							
+							
+							// Skip the collision if the normal is the wrong way
+							if (!b.oneWayCheck(c.collisionDepth, a.getVelocity(), c.normal) || 
+								!a.oneWayCheck(c.collisionDepth, b.getVelocity(), c.normal.clone().negate())) 
+								continue;
+							
+							// Now we sort them
 							if (a.isDynamic()) {
 								c.a = b;
 								c.b = a;
@@ -101,12 +108,7 @@ public class World {
 								c.a = a;
 								c.b = b;
 							}
-							
-							// Skip the collision if the normal is the wrong way
-							if (!b.oneWayCheck(c.collisionDepth, a.getVelocity(), c.normal) || 
-								!a.oneWayCheck(c.collisionDepth, b.getVelocity(), c.normal.clone().negate())) 
-								continue;
-							
+
 							// Add their collisions to the bodies
 							a.addCollision(c);
 							b.addCollision(c);

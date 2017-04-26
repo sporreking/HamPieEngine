@@ -148,9 +148,9 @@ public class Shape {
 			
 			Vector2f normal;
 			if (rightHand) {
-				normal = new Vector2f(-edge.y, edge.x);
+				normal = new Vector2f( edge.y,-edge.x);
 			} else {
-				normal = new Vector2f(edge.y, -edge.x);
+				normal = new Vector2f(-edge.y, edge.x);
 			}
 			normal.normalise();
 			int j = 0;
@@ -222,6 +222,14 @@ public class Shape {
 			b.add(t.position);
 			
 			sk.debug.Debug.drawLine(a, b, color);
+		}
+		
+		// Normals
+		for (Vector2f n : normals) {
+			Vector2f a = getCenter(t);
+			Vector2f b = getCenter(t).clone().add(n.clone().rotate(t.rotation));
+					
+			sk.debug.Debug.drawLine(a, b, (Vector3f) color.scale(0.5f));		;
 		}
 		
 		// The broadphase check

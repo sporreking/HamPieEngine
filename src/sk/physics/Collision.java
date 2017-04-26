@@ -1,6 +1,8 @@
 package sk.physics;
 
 
+import com.sun.media.sound.DirectAudioDeviceProvider;
+
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
 
@@ -20,6 +22,8 @@ public class Collision {
 	// sinking in too much, make it smaller.
 	public static float INACCURACY = 0.001f;
 	
+	// The distance between the two bodies.
+	public Vector2f distance;
 	// The normal
 	public Vector2f normal;
 	// The penetration depth
@@ -84,13 +88,13 @@ public class Collision {
 	 * data for the collision, returns null if no collision.
 	 */
 	public static Collision SATtest(Shape a, Transform ta, Shape b, Transform tb) {
-		Vector2f distance = Vector2f.sub(
+		Collision c = new Collision();
+		c.distance = Vector2f.sub(
 				a.getCenter(ta),
 				b.getCenter(tb),
 				null);
 		
 		
-		Collision collision = new Collision();
 		
 		float max;
 		float min;
@@ -108,7 +112,7 @@ public class Collision {
 			n = Vector2f.rotate(n, i < split ? ta.rotation : tb.rotation, null);
 			
 			// Cast along the normal
-			if (n.dot(distance) < 0.0f) {
+			if (n.dot(c.distance) < 0.0f) {
 				max = a.castAlongMax(n, ta);
 				min = -b.castAlongMin(n, tb);
 			} else {
@@ -116,21 +120,21 @@ public class Collision {
 				min = -a.castAlongMin(n, ta);
 			}
 			
-			dotDistance = Math.abs(Vector2f.dot(distance, n));
+			dotDistance = Math.abs(Vector2f.dot(c.distance, n));
 			// Check along the current axis
 			depth = (max + min) - dotDistance;
 						
 			if (0 < depth) {
 				
-				if (depth < collision.collisionDepth) {
-					collision.collisionDepth = depth;
-					collision.normal = n;
+				if (depth < c.collisionDepth) {
+					c.collisionDepth = depth;
+					c.normal = n;
 
 					// Calculate the collision point
 					if (i < split) {
-						collision.normalOwner = ta;
+						c.normalOwner = ta;
 					} else {
-						collision.normalOwner = tb;
+						c.normalOwner = tb;
 					}
 				}
 			} else {
@@ -140,17 +144,17 @@ public class Collision {
 		
 		// The normal should point from A to B
 		// Find a way to write this without if-s and I will buy you
-		// an ice-cream, seriously
-		if (collision.normalOwner == ta) {
-			if (collision.normal.dot(distance) < 0.0f) {
-				collision.normal.negate();
+		// an ice-cream, seriously.
+		if (c.normalOwner == ta) {
+			if (c.normal.dot(c.distance) < 0.0f) {
+				c.normal.negate();
 			}
 		} else {
-			if (collision.normal.dot(distance) > 0.0f) {
-				collision.normal.negate();
+			if (c.normal.dot(c.distance) > 0.0f) {
+				c.normal.negate();
 			}
 		}
-		return collision;
+		return c;
 	}
 	
 	/**
