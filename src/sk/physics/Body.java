@@ -257,7 +257,9 @@ public class Body extends Component {
 	 * @return the list of collisions.
 	 */
 	public Collision[] getCollisions() {
-		return (Collision[]) collisions.toArray();
+		Collision[] temp = new Collision[collisions.size()];
+		collisions.toArray(temp);
+		return temp;
 	}
 	
 	/**
