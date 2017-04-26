@@ -2,6 +2,7 @@ import java.awt.Font;
 
 import org.lwjgl.glfw.GLFW;
 
+import Debug.Debug;
 import sk.audio.Audio;
 import sk.audio.AudioManager;
 import sk.audio.SineAudio;
@@ -93,13 +94,19 @@ public class TestState implements GameState {
 				new Vector2f(-1.5f, -0.5f),
 				new Vector2f(-0.5f, -0.5f),
 				new Vector2f(-0.5f,  0.5f));
+
+		Shape s_shape3 = new Shape(
+				new Vector2f(-1.5f,  0.5f),
+				new Vector2f(-1.5f, -0.5f),
+				new Vector2f(-2.5f, -1.5f),
+				new Vector2f(-2.5f,  1.5f));
 		
 		Transform t = new Transform();
 		t.position.y = 1.0f;
 		//t.scale.x = 1.5f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 1.0f));
+		t_entity.add(0, new Body(1.0f, 100.0f, 1.0f, s_shape));
 		world.addEntity(t_entity);
 		//Root
 		t_root.add(0, "Test1", t_entity);
@@ -111,8 +118,9 @@ public class TestState implements GameState {
 		t.scale.x = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 0.2f));
+		t_entity.add(0, new Body(1.0f, 100.0f, 0.2f, s_shape));
 		t_entity.get(Body.class).setDynamic(false);
+		t_entity.get(Body.class).setOneWayLeniency(0.6f);
 		t_entity.get(Body.class).addVelocity(new Vector2f(0.1f, -0.01f));
 		world.addEntity(t_entity);
 		
@@ -124,15 +132,16 @@ public class TestState implements GameState {
 		t.position.y = 0.0f;
 		t.position.x = 1.0f;
 		t.scale.x = 2.0f;
+		t.scale.y = 2.0f;
 		t_entity.add(0, t);
 		t_entity.add(0,	new Renderer(Mesh.QUAD));
-		t_entity.add(0, new Body(s_shape, 1.0f, 100.0f, 0.2f));
+		t_entity.add(0, new Body(1.0f, 100.0f, 0.2f, s_shape));
 		t_entity.get(Body.class).setDynamic(false);
 		t_entity.get(Body.class).addShape(s_shape2);
-		world.addEntity(t_entity);
-		
+		t_entity.get(Body.class).addShape(s_shape3);
+		//world.addEntity(t_entity);
 
-		t_root.add(0, "Test3", t_entity);
+		//t_root.add(0, "Test3", t_entity);
 		
 		//Audio
 		AudioManager.start();
@@ -162,7 +171,7 @@ public class TestState implements GameState {
 			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) delta, 0.0f));
 		}
 		
-		if(Keyboard.pressed(GLFW.GLFW_KEY_SPACE)) {
+		if(Keyboard.pressed(GLFW.GLFW_KEY_SPACE) && t_root.gete("Test1").get(Body.class).dotCollisionNormals(new Vector2f(0, 1)) > 0.98) {
 			t_root.gete("Test1").get(Body.class).addForce(new Vector2f(0.0f, 1.0f));
 		}
 		
@@ -171,7 +180,7 @@ public class TestState implements GameState {
 		}
 		
 		t_root.gete("Test1").get(Body.class)._draw();
-		t_root.gete("Test3").get(Body.class)._draw();
+		//t_root.gete("Test3").get(Body.class)._draw();
 		
 		if(Keyboard.down(GLFW.GLFW_KEY_W))
 			Camera.DEFAULT.position.y += speed;
@@ -208,6 +217,7 @@ public class TestState implements GameState {
 	@Override
 	public void draw() {
 		t_root.draw();
+		Debug.draw();
 	}
 	
 	@Override

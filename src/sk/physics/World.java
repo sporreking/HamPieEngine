@@ -3,10 +3,8 @@ package sk.physics;
 import java.util.ArrayList;
 
 import sk.entity.Entity;
-import sk.game.Time;
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
-import sk.util.vector.Vector3f;
 
 /**
  * The World class handles all the collisions in the world, 
@@ -24,8 +22,9 @@ public class World {
 	private float timer = 0.0f;
 	
 	/**
-	 * Adds a body to this horrid world of collision
-	 * @param body The body you wish to add
+	 * Adds a physics body to this world.
+	 * 
+	 * @param body the body you wish to add.
 	 */
 	public void addBody(Body body) {
 		// Make sure there's only one of each body
@@ -34,8 +33,9 @@ public class World {
 	}
 	
 	/**
-	 * Removes the body from the list of bodies
-	 * @param body The body that should be removed
+	 * Removes the specified body from this world if it is contained.
+	 * 
+	 * @param body the body that should be removed.
 	 */
 	public void removeBody(Body body) {
 		bodies.remove(body);
@@ -44,7 +44,8 @@ public class World {
 	/**
 	 * Updates the world, checks for collisions and
 	 * steps forward through the simulation.
-	 * @param delta The time step
+	 * 
+	 * @param delta the time passed since the previous frame.
 	 */
 	public void update(double delta) {
 		timer += delta;
@@ -60,7 +61,6 @@ public class World {
 			}
 			
 			// Check for collisions
-			System.out.println("New...");
 			for (int i = 0; i < bodies.size(); i++) {
 				for (int j = 0; j < i; j++) {
 					Body a = bodies.get(i);
@@ -80,17 +80,13 @@ public class World {
 					for (Shape shapeA : a.getShapes()) {
 						for (Shape shapeB : b.getShapes()) {
 							float bpRange = (float) Math.pow(
-									a.getShape().getBP() * Math.max(
-											ta.scale.x, 
-											ta.scale.y) + 
-									b.getShape().getBP() * Math.max(
-											tb.scale.x,
-											tb.scale.y), 2.0f);
-							float distanceSq = Vector2f.sub(
-									shapeA.getCenter(ta),
-									shapeB.getCenter(tb),
-									null).lengthSquared();
+									shapeA.getBP(ta) + shapeB.getBP(tb), 
+									2.0f);
 							
+							float distanceSq = 
+									shapeA.getCenter(ta)
+									.sub(shapeB.getCenter(tb))
+									.lengthSquared();
 							
 							if (bpRange <= distanceSq) continue;
 							c = CollisionData.SATtest(shapeA, ta, shapeB, tb);
@@ -105,6 +101,9 @@ public class World {
 								c.b = b;
 							}
 							
+							// Skip the collision if the normal is the wrong way
+							if (!b.oneWayCheck(c.normal) || !a.oneWayCheck(c.normal.clone().negate())) continue;
+							
 							// Add their collisions to the bodies
 							a.addCollision(c);
 							b.addCollision(c);
@@ -112,7 +111,7 @@ public class World {
 							// If one of them is a trigger we are done
 							if (a.isTrigger() || b.isTrigger()) return;
 						
-							c.solve();
+							c.solve(stepLength);
 						}
 					}
 				}
@@ -121,8 +120,9 @@ public class World {
 	}
 	
 	/**
-	 * Adds the entities body to the world
-	 * @param entity the entity you whish to add
+	 * Adds the body of an entity.
+	 * 
+	 * @param entity the entity whose body you wish to add.
 	 */
 	public void addEntity(Entity entity) {
 		addBody(entity.get(Body.class));
