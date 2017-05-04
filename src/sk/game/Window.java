@@ -83,7 +83,7 @@ public final class Window {
 			glfwSetWindowPos(window, (primary.width() - getWidth()) / 2,
 					(primary.height() - getHeight()) / 2);
 		} else {
-			if (Game.properties.display < getNumberOfDisplays()) {
+			if (Game.properties.display > getNumberOfDisplays()) {
 				Game.properties.display = 0;
 			}
 			long monitor = glfwGetMonitors().get(Game.properties.display);
@@ -246,7 +246,8 @@ public final class Window {
 		glViewport(0, 0, width, height);
 		aspectRatio = ((float) width) / ((float) height);
 
-		Camera.DEFAULT.updateViewMatrix();
+		if (Game.properties.recalculateViewMatrix)
+			Camera.DEFAULT.updateViewMatrix();
 	}
 	
 	/**

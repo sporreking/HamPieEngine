@@ -26,7 +26,8 @@ public class GameProperties {
 	public Vector4f clearColor = new Vector4f(0, 0, 0, 1);
 	public boolean fullscreen = true;
 	public boolean useDisplayResolution = true;
-	public int display = 0;
+	public int display = 44;
+	public boolean recalculateViewMatrix = true;
 	// Initialization settings
 	public GameState startState;
 }
