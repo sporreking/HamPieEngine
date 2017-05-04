@@ -43,6 +43,9 @@ public class Body extends Component {
 	
 	// If the body should trigger any collision response
 	private boolean trigger = false;
+
+	// If the body should use the physics implemented in the engine.
+	private boolean onlyOverlap = false;
 	
 	// A bit-mask that says with which bodies we should collide
 	private short layer = 256;
@@ -149,6 +152,27 @@ public class Body extends Component {
 		setMass(mass);
 		setFriction(friction);
 		setBounce(bounce);
+	}
+
+	/**
+	 * If the body should skip all the fysics calculations,
+	 * like friction and bounce and only do the overlap check.
+	 *
+	 * @return if it should skip all the fysics calculations.
+	 */
+	public boolean isOnlyOverlap() {
+		return onlyOverlap;
+	}
+
+	/**
+	 * If the body should do the physics calculations.
+	 *
+	 * @param b if the overlap events should be the only thing
+	 * the engine cares about.
+	 */
+	public Body setOnlyOverlap(boolean b) {
+		onlyOverlap = b;
+		return this;
 	}
 	
 	/**

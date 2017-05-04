@@ -56,7 +56,7 @@ public class World {
 			// Update all bodies
 			Vector2f deltaGravity = (Vector2f) gravity.clone().scale((float) stepLength);
 			for (Body a : bodies) {
-				if (a.isDynamic())
+				if (a.isDynamic() && !a.isOnlyOverlap())
 					a.addVelocity(deltaGravity);
 				a.step(stepLength);
 			}
