@@ -1,6 +1,5 @@
 package sk.physics;
 
-
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
 
@@ -92,8 +91,6 @@ public class Collision {
 				b.getCenter(tb),
 				null);
 		
-		
-		
 		float max;
 		float min;
 		float dotDistance = 0.0f;
@@ -170,8 +167,6 @@ public class Collision {
 			normal.negate();
 		}
 		
-		
-		
 		// Move it back
 		Vector2f reverse;
 		if (dynamicCollision) {
@@ -182,7 +177,7 @@ public class Collision {
 		}
 		b.getTransform().position.add(reverse);
 		
-		// Change the velocity
+		// Check the relative velocity
 		Vector2f relativeVelocity = new Vector2f();
 		Vector2f.sub(a.getNextVelocity(), b.getNextVelocity(), relativeVelocity);
 		
@@ -190,6 +185,8 @@ public class Collision {
 		
 		// Make sure we're not moving away, if we are, just return
 		if (0.0f > normalVelocity) return;
+		// If we only want anti overlap
+		if (a.isOnlyOverlap() || b.isOnlyOverlap()) return;
 		
 		// Bounce
 		float bounce = Math.min(a.getBounce(), b.getBounce());
