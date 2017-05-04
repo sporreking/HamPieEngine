@@ -15,13 +15,18 @@ import sk.util.vector.Vector4f;
  *
  */
 public class GameProperties {
-	
+
+	// Window settings
 	public String title = new String();
-	public GameState startState;
-	public boolean resizable = false;
 	public int width = 800;
 	public int height = 600;
+	public boolean resizable = false;
 	public boolean vSync = true;
+	public String icon = new String();
 	public Vector4f clearColor = new Vector4f(0, 0, 0, 1);
-	
+	public boolean fullscreen = true;
+	public boolean useDisplayResolution = true;
+	public int display = 0;
+	// Initialization settings
+	public GameState startState;
 }

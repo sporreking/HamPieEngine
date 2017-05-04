@@ -1,27 +1,53 @@
 package sk.game;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
 import sk.util.io.Mouse;
+import sk.gfx.Camera;
+import sk.gfx.Texture;
 import sk.util.io.Keyboard;
 import sk.util.vector.Vector4f;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
+import javax.imageio.ImageIO;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.Callbacks;
-import org.lwjgl.glfw.GLFW;
+
 
 public final class Window {
 	
 	private static GLFWVidMode primary;
 	
 	private static long window;
+	private boolean fullscreen = false;
 	
 	private static Vector4f clearColor;
+	
+	private static float aspectRatio = 1.0f;
+	
+	public static final class Resize extends GLFWWindowSizeCallback {
+		public static final Resize INSTANCE = new Resize();
+
+		@Override
+		public void invoke(long window, int width, int height) {
+			Window.setSize(width, height);
+		}
+	}
 	
 	/**
 	 * 
@@ -42,20 +68,36 @@ public final class Window {
 		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 		glfwWindowHint(GLFW_RESIZABLE, Game.properties.resizable ? GLFW_TRUE : GLFW_FALSE);
 		
-		//Create window
-		window = glfwCreateWindow(Game.properties.width, Game.properties.height,
-				Game.properties.title, MemoryUtil.NULL, MemoryUtil.NULL);
-		
-		if(window == MemoryUtil.NULL)
-			throw new IllegalStateException("Failed to create window");
-		
-		//Primary screen mode
-		primary = glfwGetVideoMode(glfwGetPrimaryMonitor());
-		
-		//Center window
-		glfwSetWindowPos(window, (primary.width() - getWidth()) / 2,
-				(primary.height() - getHeight()) / 2);
-		
+		if (!Game.properties.fullscreen) {
+			//Create window
+			window = glfwCreateWindow(Game.properties.width, Game.properties.height,
+					Game.properties.title, MemoryUtil.NULL, MemoryUtil.NULL);
+			
+			if(window == MemoryUtil.NULL)
+				throw new IllegalStateException("Failed to create window");
+			
+			//Primary screen mode
+			primary = glfwGetVideoMode(glfwGetPrimaryMonitor());
+			
+			//Center window
+			glfwSetWindowPos(window, (primary.width() - getWidth()) / 2,
+					(primary.height() - getHeight()) / 2);
+		} else {
+			if (Game.properties.display < getNumberOfDisplays()) {
+				Game.properties.display = 0;
+			}
+			long monitor = glfwGetMonitors().get(Game.properties.display);
+			
+			if (Game.properties.useDisplayResolution) {
+				GLFWVidMode mode = glfwGetVideoMode(monitor);
+				Game.properties.width = mode.width();
+				Game.properties.height = mode.height();
+			}
+			
+			//Create window
+			window = glfwCreateWindow(Game.properties.width, Game.properties.height,
+					Game.properties.title, monitor, MemoryUtil.NULL);
+		}
 		//Make context current
 		glfwMakeContextCurrent(window);
 		
@@ -69,12 +111,17 @@ public final class Window {
 		setClearColor(Game.properties.clearColor);
 		
 		//Viewport
-		glViewport(0, 0, Game.properties.width, Game.properties.height);
+		setSize(Game.properties.width, Game.properties.height);
 		
-		//Setup key callback
+		//Icon, if one is desired
+		if (!Game.properties.icon.isEmpty())
+			setIcon(Game.properties.icon);
+		
+		//Setup callbacks
 		Keyboard.INSTANCE.set(window);
 		Mouse.INSTANCE.set(window);
 		Mouse.Cursor.INSTANCE.set(window);
+		Resize.INSTANCE.set(window);
 	}
 	
 	/**
@@ -91,6 +138,116 @@ public final class Window {
 		return width[0];
 	}
 	
+	/**
+	 * 
+	 * Sets the height of the window.
+	 * 
+	 * @param height the new height for the window.
+	 */
+	public static final void setHeight(int height) {
+		int width = getWidth();
+		setSize(width, height);
+	}
+	
+	/**
+	 * 
+	 * Sets the width of the window.
+	 * 
+	 * @param width the new width for the window.
+	 */
+	public static final void setWidth(int width) {
+		int height = getHeight();
+		setSize(width, height);
+	}
+	
+	/**
+	 * 
+	 * Queries GLFW for the number of displays it finds.
+	 * 
+	 * @return the number of displays connected.
+	 */
+	public static final int getNumberOfDisplays() {
+		return glfwGetMonitors().limit();
+	}
+	
+	/**
+	 * 
+	 * Enters borderless full screen on the primary display width its default width and height.
+	 *	
+	 */
+	public static final void enterBorderless() {
+		enterBorderless(0, -1, -1);
+	}
+	
+	/**
+	 * 
+	 * Enters borderless full screen on the specified monitor with the displays width and height.
+	 * 
+	 * @param display the display you want to change to.
+	 */
+	public static final void enterBorderless(int display) {
+		enterBorderless(display, -1, -1);
+	}
+	
+	/**
+	 * 
+	 * Enters borderless full screen on the specified monitor.
+	 * 
+	 * @param display the display index you want to use.
+	 * @param width the width of the new window. -1 for the displays width.
+	 * @param width the height of the new window. -1 for the displays height.
+	 */
+	public static final void enterBorderless(int display, int width, int height) {
+		PointerBuffer monitors = glfwGetMonitors();
+		
+		GLFWVidMode mode = glfwGetVideoMode(monitors.get(display));
+		
+		if (width == -1) {
+			width = mode.width();
+		}
+		
+		if (height == -1) {
+			height = mode.height();
+		}
+		
+		// Without these line, you can't switch displays while in full screen
+		glfwWindowHint(GLFW_DECORATED, 1);
+		glfwSetWindowMonitor(window, monitors.get(display), 0, 0, width, height, mode.refreshRate());
+		glfwWindowHint(GLFW_DECORATED, 0);
+		setSize(width, height);
+	}
+	
+	/**
+	 * 
+	 * Changes the window to be floating if it was full screen, nothing happens otherwise.
+	 * 
+	 * @param x the x position of the window.
+	 * @param y the y position of the window.
+	 * @param width the width of the window.
+	 * @param height the height of the window.
+	 */
+	public static final void enterFloating(int x, int y, int width, int height) {
+		GLFWVidMode mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		
+		// Without these line, you can't switch displays while in full screen
+		glfwWindowHint(GLFW_DECORATED, 1);
+		glfwSetWindowMonitor(window, 0, (mode.width() - width) / 2, (mode.height() - height) / 2, width, height, mode.refreshRate());
+		setSize(width, height);
+	}
+	
+	/**
+	 * 
+	 * Resizes the GLViewport to fir with the new size of display.
+	 * 
+	 * @param width the new width of the viewport.
+	 * @param height the new height of the viewport.
+	 */
+	public static final void setSize(int width, int height) {
+		glViewport(0, 0, width, height);
+		aspectRatio = ((float) width) / ((float) height);
+
+		Camera.DEFAULT.updateViewMatrix();
+	}
 	
 	/**
 	 * 
@@ -108,12 +265,46 @@ public final class Window {
 	
 	/**
 	 * 
+	 * Sets the icon for the application.
+	 * 
+	 * @param path the relative path to the icon you want to use.
+	 */
+	public static final void setIcon(String path) {
+		BufferedImage img = null;
+		
+		try {
+			img = ImageIO.read(new File(path));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
+		int[] pixels = new int[img.getWidth() * img.getHeight()];
+		
+		img.getRGB(0, 0, img.getWidth(), img.getHeight(), pixels, 0, img.getWidth());
+		
+		ByteBuffer bytes = BufferUtils.createByteBuffer(pixels.length * 4);
+		bytes.asIntBuffer().put(pixels);
+		
+		GLFWImage glfwImg =GLFWImage.malloc();
+		glfwImg.set(img.getWidth(), img.getHeight(), bytes);
+		GLFWImage.Buffer buffer = GLFWImage.malloc(1);
+		buffer.put(0, glfwImg);
+		
+		glfwSetWindowIcon(window, buffer);
+
+		buffer.free();
+		glfwImg.free();
+	}
+	
+	/**
+	 * 
 	 * Returns the aspect ratio of the window.
 	 * 
 	 * @return the aspect ratio of the window.
 	 */
 	public static final float getAspectRatio() {
-		return ((float) getWidth()) / ((float) getHeight());
+		return aspectRatio;
 	}
 	
 	/**

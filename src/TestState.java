@@ -10,6 +10,7 @@ import sk.entity.Entity;
 import sk.entity.Root;
 import sk.game.Game;
 import sk.game.Time;
+import sk.game.Window;
 import sk.gamestate.GameState;
 import sk.gfx.Animation;
 import sk.gfx.Camera;
@@ -168,6 +169,19 @@ public class TestState implements GameState {
 		world.update(delta);
 		
 		//((Entity) t_root.get("Test1")).get(Transform.class).rotation += delta * 0.1;
+
+		if(Keyboard.pressed(GLFW.GLFW_KEY_PERIOD)) {
+			Window.enterFloating(0, 0, 300, 400);
+		}
+		
+		if(Keyboard.pressed(GLFW.GLFW_KEY_O)) {
+			System.out.println(Window.getNumberOfDisplays());
+			Window.enterBorderless(1, -1, -1);
+		}
+		
+		if(Keyboard.pressed(GLFW.GLFW_KEY_P)) {
+			Window.enterBorderless(0, -1, -1);
+		}
 		
 		if(Keyboard.down(GLFW.GLFW_KEY_Z)) {
 			((Entity) t_root.get("Test1")).get(Body.class).addForce(new Vector2f((float) delta, 0.0f));
@@ -199,16 +213,6 @@ public class TestState implements GameState {
 		if(Keyboard.down(GLFW.GLFW_KEY_E)) {
 			Camera.DEFAULT.scale.x -= speed;
 			Camera.DEFAULT.scale.y -= speed;
-		}
-		if(Keyboard.down(GLFW.GLFW_KEY_O)) {
-			nd += speed * .1f;
-			AudioManager.setSourcePitch(nd, 0);
-			t_entity.get(GUIButton.class).transform.position.x += speed;
-		}
-		if(Keyboard.down(GLFW.GLFW_KEY_I)) {
-			nd -= speed * .1f;
-			AudioManager.setSourcePitch(nd, 0);
-			t_entity.get(GUIButton.class).transform.position.x -= speed;
 		}
 		
 		if(Keyboard.released(GLFW.GLFW_KEY_ESCAPE))

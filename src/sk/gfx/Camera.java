@@ -77,12 +77,26 @@ public class Camera extends Transform {
 		return v;
 	}
 	
+	/**
+	 * 
+	 * Refreshes the view matrix of the camera when the screen is resized.
+	 * 
+	 * @return
+	 */
+	public Camera updateViewMatrix() {
+		float ratio = Window.getAspectRatio();
+		
+		this.createOrtho(-ratio, ratio, 1, -1);
+		
+		return this;
+	}
+	
 	public static final Camera DEFAULT;
 	public static final Camera GUI;
 	
 	static {
-		DEFAULT = new Camera().createOrtho(-Window.getAspectRatio(),
-				Window.getAspectRatio(), 1, -1);
+		DEFAULT = new Camera();
+		DEFAULT.updateViewMatrix();
 		GUI = new Camera().createOrtho(-1, 1, 1, -1);
 	}
 }
