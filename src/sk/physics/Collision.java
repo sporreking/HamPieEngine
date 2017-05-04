@@ -1,8 +1,6 @@
 package sk.physics;
 
 
-import com.sun.media.sound.DirectAudioDeviceProvider;
-
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
 
