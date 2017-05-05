@@ -234,6 +234,22 @@ public class Body extends Component {
 	}
 	
 	/**
+	 * 
+	 * Returns the first collision with the tag if there is one, null otherwise.
+	 * 
+	 * @param tag the tag you want to search for.
+	 * @return the collision if it exists.
+	 */
+	public Collision getCollisionWithTag(String tag) {
+		for (Collision c : collisions) {
+			if (c.other.getTag().equals(tag)) {
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Performs a dot operation with all collision normals
 	 * against a vector and returns the max result.
 	 * 
