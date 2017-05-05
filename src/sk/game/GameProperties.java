@@ -24,7 +24,7 @@ public class GameProperties {
 	public boolean vSync = true;
 	public String icon = new String();
 	public Vector4f clearColor = new Vector4f(0, 0, 0, 1);
-	public boolean fullscreen = true;
+	public boolean fullscreen = false;
 	public boolean useDisplayResolution = true;
 	public int display = 44;
 	public boolean recalculateViewMatrix = true;
