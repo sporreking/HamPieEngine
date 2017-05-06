@@ -109,7 +109,7 @@ public class Debug {
 		ShaderProgram.ORTHO.sendM4("view", Camera.DEFAULT.getMatrix());
 		ShaderProgram.ORTHO.sendM4("model", new Matrix4f());
 		
-		GL11.glLineWidth(5);
+		GL11.glLineWidth(3);
 		GL11.glPointSize(10);
 
 		for (int i = 0; i < lines.size(); i += 2) {

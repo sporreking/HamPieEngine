@@ -99,6 +99,12 @@ public class GUIFader extends GUIElement{
 		//Send the texture id
 		ShaderProgram.GUI.send1i("t_sampler_on", 2);
 		
+		if (text != null) {
+			text.bind();
+		} else {
+			ShaderProgram.GUI.send1i("b_has_text", 0);
+		}
+		
 		//Bind the mask to the value
 		mask.bind(0);
 		

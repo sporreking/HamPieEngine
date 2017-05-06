@@ -245,7 +245,7 @@ public class Shape {
 		// Normals
 		for (Vector2f n : normals) {
 			Vector2f a = getCenter(t);
-			Vector2f b = getCenter(t).clone().add(n.clone().rotate(t.rotation));
+			Vector2f b = getCenter(t).clone().add(n.clone().rotate(t.rotation).scale(0.1f));
 					
 			sk.debug.Debug.drawLine(a, b, (Vector3f) color.scale(0.5f));		;
 		}

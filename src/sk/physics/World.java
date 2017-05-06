@@ -29,6 +29,7 @@ public class World {
 	 */
 	public void addBody(Body body) {
 		// Make sure there's only one of each body
+		if (body == null) throw new IllegalArgumentException("Body passed to world is null");
 		if (bodies.contains(body)) return;
 		bodies.add(body);
 	}
@@ -62,7 +63,7 @@ public class World {
 			}
 			
 			// Check for collisions
-			for (int i = 0; i < bodies.size(); i++) {
+			for (int i = 1; i < bodies.size(); i++) {
 				for (int j = 0; j < i; j++) {
 					Body a = bodies.get(i);
 					Body b = bodies.get(j);
@@ -72,10 +73,11 @@ public class World {
 					if (!a.isDynamic() && !b.isDynamic()) continue;
 					// Make sure not both are triggers
 					if (a.isTrigger() && b.isTrigger()) continue;
+					// Make sure they don't share parent
+					if (a.getParent() == b.getParent() && a.getParent() != null) continue;
  					
 					
 					Collision c = null;
-					// There are multiple shapes, skip the bread phase and try the bodies
 					Transform ta = a.getTransform();
 					Transform tb = b.getTransform();
 					for (Shape shapeA : a.getShapes()) {
@@ -99,7 +101,7 @@ public class World {
 							if (!b.oneWayCheck(c.collisionDepth, a.getVelocity(), c.normal) || 
 								!a.oneWayCheck(c.collisionDepth, b.getVelocity(), c.normal.clone().negate())) 
 								continue;
-							
+
 							// Now we sort them
 							if (a.isDynamic()) {
 								c.a = b;
@@ -114,7 +116,7 @@ public class World {
 							b.addCollision(c);
 							
 							// If one of them is a trigger we are done
-							if (a.isTrigger() || b.isTrigger()) return;
+							if (a.isTrigger() || b.isTrigger()) continue;
 						
 							c.solve(stepLength);
 						}

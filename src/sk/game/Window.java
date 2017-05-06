@@ -34,7 +34,8 @@ public final class Window {
 	private static GLFWVidMode primary;
 	
 	private static long window;
-	private boolean fullscreen = false;
+	private static boolean fullscreen = false;
+	private static boolean resolutionChange = false;
 	
 	private static Vector4f clearColor;
 	
@@ -212,6 +213,7 @@ public final class Window {
 		
 		// Without these line, you can't switch displays while in full screen
 		glfwWindowHint(GLFW_DECORATED, 1);
+		fullscreen = true;
 		glfwSetWindowMonitor(window, monitors.get(display), 0, 0, width, height, mode.refreshRate());
 		glfwWindowHint(GLFW_DECORATED, 0);
 		setSize(width, height);
@@ -231,8 +233,16 @@ public final class Window {
 		
 		// Without these line, you can't switch displays while in full screen
 		glfwWindowHint(GLFW_DECORATED, 1);
+		fullscreen = false;
 		glfwSetWindowMonitor(window, 0, (mode.width() - width) / 2, (mode.height() - height) / 2, width, height, mode.refreshRate());
 		setSize(width, height);
+	}
+	
+	/**
+	 * @return If the game is in fullscreen mode or not.
+	 */
+	public static final boolean isFullscreen() {
+		return fullscreen;
 	}
 	
 	/**
@@ -246,6 +256,7 @@ public final class Window {
 		glViewport(0, 0, width, height);
 		aspectRatio = ((float) width) / ((float) height);
 
+		resolutionChange = true;
 		if (Game.properties.recalculateViewMatrix)
 			Camera.DEFAULT.updateViewMatrix();
 	}
@@ -310,6 +321,17 @@ public final class Window {
 	
 	/**
 	 * 
+	 * If the current frame as undergone a resolution change.
+	 * 
+	 * @return If the current frame as undergone a resolution change.
+	 * 
+	 */
+	public static final boolean resolutionHasChanged() {
+		return resolutionChange;
+	}
+	
+	/**
+	 * 
 	 * Clears the window with the pre-selected color.
 	 * 
 	 */
@@ -344,6 +366,7 @@ public final class Window {
 	 * 
 	 */
 	public static final void swapBuffers() {
+		resolutionChange = false;
 		glfwSwapBuffers(window);
 	}
 	

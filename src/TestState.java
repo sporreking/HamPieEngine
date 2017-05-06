@@ -33,6 +33,7 @@ import sk.sst.SST;
 import sk.util.io.Keyboard;
 import sk.util.vector.Vector2f;
 import sk.util.vector.Vector3f;
+import sk.util.vector.Vector4f;
 
 public class TestState implements GameState {
 	
@@ -68,7 +69,7 @@ public class TestState implements GameState {
 		t_entity = new Entity();
 		GUIElement e = new GUIElement(0, 0, 0, 0, 300, 300);
 		e.setTexture(t_wood);
-		text = new GUIText("Woo", 300, 300, new Font("Serif", Font.PLAIN, 50), new Vector3f(1.0f, 1.0f, 0.0f), GUITextPosition.TOP, new Vector2f());
+		text = new GUIText("Woo", 300, 300, new Font("Serif", Font.PLAIN, 50), new Vector4f(1.0f, 1.0f, 0.0f, 1.0f), GUITextPosition.TOP, new Vector2f());
 		e.setText(text);
 		t_entity.add(new Transform()).add(e);
 		
@@ -157,7 +158,7 @@ public class TestState implements GameState {
 	float speed = .01f;
 	float nd = 1.0f;
 	float clock = 0;
-	Vector3f color = new Vector3f(0, 1.0f, 0);
+	Vector4f color = new Vector4f(0, 1.0f, 0, 1.0f);
 	@Override
 	public void update(double delta) {
 		
