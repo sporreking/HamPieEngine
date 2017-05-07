@@ -133,7 +133,7 @@ public class TestState implements GameState {
 		//Audio
 		AudioManager.start();
 		
-		t_psych = new Audio("res/audio/elevator.wav");
+		t_psych = new Audio("res/audio/mono.wav");
 		
 		
 		t_entity = new Entity();
@@ -152,7 +152,6 @@ public class TestState implements GameState {
 		world.addEntity(t_entity);
 		
 		t_root.add(0, "Test3", t_entity);
-		//AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
 	}
 	
 	float speed = .01f;
@@ -172,7 +171,8 @@ public class TestState implements GameState {
 		//((Entity) t_root.get("Test1")).get(Transform.class).rotation += delta * 0.1;
 
 		if(Keyboard.pressed(GLFW.GLFW_KEY_PERIOD)) {
-			Window.enterFloating(0, 0, 300, 400);
+			AudioManager.play(0.002f, 1.0f, 
+					1, 0, 0, t_psych);
 		}
 		
 		if(Keyboard.pressed(GLFW.GLFW_KEY_O)) {

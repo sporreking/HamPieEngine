@@ -2,18 +2,20 @@ package sk.audio;
 
 import org.lwjgl.openal.AL10;
 
+import sk.util.vector.Vector3f;
+
 public class AudioSource {
 	
-	private int id;
+	protected int id;
 	
-	private float gain = 1f, pitch = 1f;
+	protected float gain = 1f, pitch = 1f;
 	
-	private float targetPitch = 1f, targetGain = 1f;
+	protected float targetPitch = 1f, targetGain = 1f;
 	
-	private float deltaPitch, deltaGain;
+	protected float deltaPitch, deltaGain;
 	
 	//true if to stop on gain zero and false if to pause
-	private boolean stop;
+	protected boolean stop;
 	
 	/**
 	 * 
@@ -50,9 +52,10 @@ public class AudioSource {
 	 * Called each frame to update gain and pitch.
 	 * 
 	 * @param delta the time passed since the previous update.
+	 * @param globalGain a volume scaler for this 
 	 */
-	public void update(double delta) {
-		adjustGain(delta);
+	public void update(double delta, float globalGain) {
+		adjustGain(delta, globalGain);
 		adjustPitch(delta);
 	}
 	
@@ -62,15 +65,16 @@ public class AudioSource {
 	 * 
 	 * @param delta the time passed since the previous update.
 	 */
-	private void adjustGain(double delta) {
-		if(gain < targetGain) {
-			addGain((float)delta * deltaGain);
-			if(gain >= targetGain)
-				setGain(targetGain);
-		} else if(gain > targetGain) {
-			addGain((float)delta * deltaGain);
-			if(gain <= targetGain) {
-				setGain(targetGain);
+	private void adjustGain(double delta, float globalGain) {
+		float target = targetGain * globalGain;
+		if(gain < target) {
+			addGain((float)delta * deltaGain * globalGain);
+			if(gain >= target)
+				setGain(target);
+		} else if(gain > target) {
+			addGain((float)delta * deltaGain * globalGain);
+			if(gain <= target) {
+				setGain(target);
 				if(gain == 0) {
 					if(stop)
 						stop();
@@ -228,5 +232,17 @@ public class AudioSource {
 	 */
 	public void destroy() {
 		AL10.alDeleteSources(id);
+	}
+	
+	/**
+	 * 
+	 * Sets the position of the audio source.
+	 * 
+	 * @param x the x position.
+	 * @param y the y posiiton.
+	 * @param z the z position.
+	 */
+	public void setPosition(float x, float y, float z) {
+		AL10.alSource3f(id, AL10.AL_POSITION, x, y, z);
 	}
 }

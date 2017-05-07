@@ -10,9 +10,9 @@ import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALC10;
-import org.lwjgl.openal.ALC11;
 import org.lwjgl.openal.ALCCapabilities;
-import org.lwjgl.openal.ALCapabilities;
+
+import sk.util.vector.Vector3f;
 
 
 public class AudioHandler implements Runnable {
@@ -24,6 +24,10 @@ public class AudioHandler implements Runnable {
 	private volatile ArrayList<AudioEvent> loopQueue;
 	
 	volatile boolean running = true;
+	
+	// Global volume
+	private float globalLoopGain = 1;
+	private float globalTempGain = 1;
 	
 	//The sources to play from
 	private AudioSource[] loopSources;
@@ -60,10 +64,10 @@ public class AudioHandler implements Runnable {
 	private void loop() {
 		
 		for(AudioSource a : loopSources)
-			a.update(1d / UPS);
+			a.update(1d / UPS, globalLoopGain);
 		
 		for(AudioSource a : tempSources)
-			a.update(1d / UPS);
+			a.update(1d / UPS, globalTempGain);
 		
 		handleEvents();
 		
@@ -85,36 +89,51 @@ public class AudioHandler implements Runnable {
 			processingQueue = true;
 			for(AudioEvent ae : tempQueue) {
 				boolean terminate = false;
+				// Loop through sources until we find one that is free
 				for(int i = 0; i < AudioManager.MAX_TEMP_SOURCES; i++) {
-					if(!tempSources[i].isPlaying()) {
-						switch(ae.EVENT) {
-						case AudioEvent.EVENT_PLAY:
-							tempSources[i].setGain(ae.PARAMS[0]);
-							tempSources[i].setPitch(ae.PARAMS[1]);
-							tempSources[i].play(ae.AUDIO, ae.LOOP);
-							break;
-						case AudioEvent.EVENT_PLAY_FADE:
-							tempSources[i].setGain(0);
-							tempSources[i].setPitch(ae.PARAMS[1]);
-							tempSources[i].play(ae.AUDIO, ae.LOOP);
-							tempSources[i].fadeGain(ae.PARAMS[0], ae.PARAMS[2]);
-							break;
-						case AudioEvent.EVENT_PAUSE:
-							tempSources[i].pause();
-							break;
-						case AudioEvent.EVENT_PAUSE_FADE:
-							tempSources[i].fadeGain(0, ae.PARAMS[0]);
-							break;
-						case AudioEvent.EVENT_STOP:
-							tempSources[i].stop();
-							break;
-						case AudioEvent.EVENT_STOP_FADE:
-							tempSources[i].fadeGain(0, ae.PARAMS[0]);
-							break;
-						}
-						
+					if(tempSources[i].isPlaying()) continue;
+
+					
+					switch(ae.EVENT) {
+					case AudioEvent.EVENT_PLAY:
+						tempSources[i].setGain(ae.PARAMS[0]);
+						tempSources[i].setPitch(ae.PARAMS[1]);
+						tempSources[i].play(ae.AUDIO, ae.LOOP);
 						break;
-					} else if(i >= AudioManager.MAX_TEMP_SOURCES - 1) {
+					case AudioEvent.EVENT_PLAY_FADE:
+						tempSources[i].setGain(0);
+						tempSources[i].setPitch(ae.PARAMS[1]);
+						tempSources[i].play(ae.AUDIO, ae.LOOP);
+						tempSources[i].fadeGain(ae.PARAMS[0], ae.PARAMS[2]);
+						break;
+					case AudioEvent.EVENT_PAUSE:
+						tempSources[i].pause();
+						break;
+					case AudioEvent.EVENT_PAUSE_FADE:
+						tempSources[i].fadeGain(0, ae.PARAMS[0]);
+						break;
+					case AudioEvent.EVENT_STOP:
+						tempSources[i].stop();
+						break;
+					case AudioEvent.EVENT_STOP_FADE:
+						tempSources[i].fadeGain(0, ae.PARAMS[0]);
+						break;
+					case AudioEvent.EVENT_PLAY_POSITION:
+						tempSources[i].setGain(ae.PARAMS[0]);
+						tempSources[i].setPitch(ae.PARAMS[1]);
+						tempSources[i].play(ae.AUDIO, ae.LOOP);
+						tempSources[i].setPosition(ae.PARAMS[2], ae.PARAMS[3], ae.PARAMS[4]);
+						break;
+					case AudioEvent.EVENT_PLAY_FADE_POSITION:
+						tempSources[i].setGain(0);
+						tempSources[i].setPitch(ae.PARAMS[1]);
+						tempSources[i].play(ae.AUDIO, ae.LOOP);
+						tempSources[i].fadeGain(ae.PARAMS[0], ae.PARAMS[2]);
+						tempSources[i].setPosition(ae.PARAMS[3], ae.PARAMS[4], ae.PARAMS[5]);
+						break;
+					}
+						
+					if(i >= AudioManager.MAX_TEMP_SOURCES - 1) {
 						terminate = true;
 						break;
 					}
@@ -167,6 +186,18 @@ public class AudioHandler implements Runnable {
 			case AudioEvent.EVENT_FADE_PITCH:
 				loopSources[source].fadePitch(ae.PARAMS[1], ae.PARAMS[2]);
 				break;
+			case AudioEvent.EVENT_PLAY_POSITION:
+				tempSources[source].setGain(ae.PARAMS[1]);
+				tempSources[source].setPitch(ae.PARAMS[2]);
+				tempSources[source].play(ae.AUDIO, ae.LOOP);
+				tempSources[source].setPosition(ae.PARAMS[3], ae.PARAMS[4], ae.PARAMS[5]);
+				break;
+			case AudioEvent.EVENT_PLAY_FADE_POSITION:
+				tempSources[source].setGain(0);
+				tempSources[source].setPitch(ae.PARAMS[2]);
+				tempSources[source].play(ae.AUDIO, ae.LOOP);
+				tempSources[source].fadeGain(ae.PARAMS[1], ae.PARAMS[3]);
+				tempSources[source].setPosition(ae.PARAMS[4], ae.PARAMS[5], ae.PARAMS[6]);
 			}
 		}
 		
@@ -239,6 +270,44 @@ public class AudioHandler implements Runnable {
 		ready = true;
 	}
 	
+	/**
+	 * @return the globalLoopGain
+	 */
+	public float getGlobalLoopGain() {
+		return globalLoopGain;
+	}
+
+	/**
+	 * @param globalLoopGain the globalLoopGain to set
+	 */
+	public void setGlobalLoopGain(float globalLoopGain) {
+		this.globalLoopGain = globalLoopGain;
+	}
+
+	/**
+	 * @return the globalTempGain
+	 */
+	public float getGlobalTempGain() {
+		return globalTempGain;
+	}
+
+	/**
+	 * @param globalTempGain the globalTempGain to set
+	 */
+	public void setGlobalTempGain(float globalTempGain) {
+		this.globalTempGain = globalTempGain;
+	}
+
+	/**
+	 * 
+	 * Sets the position of the audioListener.
+	 * 
+	 * @param position the new position of the audio listener.
+	 */
+	public void setListenerPosition(Vector3f position) {
+		AL10.alListener3f(AL10.AL_POSITION, position.x, position.y, position.z);
+	}
+
 	/**
 	 * 
 	 * Adds audio events to the queues.

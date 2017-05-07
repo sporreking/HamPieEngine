@@ -1,5 +1,7 @@
 package sk.audio;
 
+import sk.util.vector.Vector3f;
+
 public final class AudioManager {
 	
 	public static final int MAX_SOURCES = 256;
@@ -24,6 +26,43 @@ public final class AudioManager {
 		while(!audioHandler.ready);
 	}
 	
+	/**
+	 * 
+	 * Sets the position of the audio listener for 3D sound.
+	 * 
+	 * @param position the new position of the listener.
+	 */
+	public static final synchronized void setListenerPosition(Vector3f position) {
+		audioHandler.setListenerPosition(position);
+	}
+	
+	/**
+	 * @return the globalLoopGain
+	 */
+	public float getGlobalLoopGain() {
+		return audioHandler.getGlobalLoopGain();
+	}
+
+	/**
+	 * @param globalLoopGain the globalLoopGain to set
+	 */
+	public void setGlobalLoopGain(float globalLoopGain) {
+		audioHandler.setGlobalLoopGain(globalLoopGain);
+	}
+
+	/**
+	 * @return the globalTempGain
+	 */
+	public float getGlobalTempGain() {
+		return audioHandler.getGlobalTempGain();
+	}
+
+	/**
+	 * @param globalTempGain the globalTempGain to set
+	 */
+	public void setGlobalTempGain(float globalTempGain) {
+		audioHandler.setGlobalTempGain(globalTempGain);
+	}
 	/**
 	 * 
 	 * Returns the thread where the audio handler is running.
@@ -142,6 +181,134 @@ public final class AudioManager {
 					AudioEvent.EVENT_PAUSE_FADE, new float[] { s, duration }));
 	}
 	
+	/**
+	 * 
+	 * Starts playing audio, fading it in over a duration of time.
+	 * The audio will be played once only.
+	 * 
+	 * @param gain the gain to end fading at.
+	 * @param pitch the pitch of the audio.
+	 * @param x the x coordinate.
+	 * @param y the y coordinate.
+	 * @param z the z coordinate.
+	 * @param audio the audio to play.
+	 */
+	public static final synchronized void play(float gain, float pitch,
+			float x, float y, float z, Audio audio) {
+		audioHandler.queue(
+				new AudioEvent(audio, false, true,
+				AudioEvent.EVENT_PLAY_POSITION, new float[] { gain, pitch,
+						x, y, z}));
+	}
+	
+	/**
+	 * 
+	 * Starts playing audio, fading it in over a duration of time.
+	 * The audio will be played once only.
+	 * 
+	 * @param gain the gain to end fading at.
+	 * @param pitch the pitch of the audio.
+	 * @param duration the duration to fade over in seconds.
+	 * @param x the x coordinate.
+	 * @param y the y coordinate.
+	 * @param z the z coordinate.
+	 * @param audio the audio to play.
+	 */
+	public static final synchronized void play(float gain, float pitch,
+			float duration, float x, float y, float z, Audio audio) {
+		audioHandler.queue(
+				new AudioEvent(audio, false, true,
+				AudioEvent.EVENT_PLAY_FADE_POSITION, new float[] { gain, pitch,
+						duration, x, y, z}));
+	}
+	
+	/**
+	 * 
+	 * Starts playing audio, fading it in over a duration of time.
+	 * The audio will be played once only.
+	 * 
+	 * @param gain the gain to end fading at.
+	 * @param pitch the pitch of the audio.
+	 * @param x the x coordinate.
+	 * @param y the y coordinate.
+	 * @param z the z coordinate.
+	 * @param audio the audio to play.
+	 */
+	public static final synchronized void play(float gain, float pitch,
+			float x, float y, float z, Audio...audio) {
+		for (Audio a : audio) {
+			audioHandler.queue(
+				new AudioEvent(a, false, true,
+				AudioEvent.EVENT_PLAY_FADE_POSITION, new float[] { gain, pitch,
+						x, y, z}));
+		}
+	}
+	
+	/**
+	 * 
+	 * Starts playing audio, fading it in over a duration of time.
+	 * The audio will be played once only.
+	 * 
+	 * @param gain the gain to end fading at.
+	 * @param pitch the pitch of the audio.
+	 * @param duration the duration to fade over in seconds.
+	 * @param x the x coordinate.
+	 * @param y the y coordinate.
+	 * @param z the z coordinate.
+	 * @param audio the audio to play.
+	 */
+	public static final synchronized void play(float gain, float pitch,
+			float duration, float x, float y, float z, Audio...audio) {
+		for (Audio a : audio) {
+			audioHandler.queue(
+				new AudioEvent(a, false, true,
+				AudioEvent.EVENT_PLAY_FADE_POSITION, new float[] { gain, pitch,
+						duration, x, y, z}));
+		}
+	}
+
+	/**
+	 * 
+	 * Starts playing audio, fading it in over a duration of time.
+	 * The audio will be played once only.
+	 * 
+	 * @param gain the gain to end fading at.
+	 * @param pitch the pitch of the audio.
+	 * @param duration the duration to fade over in seconds.
+	 * @param x the x coordinate.
+	 * @param y the y coordinate.
+	 * @param z the z coordinate.
+	 * @param audio the audio to play.
+	 */
+	public static final synchronized void playSource(int source, float gain, float pitch,
+		float duration, float x, float y, float z, Audio audio) {
+		audioHandler.queue(
+			new AudioEvent(audio, false, true,
+			AudioEvent.EVENT_PLAY_FADE_POSITION, new float[] { source, gain, pitch,
+						duration, x, y, z}));
+	}
+
+	/**
+	 * 
+	 * Starts playing audio, fading it in over a duration of time.
+	 * The audio will be played once only.
+	 * 
+	 * @param gain the gain to end fading at.
+	 * @param pitch the pitch of the audio.
+	 * @param duration the duration to fade over in seconds.
+	 * @param x the x coordinate.
+	 * @param y the y coordinate.
+	 * @param z the z coordinate.
+	 * @param audio the audio to play.
+	 */
+	public static final synchronized void playSource(int source, float gain, float pitch,
+			float x, float y, float z, boolean loop, Audio audio) {
+		audioHandler.queue(
+			new AudioEvent(audio, loop, false,
+			AudioEvent.EVENT_PLAY_POSITION, new float[] { source, gain, pitch,
+						x, y, z}));
+	}
+
 	/**
 	 * 
 	 * Starts playing audio, fading it in over a duration of time.
