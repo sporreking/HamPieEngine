@@ -172,7 +172,7 @@ public class TestState implements GameState {
 
 		if(Keyboard.pressed(GLFW.GLFW_KEY_PERIOD)) {
 			AudioManager.play(0.002f, 1.0f, 
-					1, 0, 0, t_psych);
+					1, 0, 0, true, t_psych);
 		}
 		
 		if(Keyboard.pressed(GLFW.GLFW_KEY_O)) {
