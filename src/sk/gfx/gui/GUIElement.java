@@ -1,12 +1,12 @@
 package sk.gfx.gui;
 
-import sk.entity.Component;
 import sk.game.Window;
 import sk.gfx.Camera;
 import sk.gfx.Mesh;
 import sk.gfx.Renderer;
 import sk.gfx.ShaderProgram;
 import sk.gfx.Transform;
+import sk.util.vector.Vector4f;
 
 public class GUIElement extends Renderer {
 	
@@ -16,7 +16,8 @@ public class GUIElement extends Renderer {
 	protected int offsetY;
 	protected int width;
 	protected int height;
-	
+	protected Vector4f hue;
+
 	protected GUIText text;
 	
 	/**
@@ -41,10 +42,11 @@ public class GUIElement extends Renderer {
 		this.height = height;
 		
 		text = null;
+		hue = new Vector4f(1, 1, 1, 1);
 		
 		updateTransform();
 	}
-	
+
 	@Override
 	public void init() {
 		if(getParent().has(Transform.class))
@@ -93,9 +95,6 @@ public class GUIElement extends Renderer {
 		this.text = text;
 	}
 	
-	@Override	
-	public void update(double delta) {}
-	
 	@Override
 	public void draw() {
 		setupShader();
@@ -105,7 +104,7 @@ public class GUIElement extends Renderer {
 
 		//Tell the shader that this is NOT a fader
 		ShaderProgram.GUI.send1i("b_is_fader", 0);
-		
+
 		//Bind the texture
 		getTexture().bind(0);
 
@@ -118,11 +117,34 @@ public class GUIElement extends Renderer {
 	}
 	
 	/**
+	 * @return the current hue of the GUIElement.
+	 */
+	public Vector4f getHue() {
+		return hue;
+	}
+
+	/**
+	 * 
+	 * The hue of the GUIElement is multiplied with the original color
+	 * to give the button a different hue or change it's alpha.
+	 * 
+	 * @param hue the new hue of the GUIElemet
+	 */
+	public void setHue(Vector4f hue) {
+		this.hue = hue;
+	}
+	
+	/**
 	 * 
 	 * Called before each draw call to bind the GUI shader program and send it's appropriate matrices.
 	 * 
 	 */
 	protected void setupShader() {
+		// Update the transforms if the resolution has changed since last draw call.
+		if (Window.resolutionHasChanged()) {
+			updateTransform();
+		}
+
 		//Select shader program
 		ShaderProgram.GUI.use();
 		
@@ -134,5 +156,8 @@ public class GUIElement extends Renderer {
 		
 		//Send model matrix
 		ShaderProgram.GUI.sendM4("model", transform.getMatrix());
+
+		//Send in the hue
+		ShaderProgram.GUI.send4f("v_hue", hue.x, hue.y, hue.z, hue.w);
 	}
 }

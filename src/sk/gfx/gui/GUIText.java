@@ -1,18 +1,15 @@
 package sk.gfx.gui;
 
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 
 import sk.gfx.FontTexture;
 import sk.gfx.ShaderProgram;
-import sk.gfx.Texture;
 import sk.util.vector.Vector2f;
 import sk.util.vector.Vector3f;
+import sk.util.vector.Vector4f;
 
 /**
  * GUI text is text that can be drawn on any GUIElement.
@@ -26,15 +23,14 @@ import sk.util.vector.Vector3f;
 public class GUIText {
 	protected String text = "";
 	protected FontTexture texture = null;
-	protected Vector3f color = null;
+	protected Vector4f color = null;
 	protected Font font = null;
 
 	protected int width = -1;
 	protected int height = -1;
 
-	protected Vector2f padding = new Vector2f();
 	protected Vector2f offset = new Vector2f();
-	GUITextPosition position = GUITextPosition.CENTER;
+	protected GUITextPosition position = GUITextPosition.CENTER;
 
 	private boolean dirty = true;;
 
@@ -55,7 +51,7 @@ public class GUIText {
 	 *            the font that should be used
 	 */
 	public GUIText(String text, int width, int height, Font font) {
-		this(text, width, height, font, new Vector3f(), GUITextPosition.CENTER, new Vector2f());
+		this(text, width, height, font, new Vector4f(), GUITextPosition.CENTER, new Vector2f());
 	}
 
 	/**
@@ -70,7 +66,7 @@ public class GUIText {
 	 * @param color
 	 *            a color that will be used for when the font is displayed
 	 */
-	public GUIText(String text, int width, int height, Font font, Vector3f color) {
+	public GUIText(String text, int width, int height, Font font, Vector4f color) {
 		this(text, width, height, font, color, GUITextPosition.CENTER, new Vector2f());
 	}
 
@@ -87,7 +83,7 @@ public class GUIText {
 	 *            the position of the text, enumeration wise
 	 */
 	public GUIText(String text, int width, int height, Font font, GUITextPosition position) {
-		this(text, width, height, font, new Vector3f(), position, new Vector2f());
+		this(text, width, height, font, new Vector4f(), position, new Vector2f());
 	}
 
 	/**
@@ -105,18 +101,18 @@ public class GUIText {
 	 *            a color that will be used for when the font is displayed
 	 * @param position
 	 *            the position of the text, enumeration wise
-	 * @param padding
+	 * @param offset
 	 *            the padding of the text position in pixels
 	 */
-	public GUIText(String text, int width, int height, Font font, Vector3f color, GUITextPosition position,
-			Vector2f padding) {
+	public GUIText(String text, int width, int height, Font font, Vector4f color, GUITextPosition position,
+			Vector2f offset) {
 		this.text = text;
 		this.width = width;
 		this.height = height;
 		this.font = font;
 		this.color = color;
 		this.position = position;
-		this.padding = padding.clone();
+		this.offset = offset.clone();
 		texture = new FontTexture();
 	}
 
@@ -138,7 +134,7 @@ public class GUIText {
 			texture.bind(3);
 
 			// Send in the color
-			ShaderProgram.GUI.send4f("v_text_color", color.x, color.y, color.z, 1.0f);
+			ShaderProgram.GUI.send4f("v_text_color", color.x, color.y, color.z, color.w);
 		} else {
 			// Tell the shader it doesn't need to draw text
 			ShaderProgram.GUI.send1i("b_has_text", 0);
@@ -174,24 +170,28 @@ public class GUIText {
 		int fontWidth = fm.stringWidth(text);
 		int fontHeight = fm.getHeight();
 
+		// Calculate X and Y
 		int x = 0;
 		int y = 0;
 
 		if (position.and(GUITextPosition.TOP)) {
-			y = fontHeight + (int) padding.y;
+			y = fontHeight + (int) offset.y;
 		} else if (position.and(GUITextPosition.BOTTOM)) {
-			y = height - fontHeight / 2 - (int) padding.y;
+			y = height - fontHeight / 2;
 		} else {
 			y = height / 2 + fontHeight / 2;
 		}
 
 		if (position.and(GUITextPosition.LEFT)) {
-			x = (int) padding.x;
+			x = (int) offset.x;
 		} else if (position.and(GUITextPosition.RIGHT)) {
-			x = width - fontWidth - (int) padding.x;
+			x = width - fontWidth;
 		} else {
-			x = width / 2 - fontWidth / 2;
+			x = width / 2 - fontWidth / 2 ;
 		}
+		
+		x += (int) offset.x;
+		y += (int) offset.y;
 
 		texture.generate(text, width, height, x, y, font, new Vector3f(1.0f, 0.0f, 0.0f));
 
@@ -200,10 +200,29 @@ public class GUIText {
 		return this;
 	}
 
+	/**
+	 * 
+	 * The current text.
+	 * 
+	 * @return the current text.
+	 */
 	public String getText() {
 		return text;
 	}
 
+	/**
+	 * 
+	 * Sets the current text but doesn't update if it is the same.
+	 * 
+	 * <p>
+	 * Note that this is an expensive 
+	 * operation since it has to redraw the entire
+	 * font texture.
+	 * </p>
+	 * 
+	 * @param text the new text
+	 * @return
+	 */
 	public GUIText setText(String text) {
 		if (this.text.equals(text)) return this;
 		
@@ -212,59 +231,173 @@ public class GUIText {
 		return this;
 	}
 
-	public Vector3f getColor() {
+	/**
+	 * 
+	 * The current color of the text.
+	 * 
+	 * @return the current color of the text.
+	 */
+	public Vector4f getColor() {
 		return color;
 	}
 
-	public GUIText setColor(Vector3f color) {
+	/**
+	 * 
+	 * Sets the color of the text. This is a
+	 * super cheap operation so feel free to
+	 * run it every frame.
+	 * 
+	 * @param color
+	 * @return
+	 */
+	public GUIText setColor(Vector4f color) {
 		this.color = color;
 		return this;
 	}
 
+	/**
+	 * Returns the font that is used.
+	 * 
+	 * @return the font that is used.
+	 */
 	public Font getFont() {
 		return font;
 	}
 
+	/**
+	 * 
+	 * Sets the font of the text.
+	 * 
+	 * <p>
+	 * Note that this is an expensive 
+	 * operation since it has to redraw the entire
+	 * font texture.
+	 * </p>
+	 * 
+	 * @param font the new font
+	 * @return
+	 */
 	public GUIText setFont(Font font) {
 		this.font = font;
 		dirty = true;
 		return this;
 	}
 
+	/**
+	 * 
+	 * The width of the texture.
+	 * 
+	 * @return the width of the texture.
+	 */
 	public int getWidth() {
 		return width;
 	}
 
+	/**
+	 * 
+	 * Sets the width of the texture. 
+	 * 
+	 * <p>
+	 * Note that this is an expensive 
+	 * operation since it has to redraw the entire
+	 * font texture.
+	 * </p>
+	 * 
+	 * @param width the width of the font texture.
+	 * @return
+	 */
 	public GUIText setWidth(int width) {
 		this.width = width;
 		dirty = true;
 		return this;
 	}
 
+	/***
+	 * 
+	 * The height of the font texture.
+	 * 
+	 * @return the height of the font texture.
+	 */
 	public int getHeight() {
 		return height;
 	}
 
+	/**
+	 * 
+	 * Sets the height of the font texture. 
+	 * 
+	 * <p>
+	 * Note that this is an expensive 
+	 * operation since it has to redraw the entire
+	 * font texture.
+	 * </p>
+	 * 
+	 * @param height the height of the font texture
+	 * @return
+	 */
 	public GUIText setHeight(int height) {
 		this.height = height;
 		dirty = true;
 		return this;
 	}
 
-	public Vector2f getPadding() {
-		return padding;
+	/**
+	 * 
+	 * The offset of the text position.
+	 * 
+	 * @return the offset of the text position.
+	 */
+	public Vector2f getOffset() {
+		return offset;
 	}
 
-	public GUIText setPadding(Vector2f padding) {
-		this.padding = padding;
+	/**
+	 * 
+	 * Sets the offset of the text on the 
+	 * font texture. This is relative to the
+	 * position it has without the offset in
+	 * pixels. 
+	 * 
+	 * <p>
+	 * Note that this is an expensive 
+	 * operation since it has to redraw the entire
+	 * font texture.
+	 * </p>
+	 * 
+	 * @param offset the new position relative to the default.
+	 * @return
+	 */
+	public GUIText setOffset(Vector2f offset) {
+		this.offset = offset;
 		dirty = true;
 		return this;
 	}
 
+	/**
+	 * 
+	 * The position and alignment of the text.
+	 * 
+	 * @return the position and alignment of the text.
+	 */
 	public GUITextPosition getPosition() {
-		return position;
+		return position; 
 	}
 
+	/**
+	 * 
+	 * Sets the position and alignment of the
+	 * text on the font texture.
+	 * 
+	 * <p>
+	 * Note that this is an expensive 
+	 * operation since it has to redraw the entire
+	 * font texture.
+	 * </p>
+	 * 
+	 * @param position the position and alignment.
+	 * @return
+	 */
+	
 	public GUIText setPosition(GUITextPosition position) {
 		this.position = position;
 		dirty = true;

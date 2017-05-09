@@ -88,6 +88,10 @@ public class Vector3f extends Vector implements Serializable, ReadableVector3f, 
 		this.y = y;
 		this.z = z;
 	}
+	
+	public Vector3f clone() {
+		return new Vector3f(this.x, this.y, this.z);
+	}
 
 	/**
 	 * Load from another Vector3f

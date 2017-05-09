@@ -33,6 +33,7 @@ import sk.sst.SST;
 import sk.util.io.Keyboard;
 import sk.util.vector.Vector2f;
 import sk.util.vector.Vector3f;
+import sk.util.vector.Vector4f;
 
 public class TestState implements GameState {
 	
@@ -68,7 +69,7 @@ public class TestState implements GameState {
 		t_entity = new Entity();
 		GUIElement e = new GUIElement(0, 0, 0, 0, 300, 300);
 		e.setTexture(t_wood);
-		text = new GUIText("Woo", 300, 300, new Font("Serif", Font.PLAIN, 50), new Vector3f(1.0f, 1.0f, 0.0f), GUITextPosition.TOP, new Vector2f());
+		text = new GUIText("Woo", 300, 300, new Font("Serif", Font.PLAIN, 50), new Vector4f(1.0f, 1.0f, 0.0f, 1.0f), GUITextPosition.TOP, new Vector2f());
 		e.setText(text);
 		t_entity.add(new Transform()).add(e);
 		
@@ -132,7 +133,7 @@ public class TestState implements GameState {
 		//Audio
 		AudioManager.start();
 		
-		t_psych = new Audio("res/audio/elevator.wav");
+		t_psych = new Audio("res/audio/mono.wav");
 		
 		
 		t_entity = new Entity();
@@ -151,13 +152,12 @@ public class TestState implements GameState {
 		world.addEntity(t_entity);
 		
 		t_root.add(0, "Test3", t_entity);
-		//AudioManager.playSource(0, 1.0f, 1.0f, 5, t_psych, true);
 	}
 	
 	float speed = .01f;
 	float nd = 1.0f;
 	float clock = 0;
-	Vector3f color = new Vector3f(0, 1.0f, 0);
+	Vector4f color = new Vector4f(0, 1.0f, 0, 1.0f);
 	@Override
 	public void update(double delta) {
 		
@@ -171,7 +171,8 @@ public class TestState implements GameState {
 		//((Entity) t_root.get("Test1")).get(Transform.class).rotation += delta * 0.1;
 
 		if(Keyboard.pressed(GLFW.GLFW_KEY_PERIOD)) {
-			Window.enterFloating(0, 0, 300, 400);
+			AudioManager.play(0.002f, 1.0f, 
+					1, 0, 0, true, t_psych);
 		}
 		
 		if(Keyboard.pressed(GLFW.GLFW_KEY_O)) {

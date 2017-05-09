@@ -48,7 +48,7 @@ public class Body extends Component {
 	private boolean onlyOverlap = false;
 	
 	// A bit-mask that says with which bodies we should collide
-	private short layer = 256;
+	private short layer = (short) 0xFFFF;
 	
 	// A reference to the shape
 	private ArrayList<Shape> shapes = new ArrayList<>();
@@ -217,6 +217,27 @@ public class Body extends Component {
 	}
 	
 	/**
+	 * 
+	 * Returns a list of all collisions with the two tags.
+	 * 
+	 * @param tags the tags.
+	 * @return a list of their collisions.
+	 */
+	public Collision[] getCollisionsWithTags(String...tags) {
+		ArrayList<Collision> collisions = new ArrayList<Collision>();
+		for (Collision c : this.collisions) {
+			for (String tag : tags) {
+				if (c.other.getTag().equals(tag)) {
+					collisions.add(c);
+				}
+			}
+		}
+		Collision[] out = new Collision[collisions.size()];
+		collisions.toArray(out);
+		return out;
+	}
+	
+	/**
 	 * Returns a list of all the collisions where the other object
 	 * matches the tag. 
 	 * 
@@ -225,12 +246,30 @@ public class Body extends Component {
 	 */
 	public Collision[] getCollisionsWithTag(String tag) {
 		ArrayList<Collision> collisions = new ArrayList<Collision>();
-		for (Collision c : collisions) {
+		for (Collision c : this.collisions) {
 			if (c.other.getTag().equals(tag)) {
 				collisions.add(c);
 			}
+		}		
+		Collision[] out = new Collision[collisions.size()];
+		collisions.toArray(out);
+		return out;
+	}
+	
+	/**
+	 * 
+	 * Returns the first collision with the tag if there is one, null otherwise.
+	 * 
+	 * @param tag the tag you want to search for.
+	 * @return the collision if it exists.
+	 */
+	public Collision getCollisionWithTag(String tag) {
+		for (Collision c : collisions) {
+			if (c.other.getTag().equals(tag)) {
+				return c;
+			}
 		}
-		return (Collision[]) collisions.toArray();
+		return null;
 	}
 	
 	/**
@@ -305,13 +344,15 @@ public class Body extends Component {
 	/**
 	 * Returns whether or not there are any collisions with the tag.
 	 * 
-	 * @param tag the tag you want to search for.
+	 * @param tags a list of the tags you want to search for.
 	 * @return true if the tag was found on a colliding body.
 	 */
-	public boolean isCollidingWithTag(String tag) {
+	public boolean isCollidingWithTags(String ...tags) {
 		for (Collision c : collisions) {
-			if (c.other.getTag().equals(tag)) {
-				return true;
+			for (String tag : tags) {
+				if (c.other.getTag().equals(tag)) {
+					return true;
+				}
 			}
 		}
 		return false;

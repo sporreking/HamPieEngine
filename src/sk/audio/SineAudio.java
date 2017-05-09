@@ -3,13 +3,8 @@ package sk.audio;
 import static org.lwjgl.openal.AL10.AL_NO_ERROR;
 import static org.lwjgl.openal.AL10.alGetError;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
-import java.nio.channels.FileChannel;
 
 import org.lwjgl.openal.AL10;
 

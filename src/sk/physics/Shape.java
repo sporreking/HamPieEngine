@@ -22,6 +22,24 @@ import sk.util.vector.Vector3f;
  */
 public class Shape {
 	
+	public static final Shape QUAD;
+	
+	static {
+		QUAD = new Shape(
+			new Vector2f(-0.5f,  0.5f),
+			new Vector2f( 0.5f,  0.5f),
+			new Vector2f( 0.5f, -0.5f),
+			new Vector2f(-0.5f, -0.5f));
+	}
+	
+	public static Shape GEN_QUAD(float d) {
+		return new Shape(
+			new Vector2f(-d,  d),
+			new Vector2f( d,  d),
+			new Vector2f( d, -d),
+			new Vector2f(-d, -d));
+	}
+	
 	private Vector2f[] points;
 	private Vector2f[] normals;
 	
@@ -227,7 +245,7 @@ public class Shape {
 		// Normals
 		for (Vector2f n : normals) {
 			Vector2f a = getCenter(t);
-			Vector2f b = getCenter(t).clone().add(n.clone().rotate(t.rotation));
+			Vector2f b = getCenter(t).clone().add(n.clone().rotate(t.rotation).scale(0.1f));
 					
 			sk.debug.Debug.drawLine(a, b, (Vector3f) color.scale(0.5f));		;
 		}
