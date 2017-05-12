@@ -345,7 +345,7 @@ public class Body extends Component {
 	 * Returns whether or not there are any collisions with the tag.
 	 * 
 	 * @param tags a list of the tags you want to search for.
-	 * @return true if the tag was found on a colliding body.
+	 * @return true if the any tag was found on a colliding body.
 	 */
 	public boolean isCollidingWithTags(String ...tags) {
 		for (Collision c : collisions) {

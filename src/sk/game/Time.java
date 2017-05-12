@@ -33,4 +33,15 @@ public final class Time {
 	public static final double getDelta() {
 		return delta;
 	}
+	
+	/**
+	 * 
+	 * Returns the last system time. This can be used for
+	 * animating objects.
+	 * 
+	 * @return the time of the last frame.
+	 */
+	public static final double getTime() {
+		return ((double) (previousTime)) / 1000000000d;
+	}
 }
