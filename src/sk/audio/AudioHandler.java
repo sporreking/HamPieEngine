@@ -119,7 +119,7 @@ public class AudioHandler implements Runnable {
 						tempSources[i].fadeGain(0, ae.PARAMS[0]);
 						break;
 					case AudioEvent.EVENT_PLAY_POSITION:
-						tempSources[i].setGain(ae.PARAMS[0]);
+						tempSources[i].setGain(ae.PARAMS[0] * globalTempGain);
 						tempSources[i].setPitch(ae.PARAMS[1]);
 						tempSources[i].play(ae.AUDIO, ae.LOOP);
 						tempSources[i].setPosition(ae.PARAMS[2], ae.PARAMS[3], ae.PARAMS[4]);
