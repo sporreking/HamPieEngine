@@ -57,9 +57,6 @@ public class AudioSource {
 	 * @param globalGain a volume scaler for this 
 	 */
 	public void update(double delta, float globalGain) {
-		if (ignorePosition) {
-			AL10.alSourcei(id, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
-		}
 		adjustGain(delta, globalGain);
 		adjustPitch(delta);
 	}
@@ -252,6 +249,11 @@ public class AudioSource {
 	}
 
 	public void setIgnorePosition(boolean b) {
+		if (ignorePosition) {
+			AL10.alSourcei(id, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
+			AL10.alSource3f(id, AL10.AL_POSITION, 0, 0, 0);
+		}
+		
 		ignorePosition = b;
 	}
 }
