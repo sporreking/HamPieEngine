@@ -66,28 +66,28 @@ public final class AudioManager {
 	/**
 	 * @return the globalLoopGain
 	 */
-	public float getGlobalLoopGain() {
+	public static final float getGlobalLoopGain() {
 		return audioHandler.getGlobalLoopGain();
 	}
 
 	/**
 	 * @param globalLoopGain the globalLoopGain to set
 	 */
-	public void setGlobalLoopGain(float globalLoopGain) {
+	public static final void setGlobalLoopGain(float globalLoopGain) {
 		audioHandler.setGlobalLoopGain(globalLoopGain);
 	}
 
 	/**
 	 * @return the globalTempGain
 	 */
-	public float getGlobalTempGain() {
+	public static final float getGlobalTempGain() {
 		return audioHandler.getGlobalTempGain();
 	}
 
 	/**
 	 * @param globalTempGain the globalTempGain to set
 	 */
-	public void setGlobalTempGain(float globalTempGain) {
+	public static final void setGlobalTempGain(float globalTempGain) {
 		audioHandler.setGlobalTempGain(globalTempGain);
 	}
 	/**
