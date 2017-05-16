@@ -203,9 +203,10 @@ public class AudioHandler implements Runnable {
 				loopSources[source].setIgnorePosition(ae.PARAMS[1] == 1.0f);
 				break;
 			}
-		loopQueue.clear();
+			loopQueue.clear();
 		
-		processingQueue = false;
+			processingQueue = false;
+		}
 	}
 	
 	/**
