@@ -335,15 +335,6 @@ public final class AudioManager {
 	}
 
 	/**
-	 * If the position of the sound should be ignored and it should be played on the listener.
-	 * @param source the source.
-	 * @param ignore if the position should be ignored or not. 
-	 */
-	public static final synchronized void setIgnorePosition(int source, boolean ignore) {
-		audioHandler.queue(new AudioEvent(null, false, false, AudioEvent.EVENT_IGNORE_POSITION, new float[] {ignore ? 1.0f : 0.0f}));
-	}
-	
-	/**
 	 * 
 	 * Starts playing audio, fading it in over a duration of time.
 	 * The audio will be played once only.

@@ -245,11 +245,4 @@ public class AudioSource {
 	public void setPosition(float x, float y, float z) {
 		AL10.alSource3f(id, AL10.AL_POSITION, x, y, z);
 	}
-
-	public void setIgnorePosition(boolean b) {
-		if (b) {
-			AL10.alSourcei(id, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
-			AL10.alSource3f(id, AL10.AL_POSITION, 0, 0, 0);
-		} 
-	}
 }
