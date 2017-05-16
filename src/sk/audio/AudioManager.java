@@ -202,7 +202,7 @@ public final class AudioManager {
 	 * @param perturb adds just a smidge of random to the sound.
 	 * @param audio the audio to play.
 	 */
-	public static final synchronized void play(float gain, float pitch,
+	public static final synchronized void playOne(float gain, float pitch,
 			float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
@@ -230,7 +230,7 @@ public final class AudioManager {
 	 * @param perturb adds just a smidge of random to the sound.
 	 * @param audio the audio to play.
 	 */
-	public static final synchronized void play(float gain, float pitch,
+	public static final synchronized void playOne(float gain, float pitch,
 			float duration, float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
@@ -260,7 +260,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			float x, float y, float z, boolean perturb, Audio...audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, x, y, z, perturb, a);
+			playOne(gain, pitch, x, y, z, perturb, a);
 		}
 	}
 	
@@ -281,7 +281,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			float duration, float x, float y, float z, boolean perturb, Audio...audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, duration, x, y, z, perturb, a);
+			playOne(gain, pitch, duration, x, y, z, perturb, a);
 		}
 	}
 
@@ -390,7 +390,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			boolean perturb, Audio... audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, perturb, a);
+			playOne (gain, pitch, 0, 0, 0, perturb, a);
 		}
 	}
 	
