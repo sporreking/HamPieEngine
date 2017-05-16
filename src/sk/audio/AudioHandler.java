@@ -200,13 +200,13 @@ public class AudioHandler implements Runnable {
 				loopSources[source].setPosition(ae.PARAMS[4], ae.PARAMS[5], ae.PARAMS[6]);
 				break;
 			case AudioEvent.EVENT_IGNORE_POSITION:
-				loopSources[source].setIgnorePosition(ae.PARAMS[1] == 1.0f);
+				loopSources[source].setIgnorePosition(ae.PARAMS[0] == 1.0f);
 				break;
 			}
-			loopQueue.clear();
-		
-			processingQueue = false;
 		}
+		loopQueue.clear();
+		
+		processingQueue = false;
 	}
 	
 	/**
