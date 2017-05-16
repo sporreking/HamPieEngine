@@ -2,7 +2,6 @@ package sk.gfx.gui;
 
 import sk.entity.component.AABB;
 import sk.game.Window;
-import sk.sst.SST;
 import sk.util.io.Mouse;
 import sk.util.vector.Vector3f;
 
@@ -50,9 +49,6 @@ public class GUIButton extends GUIElement {
 	public void init() {
 		super.init();
 		
-		if(!getParent().has(SST.class))
-			getParent().add(new SST());
-		
 		if(!getParent().has(AABB.class))
 			getParent().add(0, new AABB(2.0f * width / Window.getWidth(),
 					2.0f * height / Window.getHeight(), transform));
@@ -63,22 +59,22 @@ public class GUIButton extends GUIElement {
 		if (Mouse.wasChanged()) {
 			if (getParent().get(AABB.class).contains(Mouse.projectPosition(camera.getProjection()))) {
 				if (!isOver && onHover != null) {
-					onHover.fire(getParent().get(SST.class));
+					onHover.fire();
 				}
 				isOver = true;
 			} else {
 				if (isOver && onUnhover != null) {
-					onUnhover.fire(getParent().get(SST.class));
+					onUnhover.fire();
 				}
 				isOver = false;
 			}
 			
 			if (Mouse.pressed(mouseButton) && isOver && onClick != null) {
-				onClick.fire(getParent().get(SST.class));
+				onClick.fire();
 			}
 			
 			if (Mouse.released(mouseButton) && isOver && onRelease != null) {
-				onRelease.fire(getParent().get(SST.class));
+				onRelease.fire();
 			}
 		}
 	}
