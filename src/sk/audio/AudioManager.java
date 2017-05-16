@@ -9,13 +9,32 @@ public final class AudioManager {
 	public static final int MAX_SOURCES = 256;
 	public static final int MAX_LOOP_SOURCES = 10;
 	public static final int MAX_TEMP_SOURCES = MAX_SOURCES - MAX_LOOP_SOURCES;
-	private static final float RANDOM_GAIN_RANGE = 0.25f;
-	private static final float RANDOM_PITCH_RANGE = 0.1f;
+	private static float RANDOM_GAIN_RANGE = 0.05f;
+	private static float RANDOM_PITCH_RANGE = 0.1f;
 	
 	private static AudioHandler audioHandler;
 	private static Thread thread;
 	private static Random random;
 	
+	/**
+	 * 
+	 * Sets the random range of the gain, in +/- procent.
+	 * 
+	 * @param range the new range.
+	 */
+	public static void setRandomGainRange(float range) {
+		RANDOM_GAIN_RANGE = range;
+	}
+	
+	/**
+	 * 
+	 * Sets the random range of the pitch, in +/- procent
+	 * 
+	 * @param pitch the new pitch.
+	 */
+	public static void setRandomPitchRange(float pitch) {
+		RANDOM_PITCH_RANGE = pitch;
+	}
 	
 	/**
 	 * 
