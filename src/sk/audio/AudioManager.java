@@ -260,7 +260,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			float x, float y, float z, boolean perturb, Audio...audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, x, y, z, perturb, a);
+			playOne(gain, pitch, x, y, z, perturb, a);
 		}
 	}
 	

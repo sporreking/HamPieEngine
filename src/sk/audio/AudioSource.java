@@ -14,8 +14,6 @@ public class AudioSource {
 	
 	protected float deltaPitch, deltaGain;
 	
-	protected boolean ignorePosition = false;
-	
 	//true if to stop on gain zero and false if to pause
 	protected boolean stop;
 	
@@ -249,11 +247,9 @@ public class AudioSource {
 	}
 
 	public void setIgnorePosition(boolean b) {
-		if (ignorePosition) {
+		if (b) {
 			AL10.alSourcei(id, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
 			AL10.alSource3f(id, AL10.AL_POSITION, 0, 0, 0);
-		}
-		
-		ignorePosition = b;
+		} 
 	}
 }
