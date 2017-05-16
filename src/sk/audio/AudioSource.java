@@ -14,6 +14,8 @@ public class AudioSource {
 	
 	protected float deltaPitch, deltaGain;
 	
+	protected boolean ignorePosition = false;
+	
 	//true if to stop on gain zero and false if to pause
 	protected boolean stop;
 	
@@ -55,6 +57,9 @@ public class AudioSource {
 	 * @param globalGain a volume scaler for this 
 	 */
 	public void update(double delta, float globalGain) {
+		if (ignorePosition) {
+			AL10.alSourcei(id, AL10.AL_SOURCE_RELATIVE, AL10.AL_TRUE);
+		}
 		adjustGain(delta, globalGain);
 		adjustPitch(delta);
 	}
@@ -244,5 +249,9 @@ public class AudioSource {
 	 */
 	public void setPosition(float x, float y, float z) {
 		AL10.alSource3f(id, AL10.AL_POSITION, x, y, z);
+	}
+
+	public void setIgnorePosition(boolean b) {
+		ignorePosition = b;
 	}
 }

@@ -202,7 +202,7 @@ public final class AudioManager {
 	 * @param perturb adds just a smidge of random to the sound.
 	 * @param audio the audio to play.
 	 */
-	public static final synchronized void play(float gain, float pitch,
+	public static final synchronized void playOne(float gain, float pitch,
 			float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
@@ -230,7 +230,7 @@ public final class AudioManager {
 	 * @param perturb adds just a smidge of random to the sound.
 	 * @param audio the audio to play.
 	 */
-	public static final synchronized void play(float gain, float pitch,
+	public static final synchronized void playOne(float gain, float pitch,
 			float duration, float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
@@ -281,7 +281,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			float duration, float x, float y, float z, boolean perturb, Audio...audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, duration, x, y, z, perturb, a);
+			playOne(gain, pitch, duration, x, y, z, perturb, a);
 		}
 	}
 
@@ -334,6 +334,15 @@ public final class AudioManager {
 						x, y, z}));
 	}
 
+	/**
+	 * If the position of the sound should be ignored and it should be played on the listener.
+	 * @param source the source.
+	 * @param ignore if the position should be ignored or not. 
+	 */
+	public static final synchronized void setIgnorePosition(int source, boolean ignore) {
+		audioHandler.queue(new AudioEvent(null, false, false, AudioEvent.EVENT_IGNORE_POSITION, new float[] {ignore ? 1.0f : 0.0f}));
+	}
+	
 	/**
 	 * 
 	 * Starts playing audio, fading it in over a duration of time.
@@ -390,7 +399,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			boolean perturb, Audio... audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, perturb, a);
+			playOne(gain, pitch, 0, 0, 0, perturb, a);
 		}
 	}
 	

@@ -187,20 +187,22 @@ public class AudioHandler implements Runnable {
 				loopSources[source].fadePitch(ae.PARAMS[1], ae.PARAMS[2]);
 				break;
 			case AudioEvent.EVENT_PLAY_POSITION:
-				tempSources[source].setGain(ae.PARAMS[1]);
-				tempSources[source].setPitch(ae.PARAMS[2]);
-				tempSources[source].play(ae.AUDIO, ae.LOOP);
-				tempSources[source].setPosition(ae.PARAMS[3], ae.PARAMS[4], ae.PARAMS[5]);
+				loopSources[source].setGain(ae.PARAMS[1]);
+				loopSources[source].setPitch(ae.PARAMS[2]);
+				loopSources[source].play(ae.AUDIO, ae.LOOP);
+				loopSources[source].setPosition(ae.PARAMS[3], ae.PARAMS[4], ae.PARAMS[5]);
 				break;
 			case AudioEvent.EVENT_PLAY_FADE_POSITION:
-				tempSources[source].setGain(0);
-				tempSources[source].setPitch(ae.PARAMS[2]);
-				tempSources[source].play(ae.AUDIO, ae.LOOP);
-				tempSources[source].fadeGain(ae.PARAMS[1], ae.PARAMS[3]);
-				tempSources[source].setPosition(ae.PARAMS[4], ae.PARAMS[5], ae.PARAMS[6]);
+				loopSources[source].setGain(0);
+				loopSources[source].setPitch(ae.PARAMS[2]);
+				loopSources[source].play(ae.AUDIO, ae.LOOP);
+				loopSources[source].fadeGain(ae.PARAMS[1], ae.PARAMS[3]);
+				loopSources[source].setPosition(ae.PARAMS[4], ae.PARAMS[5], ae.PARAMS[6]);
+				break;
+			case AudioEvent.EVENT_IGNORE_POSITION:
+				loopSources[source].setIgnorePosition(ae.PARAMS[1] == 1.0f);
+				break;
 			}
-		}
-		
 		loopQueue.clear();
 		
 		processingQueue = false;

@@ -18,6 +18,7 @@ public class AudioEvent {
 	public static final int EVENT_FADE_PITCH = 7;
 	public static final int EVENT_PLAY_POSITION = 8;
 	public static final int EVENT_PLAY_FADE_POSITION = 9;
+	public static final int EVENT_IGNORE_POSITION = 10;
 	
 	public final Audio AUDIO;
 	public final int EVENT;
