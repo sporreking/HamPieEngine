@@ -10,6 +10,7 @@ import org.lwjgl.system.MemoryUtil;
 import sk.util.io.Mouse;
 import sk.gfx.Camera;
 import sk.gfx.Texture;
+import sk.util.io.Joystick;
 import sk.util.io.Keyboard;
 import sk.util.vector.Vector4f;
 
@@ -123,6 +124,8 @@ public final class Window {
 		Mouse.INSTANCE.set(window);
 		Mouse.Cursor.INSTANCE.set(window);
 		Resize.INSTANCE.set(window);
+		Joystick.INSTANCE.set();
+		Joystick.init();
 	}
 	
 	/**

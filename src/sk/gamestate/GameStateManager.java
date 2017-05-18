@@ -2,6 +2,7 @@ package sk.gamestate;
 
 import sk.game.Game;
 import sk.game.Window;
+import sk.util.io.Joystick;
 import sk.util.io.Keyboard;
 import sk.util.io.Mouse;
 
@@ -47,6 +48,7 @@ public final class GameStateManager {
 		Keyboard._update();
 		Mouse._update();
 		glfwPollEvents();
+		Joystick.pollEvents();
 		
 		currentState.update(delta);
 		
