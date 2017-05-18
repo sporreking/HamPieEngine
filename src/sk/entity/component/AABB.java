@@ -1,7 +1,6 @@
 package sk.entity.component;
 import sk.entity.Component;
 import sk.entity.Entity;
-import sk.gfx.Renderer;
 import sk.gfx.Transform;
 import sk.util.vector.Vector2f;
 

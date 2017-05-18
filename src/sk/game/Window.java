@@ -9,7 +9,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import sk.util.io.Mouse;
 import sk.gfx.Camera;
-import sk.gfx.Texture;
 import sk.util.io.Joystick;
 import sk.util.io.Keyboard;
 import sk.util.vector.Vector4f;
@@ -21,7 +20,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 

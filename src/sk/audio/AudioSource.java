@@ -2,8 +2,6 @@ package sk.audio;
 
 import org.lwjgl.openal.AL10;
 
-import sk.util.vector.Vector3f;
-
 public class AudioSource {
 	
 	protected int id;

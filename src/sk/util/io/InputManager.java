@@ -5,8 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
-import java.util.Set;
-import java.util.stream.Stream;
 
 import org.lwjgl.glfw.GLFW;
 
