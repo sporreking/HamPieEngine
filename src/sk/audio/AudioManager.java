@@ -10,7 +10,7 @@ public final class AudioManager {
 	public static final int MAX_LOOP_SOURCES = 10;
 	public static final int MAX_TEMP_SOURCES = MAX_SOURCES - MAX_LOOP_SOURCES;
 	private static float RANDOM_GAIN_RANGE = 0.05f;
-	private static float RANDOM_PITCH_RANGE = 0.1f;
+	private static float RANDOM_PITCH_RANGE = 0.2f;
 	
 	private static AudioHandler audioHandler;
 	private static Thread thread;
@@ -225,8 +225,8 @@ public final class AudioManager {
 			float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
-			gain *= random.nextFloat() % RANDOM_GAIN_RANGE - RANDOM_GAIN_RANGE / 2 + 1;
-			pitch *= random.nextFloat() % RANDOM_PITCH_RANGE - RANDOM_PITCH_RANGE / 2 + 1;
+			gain += (random.nextFloat() * 2 - 1) * RANDOM_GAIN_RANGE;
+			pitch += (random.nextFloat() * 2 - 1) * RANDOM_PITCH_RANGE;
 		}
 		
 		audioHandler.queue(
@@ -253,8 +253,8 @@ public final class AudioManager {
 			float duration, float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
-			gain *= random.nextFloat() % RANDOM_GAIN_RANGE - RANDOM_GAIN_RANGE / 2 + 1;
-			pitch *= random.nextFloat() % RANDOM_PITCH_RANGE - RANDOM_PITCH_RANGE / 2 + 1;
+			gain += (random.nextFloat() * 2 - 1) * RANDOM_GAIN_RANGE;
+			pitch += (random.nextFloat() * 2 - 1) * RANDOM_PITCH_RANGE;
 		}
 		
 		audioHandler.queue(
@@ -322,8 +322,8 @@ public final class AudioManager {
 		float duration, float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
-			gain *= random.nextFloat() % RANDOM_GAIN_RANGE - RANDOM_GAIN_RANGE / 2 + 1;
-			pitch *= random.nextFloat() % RANDOM_PITCH_RANGE - RANDOM_PITCH_RANGE / 2 + 1;
+			gain += (random.nextFloat() * 2 - 1) * RANDOM_GAIN_RANGE;
+			pitch += (random.nextFloat() * 2 - 1) * RANDOM_PITCH_RANGE;
 		}
 		
 		audioHandler.queue(
@@ -368,8 +368,8 @@ public final class AudioManager {
 			float duration, boolean perturb, Audio... audio) {
 		
 		if (perturb) {
-			gain *= random.nextFloat() % RANDOM_GAIN_RANGE - RANDOM_GAIN_RANGE / 2 + 1;
-			pitch *= random.nextFloat() % RANDOM_PITCH_RANGE - RANDOM_PITCH_RANGE / 2 + 1;
+			gain += (random.nextFloat() * 2 - 1) * RANDOM_GAIN_RANGE;
+			pitch += (random.nextFloat() * 2 - 1) * RANDOM_PITCH_RANGE;
 		}
 		
 		for (Audio a : audio) {

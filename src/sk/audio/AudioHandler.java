@@ -92,7 +92,6 @@ public class AudioHandler implements Runnable {
 				// Loop through sources until we find one that is free
 				for(int i = 0; i < AudioManager.MAX_TEMP_SOURCES; i++) {
 					if(tempSources[i].isPlaying()) continue;
-
 					
 					switch(ae.EVENT) {
 					case AudioEvent.EVENT_PLAY:
@@ -135,8 +134,9 @@ public class AudioHandler implements Runnable {
 						
 					if(i >= AudioManager.MAX_TEMP_SOURCES - 1) {
 						terminate = true;
-						break;
 					}
+					
+					break;
 				}
 				
 				if(terminate)

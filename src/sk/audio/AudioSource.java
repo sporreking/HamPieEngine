@@ -174,7 +174,7 @@ public class AudioSource {
 	 */
 	public void addGain(float gain) {
 		this.gain += gain;
-		//AL10.alSourcef(id, AL10.AL_GAIN, this.gain);
+		AL10.alSourcef(id, AL10.AL_GAIN, this.gain);
 	}
 	
 	/**
@@ -197,7 +197,7 @@ public class AudioSource {
 	public void setGain(float gain) {
 		this.gain = gain;
 		targetGain = gain;
-		//AL10.alSourcef(id, AL10.AL_GAIN, gain);
+		AL10.alSourcef(id, AL10.AL_GAIN, gain);
 	}
 	
 	/**

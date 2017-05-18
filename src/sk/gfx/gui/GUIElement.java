@@ -63,8 +63,8 @@ public class GUIElement extends Renderer {
 	 * @param anchorY the y-coordinate of this GUI element's anchor point.
 	 * @param offsetX the x-axis offset in pixels from the anchor point.
 	 * @param offsetY the y-axis offset in pixels from the anchor point.
-	 * @param width the width of this GUI element in pixels.
-	 * @param height the height of this GUI element in pixels.
+	 * @param WIDTH the width of this GUI element in pixels.
+	 * @param HEIGHT the height of this GUI element in pixels.
 	 */
 	public void updateTransform() {
 		
