@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWJoystickCallback;
@@ -15,6 +16,7 @@ import sk.util.vector.Vector2f;
 
 /**
  * 
+ * 
  * Handles the connection and disconnections of joysticks (controllers).
  * 
  * @author ed
@@ -23,17 +25,47 @@ import sk.util.vector.Vector2f;
 public class Joystick extends GLFWJoystickCallback {
 
 	public static final float DEAD_ZONE = 0.05f;
+	public static final float DIGITAL_THRESHOLD = 0.5f;
 	
 	// Holds the data of a controller
 	public static class JoyData {
 		private enum JoyType {
-			None,
+			NONE,
 			PS4,
 			PS3,
-			Xbox,
+			XBOX,
+			XBOX_ONE,
 		}
 		
-		public JoyType type = JoyType.None;
+		public enum ButtonName {
+			X,
+			Y,
+			A,
+			B,
+			START,
+			SELECT,
+			HOME,
+			RIGHT_BUMPER,
+			LEFT_BUMPER,
+			LEFT,
+			RIGHT,
+			LEFTSTICK_UP,
+			LEFTSTICK_DOWN,
+			LEFTSTICK_LEFT,
+			LEFTSTICK_RIGHT,
+			RIGHTSTICK_UP,
+			RIGHTSTICK_DOWN,
+			RIGHTSTICK_LEFT,
+			RIGHTSTICK_RIGHT,
+			DPAD_UP,
+			DPAD_DOWN,
+			DPAD_LEFT,
+			DPAD_RIGHT,
+			LEFT_TRIGGER,
+			RIGHT_TRIGGER,
+		}
+		
+		public JoyType type = JoyType.NONE;
 
 		// Face buttons
 		public KeyState x, y, a, b = KeyState.RELEASED;
@@ -54,6 +86,109 @@ public class Joystick extends GLFWJoystickCallback {
 		
 		// Stick buttons
 		public KeyState left, right = KeyState.RELEASED;
+		
+		public void set(ButtonName name, KeyState state) {
+			set(name.ordinal(), state);
+		}
+		
+		public void set(int name, KeyState state) {
+			switch (name) {
+			case 0:
+				x = state;
+				return;
+			case 1:
+				y = state;
+				return;
+			case 2:
+				a = state;
+				return;
+			case 3:
+				b = state;
+				return;
+			case 4:
+				start = state;
+				return;
+			case 5:
+				select = state;
+				return;
+			case 6:
+				home = state;
+				return;
+			case 7:
+				rightBumper = state;
+				return;
+			case 8:
+				leftBumper = state;
+				return;
+			case 9:
+				left = state;
+				return;
+			case 10:
+				right = state;
+				return;
+			}
+			
+		}
+		
+		public KeyState get(ButtonName name) {
+			return get(name.ordinal());
+		}
+		
+		public KeyState get(int name) {
+			switch (name) {
+			case 0:
+				return x;
+			case 1:
+				return y;
+			case 2:
+				return a;
+			case 3:
+				return b;
+			case 4:
+				return start;
+			case 5:
+				return select;
+			case 6:
+				return home;
+			case 7:
+				return rightBumper;
+			case 8:
+				return leftBumper;
+			case 9:
+				return left;
+			case 10:
+				return right;
+			case 11:
+				return leftStick.y > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 12:
+				return leftStick.y < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 13:
+				return leftStick.x < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 14:
+				return leftStick.x > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 15:
+				return rightStick.y < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 16:
+				return rightStick.y > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 17:
+				return rightStick.x < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 18:
+				return rightStick.x > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 19:
+				return dpad.y < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 20:
+				return dpad.y > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 21:
+				return dpad.x < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 22:
+				return dpad.x > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 23:
+				return leftTrigger > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 24:
+				return rightTrigger > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;		
+			}			
+			return null;
+		}
 		
 		public String toString() {
 			StringBuilder b = new StringBuilder();
@@ -121,7 +256,7 @@ public class Joystick extends GLFWJoystickCallback {
 	}
 	
 	// A list of all connected controllers
-	private static final HashMap<Integer, JoyData> inputs;
+	private static final HashMap<Integer, JoyData> joysticks;
 	
 	
 	@Override
@@ -133,6 +268,17 @@ public class Joystick extends GLFWJoystickCallback {
 		}
 	}
 	
+	public static JoyData get(int joy) {
+		int i = 0;
+		for (int k : joysticks.keySet()) {
+			if (i == joy) {
+				return joysticks.get(k);
+			}
+			i++;
+		}
+		return null;
+	}
+	
 	/**
 	 * 
 	 * Adds the joystick and adds a keymap to it.
@@ -142,19 +288,34 @@ public class Joystick extends GLFWJoystickCallback {
 	private static void add(int joy) {
 		JoyData c = new JoyData();
 		
-		switch (GLFW.glfwGetJoystickName(joy)) {
-		case "Sony PLAYSTATION(R)3 Controller":
-			c.type = JoyData.JoyType.PS3;
-			break;
-		case "Sony Computer Entertainment Wireless Controller":
-			c.type = JoyData.JoyType.PS4;
-			break;
-		default:
+		String name = GLFW.glfwGetJoystickName(joy); 
+		if (name.contains("Microsoft")) {
+			// It's an Xbox!
+			if (name.contains("One")) {
+				// #Xbone
+				c.type = JoyData.JoyType.XBOX_ONE;
+			} else {
+				// THIS IS NOT SUPPORTED YET!
+				return;
+				// c.type = JoyData.JoyType.XBOX;
+			}
+		} else if (name.contains("Sony")) {
+			if (name.contains("3")) {
+				// PS3
+				c.type = JoyData.JoyType.PS3;
+			} else {
+				// PS4
+				c.type = JoyData.JoyType.PS4;
+			}
+		} else {
+			/*
 			System.out.println(GLFW.glfwGetJoystickName(joy));
 			System.out.println("Unkown controller connected!");
+			 */
+			return;
 		}
 		
-		inputs.put(joy, c);
+		joysticks.put(joy, c);
 	}
 	
 	/**
@@ -164,13 +325,11 @@ public class Joystick extends GLFWJoystickCallback {
 	 * @param joy the joystick id
  	 */
 	private static void remove(int joy) {
-		int i = 0;
-		for (int c : inputs.keySet()) {
+		for (int c : joysticks.keySet()) {
 			if (c == joy) {
-				inputs.remove(c);
+				joysticks.remove(c);
 				break;
 			}
-			i++;
 		}
 	}
 	
@@ -191,7 +350,17 @@ public class Joystick extends GLFWJoystickCallback {
 		for (int i = GLFW.GLFW_JOYSTICK_1; i < GLFW.GLFW_JOYSTICK_LAST; i++) {
 			if (isConnected(i)) {
 				add(i);
-				System.out.println(i + " is connected!");
+			}
+		}
+	}
+	
+	public static final void _update() {
+		for (JoyData data : joysticks.values()) {
+			for (int i = 0; i < JoyData.ButtonName.values().length; i++) {
+				KeyState state = data.get(i);
+				if (state == KeyState.PRESSED) {
+					data.set(i, KeyState.DOWN);
+				}
 			}
 		}
 	}
@@ -200,26 +369,32 @@ public class Joystick extends GLFWJoystickCallback {
 		// Update each connected controller
 		int joy;
 		JoyData data;
-		for (int i : inputs.keySet()) {
-			joy = i;
-			data = inputs.get(i);
-			FloatBuffer axis = GLFW.glfwGetJoystickAxes(joy);
-			ByteBuffer buttons = GLFW.glfwGetJoystickButtons(joy);
-			
-			switch (data.type) {
-			case PS4:
-				handlePS4(data, axis, buttons);
-				break;
-			case PS3:
-				handlePS3(data, axis, buttons);
-				break;
-			case Xbox:
-				handleXbox(data, axis, buttons);
-				break;
-			default:
-				break;
+		try {
+			for (int i : joysticks.keySet()) {
+				joy = i;
+				data = joysticks.get(i);
+				FloatBuffer axis = GLFW.glfwGetJoystickAxes(joy);
+				ByteBuffer buttons = GLFW.glfwGetJoystickButtons(joy);
+				
+				switch (data.type) {
+				case PS4:
+					handlePS4(data, axis, buttons);
+					break;
+				case PS3:
+					handlePS3(data, axis, buttons);
+					break;
+				case XBOX_ONE:
+					handleXboxOne(data, axis, buttons);
+					break;
+				case XBOX:
+					handleXbox(data, axis, buttons);
+				default:
+					break;
+				}
+				
+				//System.out.println(data);
 			}
-		}
+		} catch (Exception e) {/* SILENTLY IGNORE */}
 	}
 
 	/**
@@ -523,8 +698,145 @@ public class Joystick extends GLFWJoystickCallback {
 	 * @param axis the buffer of axis.
 	 * @param buttons the buffer of buttons.
 	 */
+	private static final void handleXboxOne(JoyData data, FloatBuffer axis, ByteBuffer buttons) {
+		/* AXIS */
+		float a;
+		int i = 0;
+		try {
+			while (axis.hasRemaining()) {
+				a = axis.get();
+				
+				switch(i) {
+				case 0:
+					data.leftStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
+					break;
+				case 1:
+					data.leftStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
+					break;
+				case 3:
+					data.rightStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
+					break;
+				case 4:
+					data.rightStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
+					break;
+				case 6:
+					data.dpad.x = Math.abs(a) < DEAD_ZONE ? 0 : Math.signum(a);
+					break;
+				case 7:
+					data.dpad.y = Math.abs(a) < DEAD_ZONE ? 0 : -Math.signum(a);
+					break;
+				case 2:
+					data.leftTrigger = (float) (Math.abs(a) < DEAD_ZONE ? 0 : a * 0.5f + 0.5);
+					break;
+				case 5:
+					data.rightTrigger = (float) (Math.abs(a) < DEAD_ZONE ? 0 : a * 0.5f + 0.5);
+					break;
+				}
+				
+				i++;
+			}
+		} catch (Exception e) {/* SILENTLY IGNORE */}
+	
+		byte b;
+		i = 0;
+		try {
+			while (buttons.hasRemaining()) {
+				b = buttons.get();
+				
+				switch(i) {
+				case 0:
+					if (b == 1 && data.a == KeyState.RELEASED) {
+						data.a = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.a = KeyState.RELEASED;
+					}
+					break;
+				case 1:
+					if (b == 1 && data.b == KeyState.RELEASED) {
+						data.b = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.b = KeyState.RELEASED;
+					}
+					break;
+				case 2:
+					if (b == 1 && data.x == KeyState.RELEASED) {
+						data.x = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.x = KeyState.RELEASED;
+					}
+					break;
+				case 3:
+					if (b == 1 && data.y == KeyState.RELEASED) {
+						data.y = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.y = KeyState.RELEASED;
+					}
+					break;
+				case 4:
+					if (b == 1 && data.leftBumper == KeyState.RELEASED) {
+						data.leftBumper = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.leftBumper = KeyState.RELEASED;
+					}
+					break;
+				case 5:
+					if (b == 1 && data.rightBumper == KeyState.RELEASED) {
+						data.rightBumper = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.rightBumper = KeyState.RELEASED;
+					}
+					break;
+				case 6:
+					if (b == 1 && data.select == KeyState.RELEASED) {
+						data.select = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.select = KeyState.RELEASED;
+					}
+					break;
+				case 7:
+					if (b == 1 && data.start == KeyState.RELEASED) {
+						data.start = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.start = KeyState.RELEASED;
+					}
+					break;
+				case 8:
+					if (b == 1 && data.home == KeyState.RELEASED) {
+						data.home = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.home = KeyState.RELEASED;
+					}
+					break;
+				case 9:
+					if (b == 1 && data.left == KeyState.RELEASED) {
+						data.left = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.left = KeyState.RELEASED;
+					}
+					break;
+				case 10:
+					if (b == 1 && data.right == KeyState.RELEASED) {
+						data.right = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.right = KeyState.RELEASED;
+					}
+					break;
+				}
+				i++;
+			}
+		} catch (Exception e) {/* SILENTLY IGNORE */}
+	}
+	
+	/**
+	 * 
+	 * Handles the controller and formats the data into something more generic.
+	 * 
+	 * @param data the data that is relevant to this controller.
+	 * @param axis the buffer of axis.
+	 * @param buttons the buffer of buttons.
+	 */
 	private static final void handleXbox(JoyData data, FloatBuffer axis, ByteBuffer buttons) {
-		System.out.println("FIX ME!");
+		
 	}
 	
 	/**
@@ -539,9 +851,10 @@ public class Joystick extends GLFWJoystickCallback {
 	}
 	
 	
-	public static final Joystick INSTANCE = new Joystick();
+	public static final Joystick INSTANCE;
 	
 	static {
-		inputs = new HashMap<>();
+		joysticks = new HashMap<>();
+		INSTANCE = new Joystick();
 	}
 }
