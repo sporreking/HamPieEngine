@@ -13,27 +13,62 @@ import org.lwjgl.glfw.GLFW;
 import sk.game.Game;
 import sk.util.io.Keyboard.KeyState;
 
+/**
+ *
+ * This is the general way to handle input in the engine.
+ *
+ * There are some things that are missing, like rebindable keys
+ * from inside the game. 
+ *
+ * But this does offer a way to interface with controllers and 
+ * keyboards without caring which is which.
+ *
+ * @author Ed
+ *
+ */
 public class InputManager {
-	
-	static InputManager INSTANCE = new InputManager();
 	
 	static HashMap<String, KeyState> states = new HashMap<>();
 	static HashMap<String, ArrayList<Input>> inputs = new HashMap<>();
 
+	/**
+	 * 
+	 * A data object that holds information related to input...
+	 *
+	 */
 	static class Input {
+		// If it is a joystick
 		boolean joystick;
+		// The ID of the Joystick
 		int joyID = 0;
+		// Which button it is
 		int button;
 		
+		/**
+		 *
+		 * Creates a new input object that looks for 
+		 * joystick events.
+		 *
+		 * @param id the id of the controller.
+		 * @param key the key/button that activates this input.
+		 */
 		public Input(String id, String key) {
 			joystick = true;
 			joyID = Integer.parseInt(id);
 			button = Joystick.JoyData.ButtonName.valueOf(key.toUpperCase()).ordinal();
 		}
 		
+		/**
+		 *
+		 * Creates a new input object that looks for
+		 * keyboard events.
+		 *
+		 * @param key the key we should look for.
+		 */
 		public Input(String key) {
 			joystick = false;
 			
+			// GLFW uses the keycodes, but the arrow keys doesn't have them, so here we go.
 			if (key.toUpperCase().equals("LEFT")) {
 				button = GLFW.GLFW_KEY_LEFT;
 				return;
@@ -57,19 +92,43 @@ public class InputManager {
 		}
 	}
 	
+	/**
+	 *
+	 * The state of the input.
+	 *
+	 * @param name the name of the input.
+	 */
 	public static KeyState get(String name) {
 		return states.get(name);
 	}
-	
+
+	/**
+	 * 
+	 * If the input was pressed this frame.
+	 *
+	 * @param name the name of the input.
+	 */
 	public static boolean pressed(String name) {
 		return states.get(name) == KeyState.PRESSED;
 	}
 	
+	/**
+	 * 
+	 * If the input is being held down. 
+	 *
+	 * @param name the name of the input.
+	 */
 	public static boolean down(String name) {
 		KeyState state = states.get(name);
 		return state == KeyState.DOWN || state == KeyState.PRESSED;
 	}
 	
+	/**
+	 * 
+	 * Polls the events from the window manager.
+	 *
+	 * This should not be called by you.
+	 */
 	public static void update() {
 		// Change pressed to released
 		for (KeyState state : states.values()) {
@@ -109,6 +168,12 @@ public class InputManager {
 		}
 	}
 	
+	/**
+	 *
+	 * Initalizes the inputManager, this should
+	 * not be called by you.
+	 *
+	 */
 	public static void init() {
 		File file = new File(Game.properties.inputMapPath);
 		if (!file.exists()) {
@@ -142,10 +207,10 @@ public class InputManager {
 				inputs.put(key, new ArrayList<>());
 			}
 			
-			if (tokens[1].equals("J")) {
+			if (tokens[1].charAt(0) == 'J') {
 				// It's a joystick
 				inputs.get(key).add(new Input(tokens[2], tokens[3]));
-			} else if (tokens[1].equals("K")) {
+			} else if (tokens[1].charAt(0) == 'K') {
 				// It's a Keyboard
 				inputs.get(key).add(new Input(tokens[2]));
 			}

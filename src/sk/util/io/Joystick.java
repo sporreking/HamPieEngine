@@ -25,6 +25,7 @@ import sk.util.vector.Vector2f;
 public class Joystick extends GLFWJoystickCallback {
 
 	public static final float DEAD_ZONE = 0.05f;
+	// The threshold when changeing analog to digita.
 	public static final float DIGITAL_THRESHOLD = 0.5f;
 	
 	// Holds the data of a controller
@@ -91,6 +92,13 @@ public class Joystick extends GLFWJoystickCallback {
 			set(name.ordinal(), state);
 		}
 		
+		/**
+		 *
+		 * Sets the state of a specified button.
+		 *
+		 * @param name the identifyer for the specific button.
+		 * @param state the state we want to change to.
+		 */
 		public void set(int name, KeyState state) {
 			switch (name) {
 			case 0:
@@ -130,10 +138,26 @@ public class Joystick extends GLFWJoystickCallback {
 			
 		}
 		
+		/**
+		 *
+		 * Returns the keystate for the specified button.
+		 *
+		 * @param name the identifyer for the specific button.
+		 *
+		 * @return the state of the specified button.
+		 */
 		public KeyState get(ButtonName name) {
 			return get(name.ordinal());
 		}
 		
+		/**
+		 *
+		 * Gets the keystate for the specified button.
+		 *
+		 * @param name the identifyer for the specified button.
+		 *
+		 * @return the state of the specified button.
+		 */
 		public KeyState get(int name) {
 			switch (name) {
 			case 0:
@@ -190,6 +214,14 @@ public class Joystick extends GLFWJoystickCallback {
 			return null;
 		}
 		
+		/**
+		 *
+		 * A way to serialize the controller input,
+		 * mainly used for debugging since there is
+		 * a lot of information in it which can take a 
+		 * while to print.
+		 *
+		 */
 		public String toString() {
 			StringBuilder b = new StringBuilder();
 			b.append("Type: ");
@@ -268,6 +300,13 @@ public class Joystick extends GLFWJoystickCallback {
 		}
 	}
 	
+	/**
+	 *
+	 * Returns the joydata related to the specified joystick.
+	 *
+	 * @param joy the id of the joystick.
+	 *
+	 */
 	public static JoyData get(int joy) {
 		int i = 0;
 		for (int k : joysticks.keySet()) {
@@ -354,6 +393,11 @@ public class Joystick extends GLFWJoystickCallback {
 		}
 	}
 	
+	/**
+	 *
+	 * Updates all the keystates.
+	 *
+	 */
 	public static final void _update() {
 		for (JoyData data : joysticks.values()) {
 			for (int i = 0; i < JoyData.ButtonName.values().length; i++) {
@@ -365,6 +409,11 @@ public class Joystick extends GLFWJoystickCallback {
 		}
 	}
 	
+	/**
+	 *
+	 * Joystick data has to be polled manually, that is what this method does.
+	 *
+	 */
 	public static final void pollEvents() {
 		// Update each connected controller
 		int joy;
