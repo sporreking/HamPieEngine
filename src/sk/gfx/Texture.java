@@ -53,7 +53,7 @@ public class Texture {
 		try {
 			img = ImageIO.read(new File(path));
 		} catch (IOException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		
 		int[] pixels = new int[img.getWidth() * img.getHeight()];

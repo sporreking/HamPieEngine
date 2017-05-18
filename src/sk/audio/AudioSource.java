@@ -9,6 +9,7 @@ public class AudioSource {
 	protected int id;
 	
 	protected float gain = 1f, pitch = 1f;
+	protected float oldGain = 0f;
 	
 	protected float targetPitch = 1f, targetGain = 1f;
 	
@@ -82,6 +83,12 @@ public class AudioSource {
 						pause();
 				}
 			}
+		}
+		
+		// Update the gain if needed
+		if (oldGain != gain) {
+			AL10.alSourcef(id, AL10.AL_PITCH, this.pitch);
+			oldGain = gain;
 		}
 	}
 	

@@ -8,6 +8,7 @@ import sk.gamestate.GameStateManager;
 import sk.gfx.Mesh;
 import sk.gfx.ShaderProgram;
 import sk.gfx.Texture;
+import sk.util.io.InputManager;
 
 /**
  * 
@@ -18,7 +19,7 @@ import sk.gfx.Texture;
  */
 public final class Game {
 	
-	protected static GameProperties properties;
+	public static GameProperties properties;
 	
 	protected static boolean running = false;
 	
@@ -37,6 +38,8 @@ public final class Game {
 		Window.show();
 		
 		GameStateManager.enterState(properties.startState);
+		InputManager.init();
+		
 		
 		running = true;
 		while(running) {

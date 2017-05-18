@@ -193,8 +193,10 @@ public class Vector2f extends Vector implements Serializable, ReadableVector2f, 
 			dest = new Vector2f();
 		}
 		
-		dest.x = (float) ( in.x * Math.cos(angle) - in.y * Math.sin(angle));
-		dest.y = (float) ( in.x * Math.sin(angle) + in.y * Math.cos(angle));			
+		float c = (float) Math.cos(angle);
+		float s = (float) Math.sin(angle);
+		dest.x = in.x * c - in.y * s;
+		dest.y = in.x * s + in.y * c;			
 		return dest;
 	}
 	

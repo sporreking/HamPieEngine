@@ -9,13 +9,32 @@ public final class AudioManager {
 	public static final int MAX_SOURCES = 256;
 	public static final int MAX_LOOP_SOURCES = 10;
 	public static final int MAX_TEMP_SOURCES = MAX_SOURCES - MAX_LOOP_SOURCES;
-	private static final float RANDOM_GAIN_RANGE = 0.25f;
-	private static final float RANDOM_PITCH_RANGE = 0.1f;
+	private static float RANDOM_GAIN_RANGE = 0.05f;
+	private static float RANDOM_PITCH_RANGE = 0.2f;
 	
 	private static AudioHandler audioHandler;
 	private static Thread thread;
 	private static Random random;
 	
+	/**
+	 * 
+	 * Sets the random range of the gain, in +/- procent.
+	 * 
+	 * @param range the new range.
+	 */
+	public static void setRandomGainRange(float range) {
+		RANDOM_GAIN_RANGE = range;
+	}
+	
+	/**
+	 * 
+	 * Sets the random range of the pitch, in +/- procent
+	 * 
+	 * @param pitch the new pitch.
+	 */
+	public static void setRandomPitchRange(float pitch) {
+		RANDOM_PITCH_RANGE = pitch;
+	}
 	
 	/**
 	 * 
@@ -47,28 +66,28 @@ public final class AudioManager {
 	/**
 	 * @return the globalLoopGain
 	 */
-	public float getGlobalLoopGain() {
+	public static final float getGlobalLoopGain() {
 		return audioHandler.getGlobalLoopGain();
 	}
 
 	/**
 	 * @param globalLoopGain the globalLoopGain to set
 	 */
-	public void setGlobalLoopGain(float globalLoopGain) {
+	public static final void setGlobalLoopGain(float globalLoopGain) {
 		audioHandler.setGlobalLoopGain(globalLoopGain);
 	}
 
 	/**
 	 * @return the globalTempGain
 	 */
-	public float getGlobalTempGain() {
+	public static final float getGlobalTempGain() {
 		return audioHandler.getGlobalTempGain();
 	}
 
 	/**
 	 * @param globalTempGain the globalTempGain to set
 	 */
-	public void setGlobalTempGain(float globalTempGain) {
+	public static final void setGlobalTempGain(float globalTempGain) {
 		audioHandler.setGlobalTempGain(globalTempGain);
 	}
 	/**
@@ -202,12 +221,12 @@ public final class AudioManager {
 	 * @param perturb adds just a smidge of random to the sound.
 	 * @param audio the audio to play.
 	 */
-	public static final synchronized void play(float gain, float pitch,
+	public static final synchronized void playOne(float gain, float pitch,
 			float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
-			gain *= random.nextFloat() % RANDOM_GAIN_RANGE - RANDOM_GAIN_RANGE / 2 + 1;
-			pitch *= random.nextFloat() % RANDOM_PITCH_RANGE - RANDOM_PITCH_RANGE / 2 + 1;
+			gain += (random.nextFloat() * 2 - 1) * RANDOM_GAIN_RANGE;
+			pitch += (random.nextFloat() * 2 - 1) * RANDOM_PITCH_RANGE;
 		}
 		
 		audioHandler.queue(
@@ -230,12 +249,12 @@ public final class AudioManager {
 	 * @param perturb adds just a smidge of random to the sound.
 	 * @param audio the audio to play.
 	 */
-	public static final synchronized void play(float gain, float pitch,
+	public static final synchronized void playOne(float gain, float pitch,
 			float duration, float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
-			gain *= random.nextFloat() % RANDOM_GAIN_RANGE - RANDOM_GAIN_RANGE / 2 + 1;
-			pitch *= random.nextFloat() % RANDOM_PITCH_RANGE - RANDOM_PITCH_RANGE / 2 + 1;
+			gain += (random.nextFloat() * 2 - 1) * RANDOM_GAIN_RANGE;
+			pitch += (random.nextFloat() * 2 - 1) * RANDOM_PITCH_RANGE;
 		}
 		
 		audioHandler.queue(
@@ -260,7 +279,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			float x, float y, float z, boolean perturb, Audio...audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, x, y, z, perturb, a);
+			playOne(gain, pitch, x, y, z, perturb, a);
 		}
 	}
 	
@@ -281,7 +300,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			float duration, float x, float y, float z, boolean perturb, Audio...audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, duration, x, y, z, perturb, a);
+			playOne(gain, pitch, duration, x, y, z, perturb, a);
 		}
 	}
 
@@ -303,8 +322,8 @@ public final class AudioManager {
 		float duration, float x, float y, float z, boolean perturb, Audio audio) {
 		
 		if (perturb) {
-			gain *= random.nextFloat() % RANDOM_GAIN_RANGE - RANDOM_GAIN_RANGE / 2 + 1;
-			pitch *= random.nextFloat() % RANDOM_PITCH_RANGE - RANDOM_PITCH_RANGE / 2 + 1;
+			gain += (random.nextFloat() * 2 - 1) * RANDOM_GAIN_RANGE;
+			pitch += (random.nextFloat() * 2 - 1) * RANDOM_PITCH_RANGE;
 		}
 		
 		audioHandler.queue(
@@ -349,8 +368,8 @@ public final class AudioManager {
 			float duration, boolean perturb, Audio... audio) {
 		
 		if (perturb) {
-			gain *= random.nextFloat() % RANDOM_GAIN_RANGE - RANDOM_GAIN_RANGE / 2 + 1;
-			pitch *= random.nextFloat() % RANDOM_PITCH_RANGE - RANDOM_PITCH_RANGE / 2 + 1;
+			gain += (random.nextFloat() * 2 - 1) * RANDOM_GAIN_RANGE;
+			pitch += (random.nextFloat() * 2 - 1) * RANDOM_PITCH_RANGE;
 		}
 		
 		for (Audio a : audio) {
@@ -390,7 +409,7 @@ public final class AudioManager {
 	public static final synchronized void play(float gain, float pitch,
 			boolean perturb, Audio... audio) {
 		for (Audio a : audio) {
-			play(gain, pitch, perturb, a);
+			playOne (gain, pitch, 0, 0, 0, perturb, a);
 		}
 	}
 	

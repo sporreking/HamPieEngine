@@ -30,4 +30,6 @@ public class GameProperties {
 	public boolean recalculateViewMatrix = true;
 	// Initialization settings
 	public GameState startState;
+	// Input map position
+	public String inputMapPath = "res/input";
 }

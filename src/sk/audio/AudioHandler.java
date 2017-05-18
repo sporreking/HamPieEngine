@@ -92,7 +92,6 @@ public class AudioHandler implements Runnable {
 				// Loop through sources until we find one that is free
 				for(int i = 0; i < AudioManager.MAX_TEMP_SOURCES; i++) {
 					if(tempSources[i].isPlaying()) continue;
-
 					
 					switch(ae.EVENT) {
 					case AudioEvent.EVENT_PLAY:
@@ -119,7 +118,7 @@ public class AudioHandler implements Runnable {
 						tempSources[i].fadeGain(0, ae.PARAMS[0]);
 						break;
 					case AudioEvent.EVENT_PLAY_POSITION:
-						tempSources[i].setGain(ae.PARAMS[0]);
+						tempSources[i].setGain(ae.PARAMS[0] * globalTempGain);
 						tempSources[i].setPitch(ae.PARAMS[1]);
 						tempSources[i].play(ae.AUDIO, ae.LOOP);
 						tempSources[i].setPosition(ae.PARAMS[2], ae.PARAMS[3], ae.PARAMS[4]);
@@ -135,8 +134,9 @@ public class AudioHandler implements Runnable {
 						
 					if(i >= AudioManager.MAX_TEMP_SOURCES - 1) {
 						terminate = true;
-						break;
 					}
+					
+					break;
 				}
 				
 				if(terminate)
@@ -187,17 +187,17 @@ public class AudioHandler implements Runnable {
 				loopSources[source].fadePitch(ae.PARAMS[1], ae.PARAMS[2]);
 				break;
 			case AudioEvent.EVENT_PLAY_POSITION:
-				tempSources[source].setGain(ae.PARAMS[1]);
-				tempSources[source].setPitch(ae.PARAMS[2]);
-				tempSources[source].play(ae.AUDIO, ae.LOOP);
-				tempSources[source].setPosition(ae.PARAMS[3], ae.PARAMS[4], ae.PARAMS[5]);
+				loopSources[source].setGain(ae.PARAMS[1]);
+				loopSources[source].setPitch(ae.PARAMS[2]);
+				loopSources[source].play(ae.AUDIO, ae.LOOP);
+				loopSources[source].setPosition(ae.PARAMS[3], ae.PARAMS[4], ae.PARAMS[5]);
 				break;
 			case AudioEvent.EVENT_PLAY_FADE_POSITION:
-				tempSources[source].setGain(0);
-				tempSources[source].setPitch(ae.PARAMS[2]);
-				tempSources[source].play(ae.AUDIO, ae.LOOP);
-				tempSources[source].fadeGain(ae.PARAMS[1], ae.PARAMS[3]);
-				tempSources[source].setPosition(ae.PARAMS[4], ae.PARAMS[5], ae.PARAMS[6]);
+				loopSources[source].setGain(0);
+				loopSources[source].setPitch(ae.PARAMS[2]);
+				loopSources[source].play(ae.AUDIO, ae.LOOP);
+				loopSources[source].fadeGain(ae.PARAMS[1], ae.PARAMS[3]);
+				loopSources[source].setPosition(ae.PARAMS[4], ae.PARAMS[5], ae.PARAMS[6]);
 			}
 		}
 		
