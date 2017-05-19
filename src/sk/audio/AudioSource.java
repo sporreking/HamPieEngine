@@ -2,8 +2,6 @@ package sk.audio;
 
 import org.lwjgl.openal.AL10;
 
-import sk.util.vector.Vector3f;
-
 public class AudioSource {
 	
 	protected int id;
@@ -174,7 +172,7 @@ public class AudioSource {
 	 */
 	public void addGain(float gain) {
 		this.gain += gain;
-		//AL10.alSourcef(id, AL10.AL_GAIN, this.gain);
+		AL10.alSourcef(id, AL10.AL_GAIN, this.gain);
 	}
 	
 	/**
@@ -197,7 +195,7 @@ public class AudioSource {
 	public void setGain(float gain) {
 		this.gain = gain;
 		targetGain = gain;
-		//AL10.alSourcef(id, AL10.AL_GAIN, gain);
+		AL10.alSourcef(id, AL10.AL_GAIN, gain);
 	}
 	
 	/**

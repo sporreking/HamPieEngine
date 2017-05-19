@@ -4,7 +4,6 @@ import sk.entity.component.AABB;
 import sk.game.Window;
 import sk.sst.SST;
 import sk.util.io.Mouse;
-import sk.util.vector.Vector3f;
 
 public class GUIButton extends GUIElement {
 

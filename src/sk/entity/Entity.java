@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
 
-import sk.gfx.Renderer;
-import sk.gfx.Transform;
-
 public class Entity extends Node {
 	
 	private TreeMap<Integer, ArrayList<Component>> components;

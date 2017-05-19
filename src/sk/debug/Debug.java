@@ -1,14 +1,11 @@
 package sk.debug;
 import java.util.ArrayList;
 
-import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL20;
 
 import sk.game.Window;
 import sk.gfx.Camera;
 import sk.gfx.ShaderProgram;
-import sk.gfx.Texture;
 import sk.util.vector.Matrix4f;
 import sk.util.vector.Vector2f;
 import sk.util.vector.Vector3f;

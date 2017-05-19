@@ -3,21 +3,18 @@ package sk.util.io;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWJoystickCallback;
-
-import com.sun.xml.internal.ws.encoding.soap.SOAP12Constants;
 
 import sk.util.io.Keyboard.KeyState;
 import sk.util.vector.Vector2f;
 
 /**
  * 
- * 
  * Handles the connection and disconnections of joysticks (controllers).
+ * 
+ * Note: The home button doesn't work on windows.
  * 
  * @author ed
  *
@@ -25,6 +22,7 @@ import sk.util.vector.Vector2f;
 public class Joystick extends GLFWJoystickCallback {
 
 	public static final float DEAD_ZONE = 0.05f;
+	// The threshold when changeing analog to digita.
 	public static final float DIGITAL_THRESHOLD = 0.5f;
 	
 	// Holds the data of a controller
@@ -91,6 +89,13 @@ public class Joystick extends GLFWJoystickCallback {
 			set(name.ordinal(), state);
 		}
 		
+		/**
+		 *
+		 * Sets the state of a specified button.
+		 *
+		 * @param name the identifyer for the specific button.
+		 * @param state the state we want to change to.
+		 */
 		public void set(int name, KeyState state) {
 			switch (name) {
 			case 0:
@@ -130,10 +135,26 @@ public class Joystick extends GLFWJoystickCallback {
 			
 		}
 		
+		/**
+		 *
+		 * Returns the keystate for the specified button.
+		 *
+		 * @param name the identifyer for the specific button.
+		 *
+		 * @return the state of the specified button.
+		 */
 		public KeyState get(ButtonName name) {
 			return get(name.ordinal());
 		}
 		
+		/**
+		 *
+		 * Gets the keystate for the specified button.
+		 *
+		 * @param name the identifyer for the specified button.
+		 *
+		 * @return the state of the specified button.
+		 */
 		public KeyState get(int name) {
 			switch (name) {
 			case 0:
@@ -190,6 +211,14 @@ public class Joystick extends GLFWJoystickCallback {
 			return null;
 		}
 		
+		/**
+		 *
+		 * A way to serialize the controller input,
+		 * mainly used for debugging since there is
+		 * a lot of information in it which can take a 
+		 * while to print.
+		 *
+		 */
 		public String toString() {
 			StringBuilder b = new StringBuilder();
 			b.append("Type: ");
@@ -268,6 +297,13 @@ public class Joystick extends GLFWJoystickCallback {
 		}
 	}
 	
+	/**
+	 *
+	 * Returns the joydata related to the specified joystick.
+	 *
+	 * @param joy the id of the joystick.
+	 *
+	 */
 	public static JoyData get(int joy) {
 		int i = 0;
 		for (int k : joysticks.keySet()) {
@@ -289,17 +325,17 @@ public class Joystick extends GLFWJoystickCallback {
 		JoyData c = new JoyData();
 		
 		String name = GLFW.glfwGetJoystickName(joy); 
-		if (name.contains("Microsoft")) {
+		System.out.println(name);
+		if (name.contains("Xbox")) {
 			// It's an Xbox!
 			if (name.contains("One")) {
 				// #Xbone
 				c.type = JoyData.JoyType.XBOX_ONE;
 			} else {
 				// THIS IS NOT SUPPORTED YET!
-				return;
-				// c.type = JoyData.JoyType.XBOX;
+				c.type = JoyData.JoyType.XBOX;
 			}
-		} else if (name.contains("Sony")) {
+		} else if (name.contains("Sony") || name.contains("Wireless")) {
 			if (name.contains("3")) {
 				// PS3
 				c.type = JoyData.JoyType.PS3;
@@ -354,6 +390,11 @@ public class Joystick extends GLFWJoystickCallback {
 		}
 	}
 	
+	/**
+	 *
+	 * Updates all the keystates.
+	 *
+	 */
 	public static final void _update() {
 		for (JoyData data : joysticks.values()) {
 			for (int i = 0; i < JoyData.ButtonName.values().length; i++) {
@@ -365,6 +406,11 @@ public class Joystick extends GLFWJoystickCallback {
 		}
 	}
 	
+	/**
+	 *
+	 * Joystick data has to be polled manually, that is what this method does.
+	 *
+	 */
 	public static final void pollEvents() {
 		// Update each connected controller
 		int joy;
@@ -406,46 +452,11 @@ public class Joystick extends GLFWJoystickCallback {
 	 * @param buttons the buffer of buttons.
 	 */
 	private static final void handlePS4(JoyData data, FloatBuffer axis, ByteBuffer buttons) {
-		/* AXIS */
-		float a;
-		int i = 0;
-		try {
-			while (axis.hasRemaining()) {
-				a = axis.get();
-
-				
-				switch(i) {
-				case 0:
-					data.leftStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
-					break;
-				case 1:
-					data.leftStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
-					break;
-				case 2:
-					data.rightStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
-					break;
-				case 5:
-					data.rightStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
-					break;
-				case 6:
-					data.dpad.x = Math.abs(a) < DEAD_ZONE ? 0 : Math.signum(a);
-					break;
-				case 7:
-					data.dpad.y = Math.abs(a) < DEAD_ZONE ? 0 : -Math.signum(a);
-					break;
-				case 3:
-					data.leftTrigger = (float) (Math.abs(a) < DEAD_ZONE ? 0 : a * 0.5f + 0.5);
-					break;
-				case 4:
-					data.rightTrigger = (float) (Math.abs(a) < DEAD_ZONE ? 0 : a * 0.5f + 0.5);
-					break;
-				}
-				i++;
-			}
-		} catch (Exception e) {/* SILENTLY IGNORE */}
+		
+		data.dpad.scale(0);
 		
 		byte b;
-		i = 0;
+		int i = 0;
 		try {
 			while (buttons.hasRemaining()) {
 				b = buttons.get();
@@ -528,10 +539,67 @@ public class Joystick extends GLFWJoystickCallback {
 						data.home = KeyState.RELEASED;
 					}
 					break;
+					/* Windows stuff, IDK */
+				case 14:
+					if (b == 1)
+						data.dpad.y += 1;
+					break;
+				case 15:
+					if (b == 1)
+						data.dpad.x += 1;
+					break;
+				case 16:
+					if (b == 1)
+						data.dpad.y -= 1;
+					break;
+				case 17:
+					if (b == 1)
+						data.dpad.x -= 1;
+					break;
 				}
 				i++;
 			}
 		} catch (Exception e) {/* SILENTLY IGNORE */}
+		
+		/* AXIS */
+		float a;
+		i = 0;
+		try {
+			while (axis.hasRemaining()) {
+				a = axis.get();
+
+				
+				switch(i) {
+				case 0:
+					data.leftStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
+					break;
+				case 1:
+					data.leftStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
+					break;
+				case 2:
+					data.rightStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
+					break;
+				case 5:
+					data.rightStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
+					break;
+				case 6:
+					data.dpad.x = Math.abs(a) < DEAD_ZONE ? 0 : Math.signum(a);
+					break;
+				case 7:
+					data.dpad.y = Math.abs(a) < DEAD_ZONE ? 0 : -Math.signum(a);
+					break;
+				case 3:
+					data.leftTrigger = (float) (Math.abs(a) < DEAD_ZONE ? 0 : a * 0.5f + 0.5);
+					break;
+				case 4:
+					data.rightTrigger = (float) (Math.abs(a) < DEAD_ZONE ? 0 : a * 0.5f + 0.5);
+					break;
+				}
+				i++;
+			}
+		} catch (Exception e) {/* SILENTLY IGNORE */}
+		
+		
 	}
 	
 	/**
@@ -836,7 +904,174 @@ public class Joystick extends GLFWJoystickCallback {
 	 * @param buttons the buffer of buttons.
 	 */
 	private static final void handleXbox(JoyData data, FloatBuffer axis, ByteBuffer buttons) {
+		data.dpad.scale(0);
 		
+		float a;
+		int i = 0;
+		try {
+			while (axis.hasRemaining()) {
+				a = axis.get();
+				
+				switch(i) {
+				case 0:
+					data.leftStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
+					break;
+				case 1:
+					data.leftStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
+					break;
+				case 2:
+					data.rightStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
+					break;
+				case 3:
+					data.rightStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
+					break;
+				case 6:
+					data.dpad.x = Math.abs(a) < DEAD_ZONE ? 0 : Math.signum(a);
+					break;
+				case 7:
+					data.dpad.y = Math.abs(a) < DEAD_ZONE ? 0 : -Math.signum(a);
+					break;
+				case 4:
+					data.leftTrigger = (float) (Math.abs(a) < DEAD_ZONE ? 0 : a * 0.5f + 0.5);
+					break;
+				case 5:
+					data.rightTrigger = (float) (Math.abs(a) < DEAD_ZONE ? 0 : a * 0.5f + 0.5);
+					break;
+				}
+				
+				i++;
+			}
+		} catch (Exception e) {/* SILENTLY IGNORE */}
+	
+		byte b;
+		i = 0;
+		boolean isWindows = buttons.limit() > 11;
+		try {
+			while (buttons.hasRemaining()) {
+				b = buttons.get();
+				
+				
+				System.out.println(i + ", " + b);
+				
+				switch(i) {
+				case 0:
+					if (b == 1 && data.a == KeyState.RELEASED) {
+						data.a = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.a = KeyState.RELEASED;
+					}
+					break;
+				case 1:
+					if (b == 1 && data.b == KeyState.RELEASED) {
+						data.b = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.b = KeyState.RELEASED;
+					}
+					break;
+				case 2:
+					if (b == 1 && data.x == KeyState.RELEASED) {
+						data.x = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.x = KeyState.RELEASED;
+					}
+					break;
+				case 3:
+					if (b == 1 && data.y == KeyState.RELEASED) {
+						data.y = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.y = KeyState.RELEASED;
+					}
+					break;
+				case 4:
+					if (b == 1 && data.leftBumper == KeyState.RELEASED) {
+						data.leftBumper = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.leftBumper = KeyState.RELEASED;
+					}
+					break;
+				case 5:
+					if (b == 1 && data.rightBumper == KeyState.RELEASED) {
+						data.rightBumper = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.rightBumper = KeyState.RELEASED;
+					}
+					break;
+				case 6:
+					if (b == 1 && data.select == KeyState.RELEASED) {
+						data.select = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.select = KeyState.RELEASED;
+					}
+					break;
+				case 7:
+					if (b == 1 && data.start == KeyState.RELEASED) {
+						data.start = KeyState.PRESSED;
+					} else if (b != 1) {
+						data.start = KeyState.RELEASED;
+					}
+					break;
+				case 8: // Woop, windows...
+					if (isWindows) {
+						if (b == 1 && data.home == KeyState.RELEASED) {
+							data.left= KeyState.PRESSED;
+						} else if (b != 1) {
+							data.right = KeyState.RELEASED;
+						}
+					} else {
+						if (b == 1 && data.home == KeyState.RELEASED) {
+							data.home = KeyState.PRESSED;
+						} else if (b != 1) {
+							data.home = KeyState.RELEASED;
+						}
+					}
+					break;
+				case 9:
+					if (isWindows) {
+						if (b == 1 && data.right == KeyState.RELEASED) {
+							data.right = KeyState.PRESSED;
+						} else if (b != 1) {
+							data.right = KeyState.RELEASED;
+						}
+					} else {
+						if (b == 1 && data.left == KeyState.RELEASED) {
+							data.left = KeyState.PRESSED;
+						} else if (b != 1) {
+							data.left = KeyState.RELEASED;
+						}
+					}
+					break;
+				case 10:
+					if (isWindows) {
+						if (b == 1) {
+							data.dpad.y += 1;
+						}
+					} else {
+						if (b == 1 && data.right == KeyState.RELEASED) {
+							data.right = KeyState.PRESSED;
+						} else if (b != 1) {
+							data.right = KeyState.RELEASED;
+						}
+					}
+					break;
+				case 11:
+					if (b == 1) {
+						data.dpad.x += 1;
+					}
+					break;
+				case 12:
+					if (b == 1) {
+						data.dpad.y -= 1;
+					}
+					break;
+				case 13:
+					if (b == 1) {
+						data.dpad.x -= 1;
+					}
+					break;
+				}
+				i++;
+			}
+		} catch (Exception e) {/* SILENTLY IGNORE */}
 	}
 	
 	/**
