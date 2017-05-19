@@ -19,6 +19,7 @@ public class GUIElement extends Renderer {
 	protected Vector4f hue;
 
 	protected GUIText text;
+	protected boolean dirty = true;
 	
 	/**
 	 * Creates a new GUI element, and attaches it to the screen.
@@ -63,8 +64,8 @@ public class GUIElement extends Renderer {
 	 * @param anchorY the y-coordinate of this GUI element's anchor point.
 	 * @param offsetX the x-axis offset in pixels from the anchor point.
 	 * @param offsetY the y-axis offset in pixels from the anchor point.
-	 * @param width the width of this GUI element in pixels.
-	 * @param height the height of this GUI element in pixels.
+	 * @param TEXT_WIDTH the width of this GUI element in pixels.
+	 * @param TEXT_HEIGHT the height of this GUI element in pixels.
 	 */
 	public void updateTransform() {
 		
@@ -95,6 +96,16 @@ public class GUIElement extends Renderer {
 		this.text = text;
 	}
 	
+	/**
+	 * 
+	 * Gets the text on this GUIElement.
+	 * 
+	 * @return the text object bound to this button.
+	 */
+	public GUIText getText() {
+		return text;
+	}
+	
 	@Override
 	public void draw() {
 		setupShader();
@@ -122,6 +133,41 @@ public class GUIElement extends Renderer {
 	public Vector4f getHue() {
 		return hue;
 	}
+	
+	/**
+	 * 
+	 * Sets the X-anchor.
+	 * 
+	 * @param x the OpenGL x coordinate this should anchor to.
+	 */
+	public void setAnchorX(float x) {
+		anchorX = x;
+		dirty = true;
+	}
+	
+	/**
+	 * 
+	 * Sets the Y-anchor.
+	 * 
+	 * @param y the OpenGL y coordinate this should anchor to.
+	 */
+	public void setAnchorY(float y) {
+		anchorY = y;
+		dirty = true;
+	}
+	
+	/**
+	 * 
+	 * Sets the anchor.
+	 * 
+	 * @param x the OpenGL x coordinate this should anchor to.
+	 * @param y the OpenGL y coordinate this should anchor to.
+	 */
+	public void setAnchor(float x, float y) {
+		anchorX = x;
+		anchorY = y;
+		dirty = true;
+	}
 
 	/**
 	 * 
@@ -141,7 +187,7 @@ public class GUIElement extends Renderer {
 	 */
 	protected void setupShader() {
 		// Update the transforms if the resolution has changed since last draw call.
-		if (Window.resolutionHasChanged()) {
+		if (Window.resolutionHasChanged() || dirty) {
 			updateTransform();
 		}
 
