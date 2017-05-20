@@ -11,6 +11,8 @@ public class GUIButton extends GUIElement {
 	private boolean isDown = false;
 	private boolean isOver = false;
 	
+	private boolean hovered = false;
+	
 	private Event onClick, onRelease, onHover, onUnhover;
 	
 	/**
@@ -55,8 +57,10 @@ public class GUIButton extends GUIElement {
 	 * 
 	 */
 	public void hover() {
-		if (onHover != null)
+		if (onHover != null && !hovered) {
 			onHover.fire(this);
+			hovered = true;
+		}
 	}
 	
 	/**
@@ -65,9 +69,10 @@ public class GUIButton extends GUIElement {
 	 * 
 	 */
 	public void unhover() {
-		if (onUnhover != null)
-			
+		if (onUnhover != null && hovered) {
 			onUnhover.fire(this);
+			hovered = false;
+		}
 	}
 	
 	

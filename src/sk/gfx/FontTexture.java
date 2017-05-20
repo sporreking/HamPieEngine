@@ -95,7 +95,10 @@ public class FontTexture extends Texture {
 				RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 		gfx.setColor(Color.getHSBColor(hsb[0], hsb[1], hsb[2]));
 		gfx.setFont(font);
-		gfx.drawString(text, x, y);
+		for (String line : text.split("\n")) {
+			gfx.drawString(line, x, y);
+			y += gfx.getFontMetrics().getHeight();
+		}
 		
 		int[] pixels = new int[width * height];
 		
