@@ -917,13 +917,13 @@ public class Joystick extends GLFWJoystickCallback {
 					data.leftStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
 					break;
 				case 1:
-					data.leftStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
+					data.leftStick.y = Math.abs(a) < DEAD_ZONE ? 0 : a;
 					break;
 				case 2:
 					data.rightStick.x = Math.abs(a) < DEAD_ZONE ? 0 : a;
 					break;
 				case 3:
-					data.rightStick.y = Math.abs(a) < DEAD_ZONE ? 0 : -a;
+					data.rightStick.y = Math.abs(a) < DEAD_ZONE ? 0 : a;
 					break;
 				case 6:
 					data.dpad.x = Math.abs(a) < DEAD_ZONE ? 0 : Math.signum(a);
