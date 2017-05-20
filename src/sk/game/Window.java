@@ -257,6 +257,8 @@ public final class Window {
 		glViewport(0, 0, width, height);
 		aspectRatio = ((float) width) / ((float) height);
 
+		glfwSetWindowSize(window, width, height);
+		
 		resolutionChange = true;
 		if (Game.properties.recalculateViewMatrix)
 			Camera.DEFAULT.updateViewMatrix();

@@ -28,6 +28,49 @@ public class GUIButton extends GUIElement {
 		this(anchorX, anchorY, offsetX, offsetY, width, height, 0);
 	}
 	
+	
+	/**
+	 * 
+	 * Fires the onClick event.
+	 * 
+	 */
+	public void click() {
+		if (onClick != null)
+			onClick.fire(this);
+	}
+
+	/**
+	 * 
+	 * Fires the onRelease event.
+	 * 
+	 */
+	public void release() {
+		if (onRelease != null)
+			onRelease.fire(this);
+	}
+	
+	/**
+	 * 
+	 * Fires the onHover event.
+	 * 
+	 */
+	public void hover() {
+		if (onHover != null)
+			onHover.fire(this);
+	}
+	
+	/**
+	 * 
+	 * Fires the onUnhover event.
+	 * 
+	 */
+	public void unhover() {
+		if (onUnhover != null)
+			
+			onUnhover.fire(this);
+	}
+	
+	
 	/**
 	 * 
 	 * Creates a new GUI button.
@@ -49,9 +92,6 @@ public class GUIButton extends GUIElement {
 	public void init() {
 		super.init();
 		
-		if(!getParent().has(SST.class))
-			getParent().add(new SST());
-		
 		if(!getParent().has(AABB.class))
 			getParent().add(0, new AABB(2.0f * width / Window.getWidth(),
 					2.0f * height / Window.getHeight(), transform));
@@ -62,22 +102,22 @@ public class GUIButton extends GUIElement {
 		if (Mouse.wasChanged()) {
 			if (getParent().get(AABB.class).contains(Mouse.projectPosition(camera.getProjection()))) {
 				if (!isOver && onHover != null) {
-					onHover.fire(getParent().get(SST.class));
+					hover();
 				}
 				isOver = true;
 			} else {
 				if (isOver && onUnhover != null) {
-					onUnhover.fire(getParent().get(SST.class));
+					unhover();
 				}
 				isOver = false;
 			}
 			
 			if (Mouse.pressed(mouseButton) && isOver && onClick != null) {
-				onClick.fire(getParent().get(SST.class));
+				click();
 			}
 			
 			if (Mouse.released(mouseButton) && isOver && onRelease != null) {
-				onRelease.fire(getParent().get(SST.class));
+				release();
 			}
 		}
 	}

@@ -79,6 +79,12 @@ public class InputManager {
 			} else if (key.toUpperCase().equals("DOWN")) {
 				button = GLFW.GLFW_KEY_DOWN;
 				return;
+			} else if (key.toUpperCase().equals("ESCAPE")) {
+				button = GLFW.GLFW_KEY_ESCAPE;
+				return;
+			} else if (key.toUpperCase().equals("ENTER")) {
+				button = GLFW.GLFW_KEY_ENTER;
+				return;
 			}
 
 			if (key == "_") {

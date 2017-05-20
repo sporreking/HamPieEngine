@@ -43,13 +43,14 @@ public final class SST extends Component {
 			throw new IllegalArgumentException("Tag data must be of type String or Number");
 		
 		SSTComponent<?> comp = tags.get(tag);
-		if(comp == null)
-			tags.put(tag, new SSTComponent<>(tag, data));
-		else
+		if(comp != null) {
 			if(comp.data.getClass() != data.getClass()) {
 				throw new IllegalArgumentException("Error in tag \"" + tag + "\"! Cannot store value of type "
 						+ data.getClass().getSimpleName() + " in tag of type " + comp.data.getClass().getSimpleName());
 			}
+		}
+		
+		tags.put(tag, new SSTComponent<>(tag, data));
 	}
 	
 	/**
