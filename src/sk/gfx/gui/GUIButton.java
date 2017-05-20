@@ -37,8 +37,10 @@ public class GUIButton extends GUIElement {
 	 * 
 	 */
 	public void click() {
-		if (onClick != null)
+		if (onClick != null) {
 			onClick.fire(this);
+			Mouse._update();
+		}
 	}
 
 	/**
@@ -47,8 +49,10 @@ public class GUIButton extends GUIElement {
 	 * 
 	 */
 	public void release() {
-		if (onRelease != null)
+		if (onRelease != null) {
 			onRelease.fire(this);
+			Mouse._update();
+		}
 	}
 	
 	/**

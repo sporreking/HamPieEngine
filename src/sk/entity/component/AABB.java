@@ -1,7 +1,12 @@
 package sk.entity.component;
+import java.awt.IllegalComponentStateException;
+
 import sk.entity.Component;
 import sk.entity.Entity;
+import sk.gfx.Renderer;
 import sk.gfx.Transform;
+import sk.gfx.gui.GUIElement;
+import sk.gfx.gui.GUIFader;
 import sk.util.vector.Vector2f;
 
 public class AABB extends Component {
@@ -90,8 +95,17 @@ public class AABB extends Component {
 	
 	@Override
 	public void init() {
+		if (transform != null) return;
 		if(getParent().has(Transform.class)) {
 			transform = getParent().get(Transform.class);
+		} else if (getParent().has(Renderer.class)) {
+			transform = getParent().get(Renderer.class).transform;
+		} else if (getParent().has(GUIElement.class)) {
+			transform = getParent().get(GUIElement.class).transform;
+		} else if (getParent().has(GUIFader.class)) {
+			transform = getParent().get(GUIFader.class).transform;
+		} else {
+			throw new IllegalComponentStateException("There is no Transform, or renderer with a transform connected to this entity.");
 		}
 	}
 	
@@ -106,6 +120,20 @@ public class AABB extends Component {
 		
 		min.y = -halfHeight + transform.position.y;
 		max.y =  halfHeight + transform.position.y;
+	}
+	
+	/**
+	 * @return the smaller part of the bounding box coordinates.
+	 */
+	public Vector2f getMin() {
+		return min.clone();
+	}
+	
+	/**
+	 * @return the greater part of the bounding box coordinates.
+	 */
+	public Vector2f getMax() {
+		return max.clone();
 	}
 	
 	/**

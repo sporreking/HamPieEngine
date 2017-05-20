@@ -42,6 +42,7 @@ public class Joystick extends GLFWJoystickCallback {
 			B,
 			START,
 			SELECT,
+			// Works only on Linux
 			HOME,
 			RIGHT_BUMPER,
 			LEFT_BUMPER,
