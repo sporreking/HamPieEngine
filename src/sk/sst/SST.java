@@ -284,6 +284,9 @@ public final class SST extends Component {
 			case "Long":
 				type = SSTType.LONG;
 				break;
+			case "Float":
+				type = SSTType.FLOAT;
+				break;
 			case "Double":
 				type = SSTType.DOUBLE;
 				break;
@@ -301,18 +304,18 @@ public final class SST extends Component {
 		 */
 		public void write(ByteBuffer buffer) {
 			
-			buffer.put((byte)(Object)type.ordinal());
+			buffer.put((byte)(int)type.ordinal());
 			buffer.put(tag.getBytes(StandardCharsets.UTF_8));
-			buffer.put((byte)(Object)0xFF);
+			buffer.put((byte)(int)0xFF);
 			
 			switch(type) {
-			case BYTE: buffer.put((byte)(Object)data); break;
-			case SHORT: buffer.putShort((short)(Object)data); break;
-			case INT: buffer.putInt((int)(Object)data); break;
-			case LONG: buffer.putLong((long)(Object)data); break;
-			case FLOAT: buffer.putFloat((float)(Object)data); break;
-			case DOUBLE: buffer.putDouble((double)(Object)data); break;
-			case STRING: buffer.put(((String)(Object)data).getBytes(STRING_ENCODING)); buffer.put((byte)(0xFF)); break;
+			case BYTE: buffer.put((byte)(byte)data); break;
+			case SHORT: buffer.putShort((short)(short)data); break;
+			case INT: buffer.putInt((int)(int)data); break;
+			case LONG: buffer.putLong((long)(long)data); break;
+			case FLOAT: buffer.putFloat((float)(float)data); break;
+			case DOUBLE: buffer.putDouble((double)(double)data); break;
+			case STRING: buffer.put(((String)(String)data).getBytes(STRING_ENCODING)); buffer.put((byte)(0xFF)); break;
 			}
 		}
 		

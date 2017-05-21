@@ -11,10 +11,10 @@ public class AudioSource {
 	
 	protected float targetPitch = 1f, targetGain = 1f;
 	
-	protected float deltaPitch, deltaGain;
+	protected float deltaPitch = 2f, deltaGain = 2f;
 	
 	//true if to stop on gain zero and false if to pause
-	protected boolean stop;
+	protected boolean stop = false;
 	
 	/**
 	 * 
@@ -66,18 +66,25 @@ public class AudioSource {
 	 */
 	private void adjustGain(double delta, float globalGain) {
 		float target = targetGain * globalGain;
+		target = Math.max(0, target);
 		if(gain < target) {
-			addGain((float)delta * deltaGain * globalGain);
-			if(gain >= target)
+			addGain((float)delta * deltaGain);
+			if(gain >= target) {
 				setGain(target);
+				if (target != 0)
+					targetGain = target / globalGain;
+			}
 		} else if(gain > target) {
-			addGain((float)delta * deltaGain * globalGain);
+			addGain((float)-delta * deltaGain);
 			if(gain <= target) {
 				setGain(target);
+				if (target != 0)
+					targetGain = target / globalGain;
+				
 				if(gain == 0) {
 					if(stop)
 						stop();
-					else
+				else
 						pause();
 				}
 			}
@@ -85,7 +92,7 @@ public class AudioSource {
 		
 		// Update the gain if needed
 		if (oldGain != gain) {
-			AL10.alSourcef(id, AL10.AL_PITCH, this.pitch);
+			AL10.alSourcef(id, AL10.AL_GAIN, gain);
 			oldGain = gain;
 		}
 	}
@@ -172,7 +179,11 @@ public class AudioSource {
 	 */
 	public void addGain(float gain) {
 		this.gain += gain;
-		AL10.alSourcef(id, AL10.AL_GAIN, this.gain);
+		
+		// NOTE: This should be commented out, because we want
+		// the gain to allways be set through the update function,
+		// where it is updated if it differes.
+		//AL10.alSourcef(id, AL10.AL_GAIN, this.gain);
 	}
 	
 	/**
@@ -195,7 +206,12 @@ public class AudioSource {
 	public void setGain(float gain) {
 		this.gain = gain;
 		targetGain = gain;
-		AL10.alSourcef(id, AL10.AL_GAIN, gain);
+		deltaGain = 2;
+		
+		// NOTE: This should be commented out, because we want
+		// the gain to allways be set through the update function,
+		// where it is updated if it differes.
+		//AL10.alSourcef(id, AL10.AL_GAIN, gain);
 	}
 	
 	/**

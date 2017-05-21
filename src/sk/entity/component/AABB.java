@@ -53,6 +53,10 @@ public class AABB extends Component {
 		this.transform = transform;
 	}
 	
+	public void setTransform(Transform t) {
+		transform = t;
+	}
+	
 	/**
 	 * 
 	 * Sets the width of this AABB.
@@ -126,6 +130,7 @@ public class AABB extends Component {
 	 * @return the smaller part of the bounding box coordinates.
 	 */
 	public Vector2f getMin() {
+		updateBoundaries();
 		return min.clone();
 	}
 	
@@ -133,6 +138,7 @@ public class AABB extends Component {
 	 * @return the greater part of the bounding box coordinates.
 	 */
 	public Vector2f getMax() {
+		updateBoundaries();
 		return max.clone();
 	}
 	

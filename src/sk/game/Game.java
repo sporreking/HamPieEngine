@@ -32,6 +32,9 @@ public final class Game {
 	public static final void start(GameProperties properties) {
 		Game.properties = properties;
 		
+		AudioManager.setGlobalLoopGain(properties.globalLoopGain);
+		AudioManager.setGlobalTempGain(properties.globalTempGain);
+		
 		Window.create();
 		initGL();
 		
