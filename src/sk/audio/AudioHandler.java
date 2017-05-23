@@ -248,12 +248,12 @@ public class AudioHandler implements Runnable {
 		loopSources = new AudioSource[AudioManager.MAX_LOOP_SOURCES];
 		
 		for(int i = 0; i < loopSources.length; i++)
-			loopSources[i] = new AudioSource();
+			loopSources[i] = new AudioSource(false);
 		
 		tempSources = new AudioSource[AudioManager.MAX_TEMP_SOURCES];
 		
 		for(int i = 0; i < tempSources.length; i++)
-			tempSources[i] = new AudioSource();
+			tempSources[i] = new AudioSource(true);
 		
 		FloatBuffer buffer = ByteBuffer.allocateDirect(6 << 2).order(ByteOrder.nativeOrder()).asFloatBuffer();
 		

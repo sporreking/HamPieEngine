@@ -7,22 +7,23 @@ public class AudioSource {
 	protected int id;
 	
 	protected float gain = 1f, pitch = 1f;
-	protected float oldGain = 0f;
 	
 	protected float targetPitch = 1f, targetGain = 1f;
 	
 	protected float deltaPitch = 2f, deltaGain = 2f;
 	
 	//true if to stop on gain zero and false if to pause
-	protected boolean stop = false;
+	protected boolean stop = true;
+	protected boolean isTemp = false;
 	
 	/**
 	 * 
 	 * Creates a new audio source.
 	 * 
 	 */
-	public AudioSource() {
+	public AudioSource(boolean isTemp) {
 		id = AL10.alGenSources();
+		this.isTemp = isTemp;
 	}
 	
 	/**
@@ -54,7 +55,7 @@ public class AudioSource {
 	 * @param globalGain a volume scaler for this 
 	 */
 	public void update(double delta, float globalGain) {
-		adjustGain(delta, globalGain);
+		adjustGain(delta);
 		adjustPitch(delta);
 	}
 	
@@ -64,36 +65,26 @@ public class AudioSource {
 	 * 
 	 * @param delta the time passed since the previous update.
 	 */
-	private void adjustGain(double delta, float globalGain) {
-		float target = targetGain * globalGain;
+	private void adjustGain(double delta) {
+		float target = targetGain;
 		target = Math.max(0, target);
 		if(gain < target) {
 			addGain((float)delta * deltaGain);
 			if(gain >= target) {
 				setGain(target);
-				if (target != 0)
-					targetGain = target / globalGain;
 			}
 		} else if(gain > target) {
 			addGain((float)-delta * deltaGain);
 			if(gain <= target) {
 				setGain(target);
-				if (target != 0)
-					targetGain = target / globalGain;
 				
 				if(gain == 0) {
 					if(stop)
 						stop();
 				else
-						pause();
+					pause();
 				}
 			}
-		}
-		
-		// Update the gain if needed
-		if (oldGain != gain) {
-			AL10.alSourcef(id, AL10.AL_GAIN, gain);
-			oldGain = gain;
 		}
 	}
 	
@@ -179,7 +170,7 @@ public class AudioSource {
 	 */
 	public void addGain(float gain) {
 		this.gain += gain;
-		
+		setGain(gain);
 		// NOTE: This should be commented out, because we want
 		// the gain to allways be set through the update function,
 		// where it is updated if it differes.
@@ -206,12 +197,14 @@ public class AudioSource {
 	public void setGain(float gain) {
 		this.gain = gain;
 		targetGain = gain;
-		deltaGain = 2;
 		
 		// NOTE: This should be commented out, because we want
 		// the gain to allways be set through the update function,
 		// where it is updated if it differes.
-		//AL10.alSourcef(id, AL10.AL_GAIN, gain);
+
+		float global = (isTemp ? AudioManager.getGlobalTempGain() : AudioManager.getGlobalLoopGain());
+		
+		AL10.alSourcef(id, AL10.AL_GAIN, this.gain * global);
 	}
 	
 	/**
