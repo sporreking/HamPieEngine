@@ -42,6 +42,7 @@ public class Joystick extends GLFWJoystickCallback {
 			B,
 			START,
 			SELECT,
+			// Works only on Linux
 			HOME,
 			RIGHT_BUMPER,
 			LEFT_BUMPER,
@@ -188,17 +189,17 @@ public class Joystick extends GLFWJoystickCallback {
 			case 14:
 				return leftStick.x > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
 			case 15:
-				return rightStick.y < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
-			case 16:
 				return rightStick.y > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 16:
+				return rightStick.y < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
 			case 17:
 				return rightStick.x < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
 			case 18:
 				return rightStick.x > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
 			case 19:
-				return dpad.y < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
-			case 20:
 				return dpad.y > DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
+			case 20:
+				return dpad.y < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
 			case 21:
 				return dpad.x < -DIGITAL_THRESHOLD ? KeyState.DOWN : KeyState.RELEASED;
 			case 22:
@@ -325,7 +326,7 @@ public class Joystick extends GLFWJoystickCallback {
 		JoyData c = new JoyData();
 		
 		String name = GLFW.glfwGetJoystickName(joy); 
-		System.out.println(name);
+		System.out.println("Connected: " + name);
 		if (name.contains("Xbox")) {
 			// It's an Xbox!
 			if (name.contains("One")) {

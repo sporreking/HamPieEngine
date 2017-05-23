@@ -79,6 +79,12 @@ public class InputManager {
 			} else if (key.toUpperCase().equals("DOWN")) {
 				button = GLFW.GLFW_KEY_DOWN;
 				return;
+			} else if (key.toUpperCase().equals("ESCAPE")) {
+				button = GLFW.GLFW_KEY_ESCAPE;
+				return;
+			} else if (key.toUpperCase().equals("ENTER")) {
+				button = GLFW.GLFW_KEY_ENTER;
+				return;
 			}
 
 			if (key == "_") {
@@ -136,9 +142,11 @@ public class InputManager {
 		}
 		
 		// Poll all updates
+		KeyState lastState;
 		KeyState state;
 		for (String key : inputs.keySet()) {
 			ArrayList<Input> bindings = inputs.get(key);
+			lastState = states.get(key);
 			state = KeyState.RELEASED;
 			
 			for (Input binding : bindings) {
@@ -148,9 +156,14 @@ public class InputManager {
 					if (d == null) continue;
 					
 					KeyState s = d.get(binding.button);
-					if (s == KeyState.RELEASED) continue;
-					state = s;
 					
+					if (s == KeyState.RELEASED) continue;					
+					if (s == KeyState.DOWN && lastState == KeyState.RELEASED) {
+						state = KeyState.PRESSED;
+						break;
+					} else {
+						state = s;
+					}
 				} else {
 					if (Keyboard.pressed(binding.button)) {
 						state = KeyState.PRESSED;
@@ -212,7 +225,6 @@ public class InputManager {
 				// It's a Keyboard
 				inputs.get(key).add(new Input(tokens[2]));
 			}
-			
 		}	
 	}
 }

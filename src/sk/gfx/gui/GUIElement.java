@@ -1,5 +1,6 @@
 package sk.gfx.gui;
 
+import sk.entity.component.AABB;
 import sk.game.Window;
 import sk.gfx.Camera;
 import sk.gfx.Mesh;
@@ -74,6 +75,14 @@ public class GUIElement extends Renderer {
 		
 		transform.position.x = anchorX + 2.0f * offsetX / Window.getWidth();
 		transform.position.y = anchorY + 2.0f * offsetY / Window.getHeight();
+		
+		// If we have an AABB, update that too.
+		if (getParent() == null) return;
+		if (getParent().has(AABB.class)) {
+			AABB aabb = getParent().get(AABB.class);
+			aabb.setWidth(2.0f * width / Window.getWidth());
+			aabb.setHeight(2.0f * height / Window.getHeight());
+		}
 	}
 	
 	/**
