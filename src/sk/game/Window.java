@@ -9,7 +9,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import sk.util.io.Mouse;
 import sk.gfx.Camera;
-import sk.gfx.Texture;
 import sk.util.io.Joystick;
 import sk.util.io.Keyboard;
 import sk.util.vector.Vector4f;
@@ -21,7 +20,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import javax.imageio.ImageIO;
 
@@ -36,6 +34,7 @@ public final class Window {
 	
 	private static long window;
 	private static boolean fullscreen = false;
+	private static int display = 0;
 	private static boolean resolutionChange = false;
 	
 	private static Vector4f clearColor;
@@ -217,6 +216,7 @@ public final class Window {
 		// Without these line, you can't switch displays while in full screen
 		glfwWindowHint(GLFW_DECORATED, 1);
 		fullscreen = true;
+		Window.display = display;
 		glfwSetWindowMonitor(window, monitors.get(display), 0, 0, width, height, mode.refreshRate());
 		glfwWindowHint(GLFW_DECORATED, 0);
 		setSize(width, height);
@@ -259,6 +259,8 @@ public final class Window {
 		glViewport(0, 0, width, height);
 		aspectRatio = ((float) width) / ((float) height);
 
+		glfwSetWindowSize(window, width, height);
+		
 		resolutionChange = true;
 		if (Game.properties.recalculateViewMatrix)
 			Camera.DEFAULT.updateViewMatrix();
@@ -400,5 +402,9 @@ public final class Window {
 	protected static final void destroy() {
 		Callbacks.glfwFreeCallbacks(window);
 		glfwDestroyWindow(window);
+	}
+
+	public static int getCurrentDisplay() {
+		return display;
 	}
 }

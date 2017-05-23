@@ -4,13 +4,14 @@ import sk.entity.component.AABB;
 import sk.game.Window;
 import sk.sst.SST;
 import sk.util.io.Mouse;
-import sk.util.vector.Vector3f;
 
 public class GUIButton extends GUIElement {
 
 	private int mouseButton;
 	private boolean isDown = false;
 	private boolean isOver = false;
+	
+	private boolean hovered = false;
 	
 	private Event onClick, onRelease, onHover, onUnhover;
 	
@@ -28,6 +29,56 @@ public class GUIButton extends GUIElement {
 	public GUIButton(float anchorX, float anchorY, int offsetX, int offsetY, int width, int height) {
 		this(anchorX, anchorY, offsetX, offsetY, width, height, 0);
 	}
+	
+	
+	/**
+	 * 
+	 * Fires the onClick event.
+	 * 
+	 */
+	public void click() {
+		if (onClick != null) {
+			onClick.fire(this);
+			Mouse._update();
+		}
+	}
+
+	/**
+	 * 
+	 * Fires the onRelease event.
+	 * 
+	 */
+	public void release() {
+		if (onRelease != null) {
+			onRelease.fire(this);
+			Mouse._update();
+		}
+	}
+	
+	/**
+	 * 
+	 * Fires the onHover event.
+	 * 
+	 */
+	public void hover() {
+		if (onHover != null && !hovered) {
+			onHover.fire(this);
+			hovered = true;
+		}
+	}
+	
+	/**
+	 * 
+	 * Fires the onUnhover event.
+	 * 
+	 */
+	public void unhover() {
+		if (onUnhover != null && hovered) {
+			onUnhover.fire(this);
+			hovered = false;
+		}
+	}
+	
 	
 	/**
 	 * 
@@ -50,9 +101,6 @@ public class GUIButton extends GUIElement {
 	public void init() {
 		super.init();
 		
-		if(!getParent().has(SST.class))
-			getParent().add(new SST());
-		
 		if(!getParent().has(AABB.class))
 			getParent().add(0, new AABB(2.0f * width / Window.getWidth(),
 					2.0f * height / Window.getHeight(), transform));
@@ -63,22 +111,22 @@ public class GUIButton extends GUIElement {
 		if (Mouse.wasChanged()) {
 			if (getParent().get(AABB.class).contains(Mouse.projectPosition(camera.getProjection()))) {
 				if (!isOver && onHover != null) {
-					onHover.fire(getParent().get(SST.class));
+					hover();
 				}
 				isOver = true;
 			} else {
 				if (isOver && onUnhover != null) {
-					onUnhover.fire(getParent().get(SST.class));
+					unhover();
 				}
 				isOver = false;
 			}
 			
 			if (Mouse.pressed(mouseButton) && isOver && onClick != null) {
-				onClick.fire(getParent().get(SST.class));
+				click();
 			}
 			
 			if (Mouse.released(mouseButton) && isOver && onRelease != null) {
-				onRelease.fire(getParent().get(SST.class));
+				release();
 			}
 		}
 	}

@@ -26,10 +26,13 @@ public class GameProperties {
 	public Vector4f clearColor = new Vector4f(0, 0, 0, 1);
 	public boolean fullscreen = false;
 	public boolean useDisplayResolution = true;
-	public int display = 44;
+	public int display = 0;
 	public boolean recalculateViewMatrix = true;
 	// Initialization settings
 	public GameState startState;
 	// Input map position
 	public String inputMapPath = "res/input";
+	// 'Em sound settings
+	public float globalLoopGain = 1;
+	public float globalTempGain = 1;
 }
